@@ -1,5 +1,3 @@
-from .flow_sample import FlowSample
-import xdrlib
 
 
 PROTO_ETHERNET = 1
