@@ -55,7 +55,7 @@ class SFlowRawPacket:
             raise Exception(f"sFlow version not supported: v{version}")
         ip_version = upx.unpack_uint()
         if ip_version == IP_VERSION_4:
-            agent_address = socket.inet_pton(socket.AF_INET, upx.unpack_fopaque(4))
+            agent_address = socket.inet_ntop(socket.AF_INET, upx.unpack_fopaque(4))
         else:
             agent_address = socket.inet_ntop(socket.AF_INET6, upx.unpack_fopaque(16))
         agent_id = upx.unpack_uint()
