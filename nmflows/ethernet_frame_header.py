@@ -28,18 +28,10 @@ class EthernetFrameHeader:
 
     @classmethod
     def unpack(cls, upx: xdrlib.Unpacker, hdr_length):
-        # length = upx.unpack_uint()
-        # dst_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
-        # src_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
-        # # vlan = upx.unpack_uint()
-        # vlan = 0
-        # payload_length = int.from_bytes(upx.unpack_fopaque(2), "big")
-        # upx.unpack_fopaque(hdr_length - 18)
+        dst_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(8))
+        src_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(8))
         length = upx.unpack_uint()
-        dst_mac = upx.unpack_uint()
-        src_mac = upx.unpack_uint()
-        ethertype = upx.unpack_uint()
-        upx.unpack_fopaque(hdr_length - 32)
+        upx.unpack_fopaque(hdr_length - 24)
         return cls(dst_mac, src_mac, 0, length)
 
     def __repr__(self):
