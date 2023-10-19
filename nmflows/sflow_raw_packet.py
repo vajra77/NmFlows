@@ -51,10 +51,12 @@ class SFlowRawPacket:
     def unpack(cls, data):
         upx = xdrlib.Unpacker(data)
         version = upx.unpack_uint()
+        if version != 5:
+            raise Exception(f"sFlow version not supported: v{version}")
         ip_version = upx.unpack_uint()
         if ip_version == IP_VERSION_4:
             #agent_address = socket.ntohl(upx.unpack_uint())
-            agent_address = socket.inet_ntoa(socket.inet_ntop(socket.AF_INET, upx.unpack_fopaque(4)))
+            agent_address = socket.inet_ntoa(upx.unpack_fopaque(4))
         else:
             agent_address = socket.inet_ntop(socket.AF_INET6, upx.unpack_fopaque(16))
         agent_id = upx.unpack_uint()
