@@ -64,6 +64,7 @@ class FlowSample:
         output_id = upx.unpack_uint()
         records_count = upx.unpack_uint()
         records = []
+        print(f"records count is {records_count}")
         for _ in range(records_count):
             record = FlowRecord.unpack(upx)
             if record is not None:
