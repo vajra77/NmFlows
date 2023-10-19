@@ -41,7 +41,6 @@ class RawFrameHeader:
         length = upx.unpack_uint()
         stripped = upx.unpack_uint()
         header_length = upx.unpack_uint()
-        print(f"header len: {header_length}")
         if proto == PROTO_ETHERNET:
             header = EthernetFrameHeader.unpack(upx, header_length)
             return cls(proto, length, stripped, header_length, header)
