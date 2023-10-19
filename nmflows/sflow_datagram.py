@@ -47,6 +47,10 @@ class SFlowDatagram:
     def samples_count(self):
         return self._samples_count
 
+    @property
+    def samples(self):
+        return self._samples
+
     @classmethod
     def unpack(cls, upx):
         version = upx.unpack_uint()
@@ -74,4 +78,5 @@ class SFlowDatagram:
             IP Version: {self.ip_version}
             Agent Address: {self.agent_address}
             Samples No.: {self.samples_count}
+            Samples: {self.samples}
         """
