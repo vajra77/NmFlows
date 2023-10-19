@@ -18,6 +18,7 @@ def create_sflow_sample(upx: xdrlib.Unpacker):
     if sformat == FORMAT_FLOW_SAMPLE:
         return FlowSample.unpack(sformat, length, upx)
     else:
+        print(f"unrecognized sample format: {sformat}")
         upx.unpack_fopaque(length)
         return None
 
