@@ -41,9 +41,8 @@ class FlowRecord:
             data = RawFrameHeader.unpack(upx)
             if data is not None:
                 return cls((enterprise, s_format), length, data)
-            else:
-                print("header is none")
         else:
+            print(f"Format: {(enterprise, s_format)}")
             upx.unpack_fopaque(length)
             return None
 
