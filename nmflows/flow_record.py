@@ -1,4 +1,5 @@
 from .ethernet_frame_data import EthernetFrameData
+from .raw_frame_header import RawFrameHeader
 import xdrlib
 
 FORMAT_RAW_HEADER = (0, 1)
@@ -37,9 +38,8 @@ class FlowRecord:
             data = EthernetFrameData.unpack(upx)
             return cls((enterprise, s_format), length, data)
         elif (enterprise, s_format) == FORMAT_RAW_HEADER:
-            print(f"Record is RAW")
-            upx.unpack_fopaque(length)
-            return None
+            data = RawFrameHeader.unpack(upx)
+            return cls((enterprise, s_format), length, data)
         else:
             upx.unpack_fopaque(length)
             return None
