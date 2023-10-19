@@ -1,6 +1,6 @@
 import socketserver, threading, time, sflow, binascii
 from pprint import pprint
-from .nmflows import SFlowRawPacket
+from nmflows import SFlowRawPacket
 
 
 
@@ -14,7 +14,7 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
         try:
             dgram = SFlowRawPacket.unpack(data)
         except Exception as e:
-            pass
+            print(f"Caught exception: {e}")
         else:
             pprint(dgram)
 
