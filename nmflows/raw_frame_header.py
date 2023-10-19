@@ -42,11 +42,10 @@ class RawFrameHeader:
         stripped = upx.unpack_uint()
         header_length = upx.unpack_uint()
         if proto == PROTO_ETHERNET:
-            assert header_length == 16, "Ethernet Header has wrong length"
-            header = EthernetFrameData.unpack(upx)
+            header = upx.unpack_fopaque(header_length)
             return cls(proto, length, stripped, header_length, header)
         else:
-            upx.unpack_fopaque(length)
+            upx.unpack_fopaque(header_length)
             return None
 
     def __repr__(self):
