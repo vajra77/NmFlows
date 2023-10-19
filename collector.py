@@ -14,7 +14,7 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
             unpacker = xdrlib.Unpacker(data)
             datagram = SFlowDatagram.unpack(unpacker)
         except Exception as e:
-            print(f"Caught exception: {e}")
+            pass
         else:
             pprint(datagram)
 
