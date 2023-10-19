@@ -19,7 +19,7 @@ def create_sflow_sample(upx: xdrlib.Unpacker):
         return FlowSample.unpack(sformat, length, upx)
     else:
         upx.unpack_fopaque(length)
-        raise Exception("unhandled sflow sample format")
+        return None
 
 
 class SFlowDatagram:
