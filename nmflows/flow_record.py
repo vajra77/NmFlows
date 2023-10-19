@@ -39,7 +39,8 @@ class FlowRecord:
             return cls((enterprise, s_format), length, data)
         elif (enterprise, s_format) == FORMAT_RAW_HEADER:
             data = RawFrameHeader.unpack(upx)
-            return cls((enterprise, s_format), length, data)
+            if data is not None:
+                return cls((enterprise, s_format), length, data)
         else:
             upx.unpack_fopaque(length)
             return None
