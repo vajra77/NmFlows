@@ -1,4 +1,4 @@
-import socketserver, threading, time, sflow, binascii
+import socketserver, threading, time
 from pprint import pprint
 from nmflows import SFlowRawPacket
 import xdrlib
