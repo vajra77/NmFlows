@@ -1,5 +1,5 @@
 from .sflow_sample import SFlowSample
-from .factories import create_flow_record
+from .flow_record import create_flow_record
 import xdrlib
 
 

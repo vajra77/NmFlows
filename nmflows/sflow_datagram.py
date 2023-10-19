@@ -1,4 +1,4 @@
-from .factories import create_sflow_sample
+from .sflow_sample import create_sflow_sample
 import socket
 
 IP_VERSION_4 = 1
