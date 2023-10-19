@@ -1,8 +1,3 @@
-from .ethernet_frame_data import EthernetFrameData
-from .raw_packet_header import RawFrameHeader
-import xdrlib
-
-
 
 
 class FlowRecord:
@@ -18,7 +13,3 @@ class FlowRecord:
     @property
     def length(self):
         return self._length
-
-    @classmethod
-    def unpack(cls, upx: xdrlib.Unpacker):
-        pass

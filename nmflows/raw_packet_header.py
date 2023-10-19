@@ -1,5 +1,5 @@
-from .ethernet_frame_header import EthernetFrameHeader
 from .flow_record import FlowRecord
+from .ethernet_frame_header import EthernetFrameHeader
 import xdrlib
 
 
