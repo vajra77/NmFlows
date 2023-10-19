@@ -1,4 +1,4 @@
-from .ethernet_frame_data import EthernetFrameData
+import binascii
 import xdrlib
 
 
@@ -55,4 +55,5 @@ class RawFrameHeader:
                                 Length: {self.length}
                                 Stripped: {self.stripped}
                                 Header Length: {self.header_length}
+                                Header: {binascii.hexlify(self.header)}
         """
