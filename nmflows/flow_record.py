@@ -33,6 +33,7 @@ class FlowRecord:
         enterprise = (f_bits >> 12) & 0b11111111111111111111
         length = upx.unpack_uint()
         if (enterprise, s_format) == FORMAT_ETHERNET_DATA:
+            assert length == 16, "EthernetFrameData has wrong length"
             data = EthernetFrameData.unpack(upx)
             return cls((enterprise, s_format), length, data)
         else:
