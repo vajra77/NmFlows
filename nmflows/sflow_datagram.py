@@ -11,14 +11,15 @@ IP_VERSION_6 = 2
 
 
 def create_sflow_sample(upx: xdrlib.Unpacker):
-    sformat = socket.ntohl(upx.unpack_uint())
+    sformat = upx.unpack_uint()
+    if sformat is None:
+        raise Exception("unable to parse sflow sample format")
     length = upx.unpack_uint()
     if sformat == FORMAT_FLOW_SAMPLE:
         return FlowSample.unpack(sformat, length, upx)
     else:
-        print(f"sample with format:{sformat} dropped")
         upx.unpack_fopaque(length)
-        return None
+        raise Exception("unhandled sflow sample format")
 
 
 class SFlowDatagram:

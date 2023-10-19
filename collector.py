@@ -20,8 +20,8 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
         try:
             unpacker = xdrlib.Unpacker(data)
             datagram = create_sflow_datagram(unpacker)
-        except EOFError as e:
-            pass
+        except Exception as e:
+            print(f"[ERROR]: {e}")
         else:
             pprint(datagram)
 
