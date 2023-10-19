@@ -4,7 +4,7 @@ import socket
 IP_VERSION_4 = 1
 IP_VERSION_6 = 2
 
-class SFlowRawPacket:
+class SFlowDatagram:
 
     def __init__(self, version, ip_version, agent_address, agent_id, sequence_number, switch_uptime, samples_count, samples):
         self._version = version

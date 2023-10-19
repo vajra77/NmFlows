@@ -1,6 +1,6 @@
 import socketserver, threading, time
 from pprint import pprint
-from nmflows import SFlowRawPacket
+from nmflows import SFlowDatagram
 import xdrlib
 
 
@@ -12,11 +12,11 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
         # current_thread = threading.current_thread()
         try:
             unpacker = xdrlib.Unpacker(data)
-            dgram = SFlowRawPacket.unpack(unpacker)
+            datagram = SFlowDatagram.unpack(unpacker)
         except Exception as e:
             print(f"Caught exception: {e}")
         else:
-            pprint(dgram)
+            pprint(datagram)
 
 
 class ThreadedUDPServer(socketserver.ThreadingMixIn, socketserver.UDPServer):

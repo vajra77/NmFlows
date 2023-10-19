@@ -1,1 +1,1 @@
-from .sflow_raw_packet import SFlowRawPacket
+from .sflow_datagram import SFlowDatagram
