@@ -30,7 +30,8 @@ class EthernetFrameHeader:
     def unpack(cls, upx: xdrlib.Unpacker, hdr_length):
         dst_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
         src_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
-        vlan = socket.ntohl(upx.unpack_uint())
+        # vlan = socket.ntohl(upx.unpack_uint())
+        vlan = 0
         length = int.from_bytes(upx.unpack_fopaque(2), "big")
         upx.unpack_fopaque(hdr_length - 18)
         return cls(dst_mac, src_mac, vlan, length)
