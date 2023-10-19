@@ -25,6 +25,10 @@ class SFlowSample:
     def length(self):
         return self._length
 
+    @property
+    def data(self):
+        return self._data
+
     @classmethod
     def unpack(cls, upx: xdrlib.Unpacker):
         f_bits = upx.unpack_uint()
@@ -41,5 +45,6 @@ class SFlowSample:
         return f"""
                 Class: {self.__class__.__name__}
                 Format: {self.format}
-                Length: {self.length}        
+                Length: {self.length} 
+                Data: {self.data}       
         """
