@@ -1,11 +1,12 @@
+from .sflow_sample import SFlowSample
 from .factories import create_flow_record
 import xdrlib
 
 
-class FlowSample:
+class FlowSample(SFlowSample):
 
-    def __init__(self, sequence_number, source, sampling_rate, sample_pool, drops, input_id, output_id, records_count, records):
-        super().__init__()
+    def __init__(self, sformat, length, sequence_number, source, sampling_rate, sample_pool, drops, input_id, output_id, records_count, records):
+        super().__init__(sformat, length)
         self._sequence_number = sequence_number
         self._source = source
         self._sampling_rate = sampling_rate
@@ -53,7 +54,7 @@ class FlowSample:
         return self._records
 
     @classmethod
-    def unpack(cls, upx: xdrlib.Unpacker):
+    def unpack(cls, sformat, length, upx: xdrlib.Unpacker):
         seq_no = upx.unpack_uint()
         source = upx.unpack_uint()
         sampling_rate = upx.unpack_uint()
@@ -69,7 +70,7 @@ class FlowSample:
             record = create_flow_record(upx)
             if record is not None:
                 records.append(record)
-        return cls(seq_no, source, sampling_rate, sample_pool, drops, input_id, output_id, records_count, records)
+        return cls(sformat, length, seq_no, source, sampling_rate, sample_pool, drops, input_id, output_id, records_count, records)
 
     def __repr__(self):
         return f"""

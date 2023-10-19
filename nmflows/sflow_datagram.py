@@ -1,4 +1,4 @@
-from .sflow_sample_data import SFlowSampleData
+from .factories import create_sflow_sample
 import socket
 
 IP_VERSION_4 = 1
@@ -69,7 +69,7 @@ class SFlowDatagram:
             n_samples = 0
         samples = []
         for i in range(n_samples):
-            sample = SFlowSampleData.unpack(upx)
+            sample = create_sflow_sample(upx)
             if sample is not None:
                 samples.append(sample)
         # upx.done()
