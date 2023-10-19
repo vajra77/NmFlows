@@ -1,4 +1,4 @@
-import binascii
+from .ethernet_frame_header import EthernetFrameHeader
 import xdrlib
 
 
@@ -42,7 +42,7 @@ class RawFrameHeader:
         stripped = upx.unpack_uint()
         header_length = upx.unpack_uint()
         if proto == PROTO_ETHERNET:
-            header = upx.unpack_fopaque(header_length)
+            header = EthernetFrameHeader.unpack(upx)
             return cls(proto, length, stripped, header_length, header)
         else:
             upx.unpack_fopaque(header_length)
@@ -55,5 +55,5 @@ class RawFrameHeader:
                                 Length: {self.length}
                                 Stripped: {self.stripped}
                                 Header Length: {self.header_length}
-                                Header: {binascii.hexlify(self.header)}
+                                Header: {self.header}
         """
