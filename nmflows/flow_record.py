@@ -39,6 +39,7 @@ class FlowRecord:
         elif (enterprise, s_format) == FORMAT_RAW_HEADER:
             print(f"Record is RAW")
             upx.unpack_fopaque(length)
+            return None
         else:
             upx.unpack_fopaque(length)
             return None
