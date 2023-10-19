@@ -64,6 +64,8 @@ class FlowSample:
         input_id = upx.unpack_uint()
         output_id = upx.unpack_uint()
         records_count = upx.unpack_uint()
+        if records_count is None:
+            records_count = 0
         records = []
         for i in range(records_count):
             record = FlowRecord.unpack(upx)
