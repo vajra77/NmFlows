@@ -10,7 +10,7 @@ FORMAT_FLOW_SAMPLE = (0, 1)
 FORMAT_COUNTER_SAMPLE = (0, 2)
 FORMAT_EXPANDED_FLOW_SAMPLE = (0, 3)
 
-class SFlowSample:
+class SFlowSampleData:
 
     def __init__(self, s_format, length, data):
         self._format = s_format
