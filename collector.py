@@ -13,8 +13,8 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
         try:
             unpacker = xdrlib.Unpacker(data)
             datagram = SFlowDatagram.unpack(unpacker)
-        except Exception as e:
-            print(f"[ERROR]: {e}")
+        except EOFError as e:
+            print(f"[ERROR]: reading past the end of data: {e}")
         else:
             pprint(datagram)
 
