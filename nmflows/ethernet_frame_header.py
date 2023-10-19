@@ -1,5 +1,4 @@
 import xdrlib
-import socket
 
 
 class EthernetFrameHeader:
@@ -28,8 +27,8 @@ class EthernetFrameHeader:
 
     @classmethod
     def unpack(cls, upx: xdrlib.Unpacker):
-        dst_mac = ':'.join('%02x' % b for b upx.unpack_fopaque(6))
-        src_mac = ':'.join('%02x' % b for b upx.unpack_fopaque(6))
+        dst_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
+        src_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
         vlan = upx.unpack_fopaque(4)
         length = upx.unpack_fopaque(2)
 
