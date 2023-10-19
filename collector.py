@@ -4,6 +4,13 @@ from nmflows import SFlowDatagram
 import xdrlib
 
 
+def create_sflow_datagram(upx: xdrlib.Unpacker):
+    version = upx.unpack_uint()
+    if version != 5:
+        raise Exception(f"sFlow version not supported: v{version}")
+    return SFlowDatagram(version, upx)
+
+
 class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
 
     def handle(self):

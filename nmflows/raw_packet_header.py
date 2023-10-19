@@ -7,6 +7,7 @@ PROTO_ETHERNET = 1
 PROTO_IPV4 = 11
 PROTO_IPV6 = 12
 
+
 class RawPacketHeader(FlowRecord):
 
     def __init__(self, r_format, length, proto, content_length, stripped, header_length, header):

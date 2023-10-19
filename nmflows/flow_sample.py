@@ -81,7 +81,7 @@ class FlowSample(SFlowSample):
         if records_count is None:
             records_count = 0
         records = []
-        for i in range(records_count):
+        for _ in range(records_count):
             record = create_flow_record(upx)
             if record is not None:
                 records.append(record)

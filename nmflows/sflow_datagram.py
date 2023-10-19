@@ -68,10 +68,7 @@ class SFlowDatagram:
         return self._samples
 
     @classmethod
-    def unpack(cls, upx):
-        version = upx.unpack_uint()
-        if version != 5:
-            raise Exception(f"sFlow version not supported: v{version}")
+    def unpack(cls, version, upx):
         ip_version = upx.unpack_uint()
         if ip_version == IP_VERSION_4:
             agent_address = socket.inet_ntop(socket.AF_INET, upx.unpack_fopaque(4))
@@ -88,7 +85,6 @@ class SFlowDatagram:
             sample = create_sflow_sample(upx)
             if sample is not None:
                 samples.append(sample)
-        # upx.done()
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, n_samples, samples)
 
     def __repr__(self):
