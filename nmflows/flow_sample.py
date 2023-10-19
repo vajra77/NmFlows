@@ -63,7 +63,7 @@ class FlowSample:
         drops = upx.unpack_uint()
         input_id = upx.unpack_uint()
         output_id = upx.unpack_uint()
-        records_count = socket.ntohl(upx.unpack_uint())
+        records_count = socket.ntohl(upx.unpack_fopaque(4))
         records = []
         print(f"records count is {records_count}")
         for i in range(records_count):
