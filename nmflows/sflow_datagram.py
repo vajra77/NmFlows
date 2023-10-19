@@ -65,10 +65,10 @@ class SFlowDatagram:
         seq_number = upx.unpack_uint()
         uptime = upx.unpack_uint()
         n_samples = upx.unpack_uint()
+        if n_samples is None:
+            n_samples = 0
         samples = []
-        print(f"n. of samples: {n_samples}")
         for i in range(n_samples):
-            print(f"parsing sample {i}")
             sample = SFlowSample.unpack(upx)
             if sample is not None:
                 samples.append(sample)

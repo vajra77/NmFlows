@@ -63,11 +63,9 @@ class FlowSample:
         drops = upx.unpack_uint()
         input_id = upx.unpack_uint()
         output_id = upx.unpack_uint()
-        records_count = socket.ntohl(upx.unpack_int())
+        records_count = upx.unpack_uint()
         records = []
-        print(f"records count is {records_count}")
         for i in range(records_count):
-            print(f"extracting record {i}")
             record = FlowRecord.unpack(upx)
             if record is not None:
                 records.append(record)
