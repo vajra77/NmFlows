@@ -34,7 +34,7 @@ class FlowRecord:
         if rformat == FORMAT_ETHERNET_DATA:
             assert length == 16, "EthernetFrameData has wrong length"
             data = EthernetFrameData.unpack(upx)
-            return cls((enterprise, s_format), length, data)
+            return cls(rformat, length, data)
         elif rformat == FORMAT_RAW_HEADER:
             data = RawFrameHeader.unpack(upx)
             if data is not None:

@@ -56,7 +56,6 @@ class FlowSample:
     def unpack(cls, upx: xdrlib.Unpacker):
         seq_no = upx.unpack_uint()
         source = upx.unpack_uint()
-        src_type, src_id = ((source >> 24) & 0b11111111, source & 0b111111111111111111111111)
         sampling_rate = upx.unpack_uint()
         sample_pool = upx.unpack_uint()
         drops = upx.unpack_uint()
@@ -70,7 +69,7 @@ class FlowSample:
             record = FlowRecord.unpack(upx)
             if record is not None:
                 records.append(record)
-        return cls(seq_no, (src_type, src_id), sampling_rate, sample_pool, drops, input_id, output_id, records_count, records)
+        return cls(seq_no, source, sampling_rate, sample_pool, drops, input_id, output_id, records_count, records)
 
     def __repr__(self):
         return f"""
