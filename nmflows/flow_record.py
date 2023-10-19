@@ -37,7 +37,7 @@ class FlowRecord:
             data = EthernetFrameData.unpack(upx)
             return cls((enterprise, s_format), length, data)
         else:
-            print("skipping non Ethernet flow record")
+            upx.unpack_fopaque(length)
             return None
 
     def __repr__(self):

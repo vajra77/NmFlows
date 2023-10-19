@@ -39,6 +39,7 @@ class SFlowSample:
             data = FlowSample.unpack(upx)
             return cls((enterprise, s_format), length, data)
         else:
+            upx.unpack_fopaque(length)
             return None
 
     def __repr__(self):
