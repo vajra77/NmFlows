@@ -85,7 +85,8 @@ class FlowSample(SFlowSample):
             record = create_flow_record(upx)
             if record is not None:
                 records.append(record)
-        return cls(sformat, length, seq_no, source, sampling_rate, sample_pool, drops, input_id, output_id, records_count, records)
+        return cls(sformat, length, seq_no, source, sampling_rate,
+                   sample_pool, drops, input_id, output_id, records_count, records)
 
     def __repr__(self):
         return f"""

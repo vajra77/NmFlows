@@ -48,8 +48,8 @@ class RawPacketHeader(FlowRecord):
             header = EthernetFrameHeader.unpack(upx, header_length)
             return cls(rformat, rlength, proto, length, stripped, header_length, header)
         else:
-            upx.unpack_fopaque(header_length)
-            return None
+            header = upx.unpack_fopaque(header_length)
+            return cls(rformat, rlength, proto, length, stripped, header_length, header)
 
     def __repr__(self):
         return f"""
