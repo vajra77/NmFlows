@@ -39,7 +39,6 @@ class SFlowSample:
             data = FlowSample.unpack(upx)
             return cls((enterprise, s_format), length, data)
         else:
-            print("skipping non Flow Sample")
             return None
 
     def __repr__(self):
