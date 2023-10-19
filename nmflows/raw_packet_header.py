@@ -60,5 +60,4 @@ class RawPacketHeader(FlowRecord):
                                 Content Length: {self.content_length}
                                 Stripped: {self.stripped}
                                 Header Length: {self.header_length}
-                                Header: {self.header}
         """
