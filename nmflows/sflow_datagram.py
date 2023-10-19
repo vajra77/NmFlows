@@ -70,7 +70,7 @@ class SFlowDatagram:
             sample = SFlowSample.unpack(upx)
             if sample is not None:
                 samples.append(sample)
-        # upx.done()
+        upx.done()
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, n_samples, samples)
 
     def __repr__(self):
