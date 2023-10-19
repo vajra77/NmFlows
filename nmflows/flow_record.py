@@ -38,6 +38,7 @@ class FlowRecord:
             return cls((enterprise, s_format), length, data)
         elif (enterprise, s_format) == FORMAT_RAW_HEADER:
             print(f"Record is RAW")
+            upx.unpack_fopaque(length)
         else:
             upx.unpack_fopaque(length)
             return None
