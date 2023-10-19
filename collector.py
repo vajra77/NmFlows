@@ -11,7 +11,8 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
         # socket = self.request[1]
         # current_thread = threading.current_thread()
         try:
-            dgram = SFlowRawPacket.unpack(data)
+            unpacker = xdrlib.Unpacker(data)
+            dgram = SFlowRawPacket.unpack(unpacker)
         except Exception as e:
             print(f"Caught exception: {e}")
         else:

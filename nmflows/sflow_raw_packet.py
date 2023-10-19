@@ -1,4 +1,4 @@
-import xdrlib
+from .sflow_sample import SFlowSample
 import socket
 
 IP_VERSION_4 = 1
@@ -48,8 +48,7 @@ class SFlowRawPacket:
         return self._samples_count
 
     @classmethod
-    def unpack(cls, data):
-        upx = xdrlib.Unpacker(data)
+    def unpack(cls, upx):
         version = upx.unpack_uint()
         if version != 5:
             raise Exception(f"sFlow version not supported: v{version}")
@@ -62,16 +61,17 @@ class SFlowRawPacket:
         seq_number = upx.unpack_uint()
         uptime = upx.unpack_uint()
         n_samples = upx.unpack_uint()
-        samples = upx.unpack_bytes()
+        samples = []
+        for _ in range(n_samples):
+            samples.append(SFlowSample.unpack(upx))
         # upx.done()
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, n_samples, samples)
 
     def __repr__(self):
-        rep = f"""
+        return f"""
             Class: {self.__class__.__name__}
             Version: {self.version}
             IP Version: {self.ip_version}
             Agent Address: {self.agent_address}
             Samples No.: {self.samples_count}
         """
-        return rep
