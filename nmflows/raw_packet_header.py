@@ -1,4 +1,5 @@
 from .ethernet_frame_header import EthernetFrameHeader
+from .flow_record import FlowRecord
 import xdrlib
 
 
@@ -6,11 +7,12 @@ PROTO_ETHERNET = 1
 PROTO_IPV4 = 11
 PROTO_IPV6 = 12
 
-class RawFrameHeader:
+class RawPacketHeader(FlowRecord):
 
-    def __init__(self, proto, length, stripped, header_length, header):
+    def __init__(self, r_format, length, proto, content_length, stripped, header_length, header):
+        super().__init__(r_format, length)
         self._proto = proto
-        self._length = length
+        self._content_length = content_length
         self._stripped = stripped
         self._header_length = header_length
         self._header = header
@@ -20,8 +22,8 @@ class RawFrameHeader:
         return self._proto
 
     @property
-    def length(self):
-        return self._length
+    def content_length(self):
+        return self._content_length
 
     @property
     def stripped(self):
@@ -36,14 +38,14 @@ class RawFrameHeader:
         return self._header
 
     @classmethod
-    def unpack(cls, upx: xdrlib.Unpacker):
+    def unpack(cls, rformat, rlength, upx: xdrlib.Unpacker):
         proto = upx.unpack_uint()
         length = upx.unpack_uint()
         stripped = upx.unpack_uint()
         header_length = upx.unpack_uint()
         if proto == PROTO_ETHERNET:
             header = EthernetFrameHeader.unpack(upx, header_length)
-            return cls(proto, length, stripped, header_length, header)
+            return cls(rformat, rlength, proto, length, stripped, header_length, header)
         else:
             upx.unpack_fopaque(header_length)
             return None
@@ -53,6 +55,7 @@ class RawFrameHeader:
                                 Class: {self.__class__.__name__}
                                 Proto: {self.proto}
                                 Length: {self.length}
+                                Content Length: {self.content_length}
                                 Stripped: {self.stripped}
                                 Header Length: {self.header_length}
                                 Header: {self.header}

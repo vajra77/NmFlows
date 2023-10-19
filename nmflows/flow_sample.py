@@ -1,4 +1,4 @@
-from .flow_record import FlowRecord
+from .factories import create_flow_record
 import xdrlib
 
 
@@ -66,7 +66,7 @@ class FlowSample:
             records_count = 0
         records = []
         for i in range(records_count):
-            record = FlowRecord.unpack(upx)
+            record = create_flow_record(upx)
             if record is not None:
                 records.append(record)
         return cls(seq_no, source, sampling_rate, sample_pool, drops, input_id, output_id, records_count, records)
