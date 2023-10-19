@@ -2,10 +2,10 @@ from .ethernet_frame_data import EthernetFrameData
 from .raw_frame_header import RawFrameHeader
 import xdrlib
 
-FORMAT_RAW_HEADER = (0, 1)
-FORMAT_ETHERNET_DATA = (0, 2)
-FORMAT_IPV4_DATA = (0, 3)
-FORMAT_IPV6_DATA = (0, 4)
+FORMAT_RAW_HEADER = 1
+FORMAT_ETHERNET_DATA = 2
+FORMAT_IPV4_DATA = 3
+FORMAT_IPV6_DATA = 4
 
 
 class FlowRecord:
@@ -29,20 +29,17 @@ class FlowRecord:
 
     @classmethod
     def unpack(cls, upx: xdrlib.Unpacker):
-        f_bits = upx.unpack_uint()
-        s_format = f_bits & 0b111111111111
-        enterprise = (f_bits >> 12) & 0b11111111111111111111
+        rformat = upx.unpack_uint()
         length = upx.unpack_uint()
-        if (enterprise, s_format) == FORMAT_ETHERNET_DATA:
+        if rformat == FORMAT_ETHERNET_DATA:
             assert length == 16, "EthernetFrameData has wrong length"
             data = EthernetFrameData.unpack(upx)
             return cls((enterprise, s_format), length, data)
-        elif (enterprise, s_format) == FORMAT_RAW_HEADER:
+        elif rformat == FORMAT_RAW_HEADER:
             data = RawFrameHeader.unpack(upx)
             if data is not None:
-                return cls((enterprise, s_format), length, data)
+                return cls(rformat, length, data)
         else:
-            print(f"Format: {(enterprise, s_format)}")
             upx.unpack_fopaque(length)
             return None
 

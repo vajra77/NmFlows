@@ -1,6 +1,5 @@
 from .flow_record import FlowRecord
 import xdrlib
-import socket
 
 
 class FlowSample:
