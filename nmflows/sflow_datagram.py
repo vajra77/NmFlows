@@ -16,6 +16,7 @@ def create_sflow_sample(upx: xdrlib.Unpacker):
     if sformat == FORMAT_FLOW_SAMPLE:
         return FlowSample.unpack(sformat, length, upx)
     else:
+        print(f"sample with format:{sformat} dropped")
         upx.unpack_fopaque(length)
         return None
 
@@ -73,7 +74,8 @@ class SFlowDatagram:
         if ip_version == IP_VERSION_4:
             agent_address = socket.inet_ntop(socket.AF_INET, upx.unpack_fopaque(4))
         else:
-            agent_address = socket.inet_ntop(socket.AF_INET6, upx.unpack_fopaque(16))
+            raise NotImplementedError
+            # agent_address = socket.inet_ntop(socket.AF_INET6, upx.unpack_fopaque(16))
         agent_id = upx.unpack_uint()
         seq_number = upx.unpack_uint()
         uptime = upx.unpack_uint()
@@ -81,7 +83,7 @@ class SFlowDatagram:
         if n_samples is None:
             n_samples = 0
         samples = []
-        for i in range(n_samples):
+        for _ in range(n_samples):
             sample = create_sflow_sample(upx)
             if sample is not None:
                 samples.append(sample)
