@@ -1,5 +1,6 @@
 from .flow_record import FlowRecord
 import xdrlib
+import socket
 
 
 class FlowSample:
@@ -62,7 +63,7 @@ class FlowSample:
         drops = upx.unpack_uint()
         input_id = upx.unpack_uint()
         output_id = upx.unpack_uint()
-        records_count = upx.unpack_uint()
+        records_count = socket.ntohl(upx.unpack_uint())
         records = []
         print(f"records count is {records_count}")
         for i in range(records_count):

@@ -1,7 +1,7 @@
 from .ethernet_frame_data import EthernetFrameData
 import xdrlib
 
-
+FORMAT_RAW_HEADER = (0, 1)
 FORMAT_ETHERNET_DATA = (0, 2)
 FORMAT_IPV4_DATA = (0, 3)
 FORMAT_IPV6_DATA = (0, 4)
