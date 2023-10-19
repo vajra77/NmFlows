@@ -11,7 +11,7 @@ IP_VERSION_6 = 2
 
 
 def create_sflow_sample(upx: xdrlib.Unpacker):
-    sformat = upx.unpack_uint()
+    sformat = socket.ntohl(upx.unpack_uint())
     length = upx.unpack_uint()
     if sformat == FORMAT_FLOW_SAMPLE:
         return FlowSample.unpack(sformat, length, upx)
