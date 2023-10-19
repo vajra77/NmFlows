@@ -8,9 +8,8 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
 
     def handle(self):
         data = self.request[0].strip()
-        socket = self.request[1]
-        current_thread = threading.current_thread()
-        #print(f"==== {current_thread.name}: client: {self.client_address} ====")
+        # socket = self.request[1]
+        # current_thread = threading.current_thread()
         try:
             dgram = SFlowRawPacket.unpack(data)
         except Exception as e:

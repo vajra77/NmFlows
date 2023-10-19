@@ -20,6 +20,33 @@ class SFlowRawPacket:
     def version(self):
         return self._version
 
+    @property
+    def ip_version(self):
+        if self._ip_version == IP_VERSION_4:
+            return 4
+        else:
+            return 6
+
+    @property
+    def agent_address(self):
+        return self._agent_address
+
+    @property
+    def agent_id(self):
+        return self._agent_id
+
+    @property
+    def sequence_number(self):
+        return self._sequence_number
+
+    @property
+    def switch_uptim(self):
+        return self._switch_uptime
+
+    @property
+    def samples_count(self):
+        return self._samples_count
+
     @classmethod
     def unpack(cls, data):
         upx = xdrlib.Unpacker(data)
@@ -37,3 +64,12 @@ class SFlowRawPacket:
         upx.done()
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, n_samples, samples)
 
+    def __repr__(self):
+        rep = f"""
+            Class: {self.__class__.__name__}
+            Version: {self.version}
+            IP Version: {self.ip_version}
+            Agent Address: {self.agent_address}
+            Samples No.: {self.samples_count}
+        """
+        return rep
