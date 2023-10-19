@@ -67,7 +67,9 @@ class SFlowDatagram:
         n_samples = upx.unpack_uint()
         samples = []
         for _ in range(n_samples):
-            samples.append(SFlowSample.unpack(upx))
+            sample = SFlowSample.unpack(upx)
+            if sample is not None:
+                samples.append(samples)
         # upx.done()
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, n_samples, samples)
 

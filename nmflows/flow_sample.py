@@ -65,7 +65,9 @@ class FlowSample:
         records_count = upx.unpack_uint()
         records = []
         for _ in range(records_count):
-            records.append(FlowRecord.unpack(upx))
+            record = FlowRecord.unpack(upx)
+            if record is not None:
+                records.append(record)
         return cls(seq_no, (src_type, src_id), sampling_rate, sample_pool, drops, input_id, output_id, records_count, records)
 
     def __repr__(self):

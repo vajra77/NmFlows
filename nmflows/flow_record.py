@@ -34,9 +34,9 @@ class FlowRecord:
         length = upx.unpack_uint()
         if (enterprise, s_format) == FORMAT_ETHERNET_DATA:
             data = EthernetFrameData.unpack(upx)
+            return cls((enterprise, s_format), length, data)
         else:
-            data = None
-        return cls((enterprise, s_format), length, data)
+            return None
 
     def __repr__(self):
         return f"""
