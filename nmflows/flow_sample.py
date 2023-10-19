@@ -12,6 +12,8 @@ RECORD_IPV6_DATA = 4
 def create_flow_record(upx: xdrlib.Unpacker):
     rformat = upx.unpack_uint()
     length = upx.unpack_uint()
+    if length is None:
+        length = 0
     if rformat == RECORD_RAW_HEADER:
         return RawPacketHeader.unpack(rformat, length, upx)
     else:

@@ -15,6 +15,8 @@ def create_sflow_sample(upx: xdrlib.Unpacker):
     if sformat is None:
         raise Exception("unable to parse sflow sample format")
     length = upx.unpack_uint()
+    if length is None:
+        length = 0
     if sformat == FORMAT_FLOW_SAMPLE:
         return FlowSample.unpack(sformat, length, upx)
     else:
