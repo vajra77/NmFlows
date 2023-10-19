@@ -39,6 +39,7 @@ class SFlowSampleData:
             data = FlowSample.unpack(upx)
             return cls((enterprise, s_format), length, data)
         else:
+            print(f"Format (sample): {(enterprise, s_format)}")
             upx.unpack_fopaque(length)
             return None
 
