@@ -8,7 +8,7 @@ def create_sflow_datagram(upx: xdrlib.Unpacker):
     version = upx.unpack_uint()
     if version != 5:
         raise Exception(f"sFlow version not supported: v{version}")
-    return SFlowDatagram(version, upx)
+    return SFlowDatagram.unpack(version, upx)
 
 
 class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
@@ -19,7 +19,7 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
         # current_thread = threading.current_thread()
         try:
             unpacker = xdrlib.Unpacker(data)
-            datagram = SFlowDatagram.unpack(unpacker)
+            datagram = create_sflow_datagram(unpacker)
         except EOFError as e:
             print(f"[ERROR]: reading past the end of data: {e}")
         else:
