@@ -15,6 +15,7 @@ def create_flow_record(upx: xdrlib.Unpacker):
     if rformat == RECORD_RAW_HEADER:
         return RawPacketHeader.unpack(rformat, length, upx)
     else:
+        print(f"unrecognized flow record")
         upx.unpack_fopaque(length)
         return None
 
