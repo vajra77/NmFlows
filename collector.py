@@ -10,9 +10,13 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
         data = self.request[0].strip()
         # socket = self.request[1]
         # current_thread = threading.current_thread()
-        unpacker = xdrlib.Unpacker(data)
-        datagram = SFlowDatagram.unpack(unpacker)
-        pprint(datagram)
+        try:
+            unpacker = xdrlib.Unpacker(data)
+            datagram = SFlowDatagram.unpack(unpacker)
+        except Exception as e:
+            print(f"[ERROR]: {e}")
+        else:
+            pprint(datagram)
 
 
 class ThreadedUDPServer(socketserver.ThreadingMixIn, socketserver.UDPServer):
