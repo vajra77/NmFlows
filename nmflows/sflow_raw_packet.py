@@ -60,7 +60,7 @@ class SFlowRawPacket:
         seq_number = upx.unpack_uint()
         uptime = upx.unpack_uint()
         n_samples = upx.unpack_uint()
-        samples = upx.unpack_bytes()
+        samples = upx.unpack_fopaque(n_samples)
         upx.done()
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, n_samples, samples)
 
