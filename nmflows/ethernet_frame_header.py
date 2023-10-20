@@ -35,7 +35,7 @@ class EthernetFrameHeader:
         # upx.unpack_fopaque(hdr_length - 14)
         dst_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
         src_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
-        eth_type = binascii.hexlify(upx.unpack_fopaque(2))
+        eth_type = int.from_bytes(upx.unpack_fopaque(2))
         return cls(dst_mac, src_mac, eth_type, 14)
 
     def __repr__(self):
