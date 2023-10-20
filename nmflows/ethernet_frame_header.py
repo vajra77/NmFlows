@@ -43,7 +43,10 @@ class EthernetFrameHeader:
         dst_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
         src_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
         eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
-        if eth_type in ALLOWED_ETHERTYPES:
+
+        if eth_type < 1500:
+            return cls(dst_mac, src_mac, 0, eth_type, 14)
+        elif eth_type in ALLOWED_ETHERTYPES:
             if eth_type == ETHERTYPE_8021Q:
                 vlan = int.from_bytes(upx.unpack_fopaque(2), 'big')
                 eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
