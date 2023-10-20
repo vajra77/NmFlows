@@ -42,5 +42,5 @@ class EthernetFrameHeader:
         return f"""
                                     Src MAC: {self.src_mac}
                                     Dst MAC: {self.dst_mac}
-                                    EthType: {self.type}
+                                    EthType: {%02x:self.type}
         """
