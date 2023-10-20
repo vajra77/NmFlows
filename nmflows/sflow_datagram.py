@@ -79,8 +79,10 @@ class SFlowDatagram:
         for _ in range(n_samples):
             try:
                 sample = cls.create_sflow_sample(upx)
+            except NotImplementedError:
+                print(f"[INFO]: skipping not implemented sample type", file=sys.stderr)
             except ParserException as e:
-                print(f"[SKIP]: {e}", file=sys.stderr)
+                print(f"[ERROR]: {e}", file=sys.stderr)
             else:
                 samples.append(sample)
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, n_samples, samples)
@@ -96,7 +98,7 @@ class SFlowDatagram:
         if sformat == FORMAT_FLOW_SAMPLE:
             return FlowSample.unpack(sformat, length, upx)
         elif sformat == FORMAT_COUNTER_SAMPLE:
-            raise ParserException("counter sample not implemented")
+            raise NotImplementedError
         elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
             return ExpandedFlowSample.unpack(sformat, length, upx)
         else:
