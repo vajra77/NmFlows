@@ -72,7 +72,7 @@ class RawPacketHeader(FlowRecord):
                 else:
                     ip = None
                     upx.unpack_fopaque(header_length - ethernet.length)
-            except ParserException as e:
+            except ParserException:
                 upx.set_position(position)
                 upx.unpack_fopaque(header_length)
                 return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
