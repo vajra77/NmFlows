@@ -33,12 +33,12 @@ class EthernetFrameHeader:
         # length = int.from_bytes(upx.unpack_fopaque(2), "big")
         # upx.unpack_fopaque(hdr_length - 14)
         frame_length = socket.ntohl(upx.unpack_uint())
-        # upx.unpack_fopaque(2)
         src_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
-        # upx.unpack_fopaque(2)
+        upx.unpack_fopaque(2)
         dst_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
+        upx.unpack_fopaque(2)
         payload_type = upx.unpack_uint()
-        upx.unpack_fopaque(hdr_length - 20)
+        upx.unpack_fopaque(hdr_length - 24)
         return cls(dst_mac, src_mac, 0, frame_length)
 
     def __repr__(self):
