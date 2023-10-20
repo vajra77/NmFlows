@@ -1,11 +1,14 @@
 from .flow_record import FlowRecord
 from .ethernet_frame_header import EthernetFrameHeader
+from .ipv4_packet_header import IPv4PacketHeader
 import xdrlib
 
 
 PROTO_ETHERNET = 1
 PROTO_IPV4 = 11
 PROTO_IPV6 = 12
+
+ETHTYPE_IPV4 = 2048
 
 
 class RawPacketHeader(FlowRecord):
@@ -56,9 +59,13 @@ class RawPacketHeader(FlowRecord):
         header_length = upx.unpack_uint()
         if proto == PROTO_ETHERNET:
             ethernet = EthernetFrameHeader.unpack(upx)
-            upx.unpack_fopaque(header_length - ethernet.length)
-            #ethernet = upx.unpack_fopaque(header_length)
-            return cls(rformat, rlength, proto, length, stripped, header_length, ethernet, None, None)
+            if ethernet.type == ETHTYPE_IPV4:
+                ip = IPv4PacketHeader.unpack(upx)
+                upx.unpack_fopaque(header_length - ethernet - ip.length)
+            else:
+                ip = None
+                upx.unpack_fopaque(header_length - ethernet.length)
+            return cls(rformat, rlength, proto, length, stripped, header_length, ethernet, ip, None)
         else:
             upx.unpack_fopaque(header_length)
             return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)

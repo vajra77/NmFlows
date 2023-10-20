@@ -31,3 +31,9 @@ class IPv4PacketHeader:
         options = upx.unpack_uint()
         return cls(src_addr, dst_addr, 48)
 
+    def __repr__(self):
+        return f"""
+                                    Src Addr: {self.source_address}
+                                    Dst Addr: {self.dest_address}
+        """
+
