@@ -1,40 +1,18 @@
-from .exceptions import ParserException
 from .sflow_sample import SFlowSample
-from .raw_packet_header import RawPacketHeader
 import xdrlib
 
 
-RECORD_RAW_HEADER = 1
-RECORD_ETHERNET_DATA = 2
-RECORD_IPV4_DATA = 3
-RECORD_IPV6_DATA = 4
-
-
-def create_flow_record(upx: xdrlib.Unpacker):
-    rformat = upx.unpack_uint()
-    length = upx.unpack_uint()
-    if length is None:
-        raise ParserException(f"unable to parse flow record length")
-    if rformat == RECORD_RAW_HEADER:
-        return RawPacketHeader.unpack(rformat, length, upx)
-    elif rformat == RECORD_ETHERNET_DATA:
-        upx.unpack_fopaque(length)
-        raise ParserException(f"unhandled Ethernet Data Record")
-    else:
-        upx.unpack_fopaque(length)
-        raise ParserException(f"unrecognized flow record type")
-
 class FlowSample(SFlowSample):
 
-    def __init__(self, sformat, length, sequence_number, source, sampling_rate, sample_pool, drops, input_id, output_id, records_count, records):
+    def __init__(self, sformat, length, sequence_number, source, sampling_rate, sample_pool, drops, input_if, output_if, records_count, records):
         super().__init__(sformat, length)
         self._sequence_number = sequence_number
         self._source = source
         self._sampling_rate = sampling_rate
         self._sample_pool = sample_pool
         self._drops = drops
-        self._input_id = input_id
-        self._output_id = output_id
+        self._input_if = input_if
+        self._output_if = output_if
         self._records_count = records_count
         self._records = records
 
@@ -59,12 +37,12 @@ class FlowSample(SFlowSample):
         return self._drops
 
     @property
-    def input_id(self):
-        return self._input_id
+    def input_if(self):
+        return self._input_if
 
     @property
-    def output_id(self):
-        return self._output_id
+    def output_if(self):
+        return self._output_if
 
     @property
     def records_count(self):
@@ -81,18 +59,19 @@ class FlowSample(SFlowSample):
         sampling_rate = upx.unpack_uint()
         sample_pool = upx.unpack_uint()
         drops = upx.unpack_uint()
-        input_id = upx.unpack_uint()
-        output_id = upx.unpack_uint()
+        input_if = upx.unpack_uint()
+        output_if = upx.unpack_uint()
         records_count = upx.unpack_uint()
         if records_count is None:
             records_count = 0
         records = []
         for _ in range(records_count):
-            record = create_flow_record(upx)
+            record = cls.create_flow_record(upx)
             if record is not None:
                 records.append(record)
+
         return cls(sformat, length, seq_no, source, sampling_rate,
-                   sample_pool, drops, input_id, output_id, records_count, records)
+                   sample_pool, drops, input_if, output_if, records_count, records)
 
     def __repr__(self):
         return f"""

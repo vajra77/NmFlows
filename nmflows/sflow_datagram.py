@@ -1,5 +1,6 @@
 from .exceptions import ParserException
 from .flow_sample import FlowSample
+from .expanded_flow_sample import ExpandedFlowSample
 import socket
 import xdrlib
 import sys
@@ -22,6 +23,8 @@ def create_sflow_sample(upx: xdrlib.Unpacker):
         raise ParserException("unable to parse sflow sample length")
     if sformat == FORMAT_FLOW_SAMPLE:
         return FlowSample.unpack(sformat, length, upx)
+    elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
+        return ExpandedFlowSample.unpack(sformat, length, upx)
     else:
         upx.unpack_fopaque(length)
         raise ParserException(f"unrecognized sample format: {sformat}")

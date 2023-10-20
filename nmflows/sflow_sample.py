@@ -1,8 +1,16 @@
+from .raw_packet_header import RawPacketHeader
+from .exceptions import ParserException
+import xdrlib
 
 
 FORMAT_FLOW_SAMPLE = 1
 FORMAT_COUNTER_SAMPLE = 2
 FORMAT_EXPANDED_FLOW_SAMPLE = 3
+
+RECORD_RAW_HEADER = 1
+RECORD_ETHERNET_DATA = 2
+RECORD_IPV4_DATA = 3
+RECORD_IPV6_DATA = 4
 
 
 class SFlowSample:
@@ -27,3 +35,22 @@ class SFlowSample:
 
     def is_expanded_flow_sample(self):
         return self._format == FORMAT_EXPANDED_FLOW_SAMPLE
+
+    @classmethod
+    def unpack(cls, sformat, length, upx: xdrlib.Unpacker):
+        raise NotImplementedError
+
+    @staticmethod
+    def create_flow_record(upx: xdrlib.Unpacker):
+        rformat = upx.unpack_uint()
+        length = upx.unpack_uint()
+        if length is None:
+            raise ParserException(f"unable to parse flow record length")
+        if rformat == RECORD_RAW_HEADER:
+            return RawPacketHeader.unpack(rformat, length, upx)
+        elif rformat == RECORD_ETHERNET_DATA:
+            upx.unpack_fopaque(length)
+            raise ParserException(f"unhandled Ethernet Data Record")
+        else:
+            upx.unpack_fopaque(length)
+            raise ParserException(f"unrecognized flow record type")
