@@ -37,6 +37,5 @@ class EthernetFrameHeader:
         return f"""
                                     Dst MAC: {self.dst_mac}
                                     Src MAC: {self.src_mac}
-                                    VLAN: {self.vlan}
                                     Length: {self.length}
         """
