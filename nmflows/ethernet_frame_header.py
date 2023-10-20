@@ -27,16 +27,16 @@ class EthernetFrameHeader:
         # src_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
         # length = int.from_bytes(upx.unpack_fopaque(2), "big")
         # upx.unpack_fopaque(hdr_length - 14)
+        preamble = upx.unpack_fopaque(8)
         src_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
         dst_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
         length = int.from_bytes(upx.unpack_fopaque(2), 'big')
-        vlan = upx.unpack_uint()
-        upx.unpack_fopaque(hdr_length - 18)
+        upx.unpack_fopaque(hdr_length - 22)
         return cls(dst_mac, src_mac, length)
 
     def __repr__(self):
         return f"""
-                                    Dst MAC: {self.dst_mac}
                                     Src MAC: {self.src_mac}
+                                    Dst MAC: {self.dst_mac}
                                     Length: {self.length}
         """
