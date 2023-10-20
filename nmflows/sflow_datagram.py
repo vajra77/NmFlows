@@ -23,7 +23,7 @@ def create_sflow_sample(upx: xdrlib.Unpacker):
     if sformat == FORMAT_FLOW_SAMPLE:
         return FlowSample.unpack(sformat, length, upx)
     else:
-        upx.unpack_fopaque(length - 8)
+        upx.unpack_fopaque(length)
         raise ParserException(f"unrecognized sample format: {sformat}")
 
 class SFlowDatagram:
