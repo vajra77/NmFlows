@@ -8,8 +8,11 @@ PROTO_ETHERNET = 1
 PROTO_IPV4 = 11
 PROTO_IPV6 = 12
 
-ETHTYPE_IPV4 = 2048
+ETHERTYPE_IPV4 = 0x800
+ETHERTYPE_ARP = 0x806
+ETHTYPE_IPV6 = 0x86DD
 
+ALLOWED_ETHERTYPES = [ ETHERTYPE_ARP, ETHERTYPE_IPV4, ETHTYPE_IPV6]
 
 class RawPacketHeader(FlowRecord):
 
@@ -59,7 +62,7 @@ class RawPacketHeader(FlowRecord):
         header_length = upx.unpack_uint()
         if proto == PROTO_ETHERNET:
             ethernet = EthernetFrameHeader.unpack(upx)
-            if ethernet.type == ETHTYPE_IPV4:
+            if ethernet.type == ETHERTYPE_IPV4:
                 ip = IPv4PacketHeader.unpack(upx)
                 upx.unpack_fopaque(header_length - ethernet.length - ip.length)
             else:
