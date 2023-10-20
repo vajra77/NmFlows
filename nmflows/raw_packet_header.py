@@ -13,10 +13,10 @@ ETHTYPE_IPV4 = 2048
 
 class RawPacketHeader(FlowRecord):
 
-    def __init__(self, r_format, length, proto, content_length, stripped, header_length, eth_hdr, ip_hdr, txp_hdr):
+    def __init__(self, r_format, length, proto, payload_length, stripped, header_length, eth_hdr, ip_hdr, txp_hdr):
         super().__init__(r_format, length)
         self._proto = proto
-        self._content_length = content_length
+        self._payload_length = payload_length
         self._stripped = stripped
         self._header_length = header_length
         self._datalink_header = eth_hdr
@@ -28,8 +28,8 @@ class RawPacketHeader(FlowRecord):
         return self._proto
 
     @property
-    def content_length(self):
-        return self._content_length
+    def payload_length(self):
+        return self._payload_length
 
     @property
     def stripped(self):
@@ -59,7 +59,7 @@ class RawPacketHeader(FlowRecord):
         header_length = upx.unpack_uint()
         if proto == PROTO_ETHERNET:
             ethernet = EthernetFrameHeader.unpack(upx)
-            if ethernet.type == ETHTYPE_IPV4 or ethernet.type < 1500:
+            if ethernet.type == ETHTYPE_IPV4:
                 ip = IPv4PacketHeader.unpack(upx)
                 upx.unpack_fopaque(header_length - ethernet.length - ip.length)
             else:
@@ -75,7 +75,7 @@ class RawPacketHeader(FlowRecord):
                                 Class: {self.__class__.__name__}
                                 Proto: {self.proto}
                                 Length: {self.length}
-                                Content Length: {self.content_length}
+                                Payload Length: {self.payload_length}
                                 Stripped: {self.stripped}
                                 Header Length: {self.header_length}
                                 Datalink Header: {self.datalink_header}
