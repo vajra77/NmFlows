@@ -1,6 +1,9 @@
+from .exceptions import ParserException
 from .flow_sample import FlowSample
 import socket
 import xdrlib
+import sys
+
 
 FORMAT_FLOW_SAMPLE = 1
 FORMAT_COUNTER_SAMPLE = 2
@@ -13,15 +16,15 @@ IP_VERSION_6 = 2
 def create_sflow_sample(upx: xdrlib.Unpacker):
     sformat = upx.unpack_uint()
     if sformat is None:
-        raise Exception("unable to parse sflow sample format")
+        raise ParserException("unable to parse sflow sample format")
     length = upx.unpack_uint()
     if length is None:
-        raise Exception("unable to parse sflow sample length")
+        raise ParserException("unable to parse sflow sample length")
     if sformat == FORMAT_FLOW_SAMPLE:
         return FlowSample.unpack(sformat, length, upx)
     else:
-        upx.unpack_fopaque(length)
-        raise Exception(f"unrecognized sample format: {sformat}")
+        upx.unpack_fopaque(length - 8)
+        raise ParserException(f"unrecognized sample format: {sformat}")
 
 class SFlowDatagram:
 
@@ -86,8 +89,12 @@ class SFlowDatagram:
             n_samples = 0
         samples = []
         for _ in range(n_samples):
-            sample = create_sflow_sample(upx)
-            samples.append(sample)
+            try:
+                sample = create_sflow_sample(upx)
+            except ParserException as e:
+                print(f"[ERROR]: {e}", file=sys.stderr)
+            else:
+                samples.append(sample)
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, n_samples, samples)
 
     def __repr__(self):
