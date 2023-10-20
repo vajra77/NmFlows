@@ -61,7 +61,7 @@ class RawPacketHeader(FlowRecord):
             ethernet = EthernetFrameHeader.unpack(upx)
             if ethernet.type == ETHTYPE_IPV4 or ethernet.type < 1500:
                 ip = IPv4PacketHeader.unpack(upx)
-                upx.unpack_fopaque(header_length - ethernet - ip.length)
+                upx.unpack_fopaque(header_length - ethernet.length - ip.length)
             else:
                 ip = None
                 upx.unpack_fopaque(header_length - ethernet.length)
@@ -80,4 +80,5 @@ class RawPacketHeader(FlowRecord):
                                 Header Length: {self.header_length}
                                 Datalink Header: {self.datalink_header}
                                 Network Header: {self.network_header}
+                                Transport Header: {self.transport_header}
         """
