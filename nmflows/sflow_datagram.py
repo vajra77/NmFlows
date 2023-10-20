@@ -91,6 +91,7 @@ class SFlowDatagram:
             sample = create_sflow_sample(upx)
             if sample is not None:
                 samples.append(sample)
+        upx.done()
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, n_samples, samples)
 
     def __repr__(self):
