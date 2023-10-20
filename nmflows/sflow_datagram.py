@@ -16,14 +16,12 @@ def create_sflow_sample(upx: xdrlib.Unpacker):
         raise Exception("unable to parse sflow sample format")
     length = upx.unpack_uint()
     if length is None:
-        length = 0
+        raise Exception("unable to parse sflow sample length")
     if sformat == FORMAT_FLOW_SAMPLE:
         return FlowSample.unpack(sformat, length, upx)
     else:
-        print(f"unrecognized sample format: {sformat}")
         upx.unpack_fopaque(length)
-        return None
-
+        raise Exception(f"unrecognized sample format: {sformat}")
 
 class SFlowDatagram:
 
@@ -87,10 +85,9 @@ class SFlowDatagram:
         if n_samples is None:
             n_samples = 0
         samples = []
-        for _ in range(n_samples - 1):
+        for _ in range(n_samples):
             sample = create_sflow_sample(upx)
-            if sample is not None:
-                samples.append(sample)
+            samples.append(sample)
         upx.done()
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, n_samples, samples)
 
