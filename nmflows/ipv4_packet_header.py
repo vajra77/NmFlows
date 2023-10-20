@@ -26,8 +26,8 @@ class IPv4PacketHeader:
         h1 = upx.unpack_uint()
         h2 = upx.unpack_uint()
         h3 = upx.unpack_uint()
-        src_addr = socket.inet_ntoa(upx.unpack_uint())
-        dst_addr = socket.inet_ntoa(upx.unpack_uint())
+        src_addr = socket.inet_ntoa(upx.unpack_fopaque(4))
+        dst_addr = socket.inet_ntoa(upx.unpack_fopaque(4))
         options = upx.unpack_uint()
         return cls(src_addr, dst_addr, 48)
 
