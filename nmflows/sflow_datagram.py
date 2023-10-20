@@ -106,6 +106,7 @@ class SFlowDatagram:
             return ExpandedFlowSample.unpack(sformat, length, upx)
         else:
             upx.unpack_fopaque(length)
+            upx.done()
             raise ParserException(f"unrecognized sample format: {sformat}")
 
     def __repr__(self):
