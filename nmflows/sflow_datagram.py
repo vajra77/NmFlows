@@ -90,11 +90,14 @@ class SFlowDatagram:
     @staticmethod
     def create_sflow_sample(upx: xdrlib.Unpacker):
         sformat = upx.unpack_uint()
+
         if sformat is None:
             raise ParserException("unable to parse sflow sample format")
         length = upx.unpack_uint()
+
         if length is None:
             raise ParserException("unable to parse sflow sample length")
+
         if sformat == FORMAT_FLOW_SAMPLE:
             return FlowSample.unpack(sformat, length, upx)
         elif sformat == FORMAT_COUNTER_SAMPLE:
