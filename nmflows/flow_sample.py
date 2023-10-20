@@ -1,3 +1,4 @@
+from .exceptions import ParserException
 from .sflow_sample import SFlowSample
 from .raw_packet_header import RawPacketHeader
 import xdrlib
@@ -13,13 +14,15 @@ def create_flow_record(upx: xdrlib.Unpacker):
     rformat = upx.unpack_uint()
     length = upx.unpack_uint()
     if length is None:
-        length = 0
+        raise ParserException(f"unable to parse flow record length")
     if rformat == RECORD_RAW_HEADER:
         return RawPacketHeader.unpack(rformat, length, upx)
-    else:
-        print(f"unrecognized flow record: {rformat}")
+    elif rformat == RECORD_ETHERNET_DATA:
         upx.unpack_fopaque(length)
-        return None
+        raise ParserException(f"unhandled Ethernet Data Record")
+    else:
+        upx.unpack_fopaque(length)
+        raise ParserException(f"unrecognized flow record type")
 
 class FlowSample(SFlowSample):
 
