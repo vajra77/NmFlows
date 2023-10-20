@@ -14,21 +14,6 @@ IP_VERSION_4 = 1
 IP_VERSION_6 = 2
 
 
-def create_sflow_sample(upx: xdrlib.Unpacker):
-    sformat = upx.unpack_uint()
-    if sformat is None:
-        raise ParserException("unable to parse sflow sample format")
-    length = upx.unpack_uint()
-    if length is None:
-        raise ParserException("unable to parse sflow sample length")
-    if sformat == FORMAT_FLOW_SAMPLE:
-        return FlowSample.unpack(sformat, length, upx)
-    elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
-        return ExpandedFlowSample.unpack(sformat, length, upx)
-    else:
-        upx.unpack_fopaque(length)
-        raise ParserException(f"unrecognized sample format: {sformat}")
-
 class SFlowDatagram:
 
     def __init__(self, version, ip_version, agent_address, agent_id, sequence_number, switch_uptime, samples_count, samples):
@@ -93,12 +78,30 @@ class SFlowDatagram:
         samples = []
         for _ in range(n_samples):
             try:
-                sample = create_sflow_sample(upx)
+                sample = cls.create_sflow_sample(upx)
             except ParserException as e:
-                print(f"[ERROR]: {e}", file=sys.stderr)
+                print(f"[SKIP]: {e}", file=sys.stderr)
             else:
                 samples.append(sample)
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, n_samples, samples)
+
+    @staticmethod
+    def create_sflow_sample(upx: xdrlib.Unpacker):
+        sformat = upx.unpack_uint()
+        if sformat is None:
+            raise ParserException("unable to parse sflow sample format")
+        length = upx.unpack_uint()
+        if length is None:
+            raise ParserException("unable to parse sflow sample length")
+        if sformat == FORMAT_FLOW_SAMPLE:
+            return FlowSample.unpack(sformat, length, upx)
+        elif sformat == FORMAT_COUNTER_SAMPLE:
+            raise ParserException("counter sample not implemented")
+        elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
+            return ExpandedFlowSample.unpack(sformat, length, upx)
+        else:
+            upx.unpack_fopaque(length)
+            raise ParserException(f"unrecognized sample format: {sformat}")
 
     def __repr__(self):
         return f"""
