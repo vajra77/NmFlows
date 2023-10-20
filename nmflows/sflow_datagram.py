@@ -87,7 +87,7 @@ class SFlowDatagram:
         if n_samples is None:
             n_samples = 0
         samples = []
-        for _ in range(n_samples):
+        for _ in range(n_samples - 1):
             sample = create_sflow_sample(upx)
             if sample is not None:
                 samples.append(sample)
