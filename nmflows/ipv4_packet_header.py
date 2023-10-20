@@ -29,7 +29,7 @@ class IPv4PacketHeader:
         src_addr = socket.inet_ntoa(upx.unpack_fopaque(4))
         dst_addr = socket.inet_ntoa(upx.unpack_fopaque(4))
         options = upx.unpack_uint()
-        return cls(src_addr, dst_addr, 48)
+        return cls(src_addr, dst_addr, 24)
 
     def __repr__(self):
         return f"""
