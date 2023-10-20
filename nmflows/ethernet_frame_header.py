@@ -4,10 +4,9 @@ import socket
 
 class EthernetFrameHeader:
 
-    def __init__(self, dst_mac, src_mac, vlan, length):
+    def __init__(self, dst_mac, src_mac, length):
         self._dst_mac = dst_mac
         self._src_mac = src_mac
-        self._vlan = vlan
         self._length = length
 
     @property
@@ -17,10 +16,6 @@ class EthernetFrameHeader:
     @property
     def dst_mac(self):
         return self._dst_mac
-
-    @property
-    def vlan(self):
-        return self._vlan
 
     @property
     def length(self):
@@ -34,10 +29,9 @@ class EthernetFrameHeader:
         # upx.unpack_fopaque(hdr_length - 14)
         src_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
         dst_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
-        vlan = int.from_bytes(upx.unpack_fopaque(4), 'big')
-        length = int.from_bytes(upx.unpack_fopaque(2), 'big')
+        length = int.from_bytes(upx.unpack_fopaque(2), 'little')
         upx.unpack_fopaque(hdr_length - 14)
-        return cls(dst_mac, src_mac, vlan, length)
+        return cls(dst_mac, src_mac, length)
 
     def __repr__(self):
         return f"""
