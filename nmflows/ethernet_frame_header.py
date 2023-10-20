@@ -41,23 +41,18 @@ class EthernetFrameHeader:
 
     @classmethod
     def unpack(cls, upx: xdrlib.Unpacker):
-        # dst_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
-        # src_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
-        # eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
-        # if eth_type in ALLOWED_ETHERTYPES:
-        #     if eth_type == ETHERTYPE_8021Q:
-        #         vlan = int.from_bytes(upx.unpack_fopaque(2), 'big')
-        #         eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
-        #         return cls(dst_mac, src_mac, vlan, eth_type, 18)
-        #     else:
-        #         return cls(dst_mac, src_mac, 0, eth_type, 14)
-        # else:
-        #     raise ParserException(f"Unrecognized ethertype: {eth_type}")
-        length = upx.unpack_uint()
-        dst_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(8))
-        src_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(8))
-        eth_type = upx.unpack_uint()
-        return cls(dst_mac, src_mac, 0, eth_type, 24)
+        dst_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
+        src_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
+        eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
+        if eth_type in ALLOWED_ETHERTYPES:
+            if eth_type == ETHERTYPE_8021Q:
+                vlan = int.from_bytes(upx.unpack_fopaque(2), 'big')
+                eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
+                return cls(dst_mac, src_mac, vlan, eth_type, 18)
+            else:
+                return cls(dst_mac, src_mac, 0, eth_type, 14)
+        else:
+            raise ParserException(f"Unrecognized ethertype: {eth_type}")
 
 
     def __repr__(self):
