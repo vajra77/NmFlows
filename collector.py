@@ -23,7 +23,8 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
             datagram = create_sflow_datagram(unpacker)
         except Exception as e:
             # print(f"[ERROR]: {e}")
-            traceback.print_exc()
+            # traceback.print_exc()
+            pass
         else:
             pprint(datagram)
 
