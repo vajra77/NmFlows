@@ -1,12 +1,14 @@
+import binascii
 import xdrlib
 import socket
 
 
 class EthernetFrameHeader:
 
-    def __init__(self, dst_mac, src_mac, length):
+    def __init__(self, dst_mac, src_mac, e_type, length):
         self._dst_mac = dst_mac
         self._src_mac = src_mac
+        self._type = e_type
         self._length = length
 
     @property
@@ -18,25 +20,27 @@ class EthernetFrameHeader:
         return self._dst_mac
 
     @property
+    def type(self):
+        return self._type
+
+    @property
     def length(self):
         return self._length
 
     @classmethod
-    def unpack(cls, upx: xdrlib.Unpacker, hdr_length):
+    def unpack(cls, upx: xdrlib.Unpacker):
         # dst_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
         # src_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
         # length = int.from_bytes(upx.unpack_fopaque(2), "big")
         # upx.unpack_fopaque(hdr_length - 14)
-        src_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
         dst_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
-        vlan = upx.unpack_uint()
-        length = int.from_bytes(upx.unpack_fopaque(2), 'big')
-        upx.unpack_fopaque(hdr_length - 18)
-        return cls(dst_mac, src_mac, length)
+        src_mac = ':'.join('%02x' % b for b in upx.unpack_fopaque(6))
+        eth_type = binascii.hexlify(upx.unpack_fopaque(2))
+        return cls(dst_mac, src_mac, eth_type, 14)
 
     def __repr__(self):
         return f"""
                                     Src MAC: {self.src_mac}
                                     Dst MAC: {self.dst_mac}
-                                    Length: {self.length}
+                                    EthType: {self.type}
         """
