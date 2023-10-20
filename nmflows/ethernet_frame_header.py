@@ -2,9 +2,11 @@ import xdrlib
 
 ETHERTYPE_IPV4 = 0x800
 ETHERTYPE_ARP = 0x806
-ETHTYPE_IPV6 = 0x86DD
+ETHERTYPE_8021Q = 0x8100
+ETHERTYPE_IPV6 = 0x86DD
 
-ALLOWED_ETHERTYPES = [ETHERTYPE_ARP, ETHERTYPE_IPV4, ETHTYPE_IPV6]
+
+ALLOWED_ETHERTYPES = [ETHERTYPE_ARP, ETHERTYPE_8021Q, ETHERTYPE_IPV4, ETHERTYPE_IPV6]
 
 
 class EthernetFrameHeader:
@@ -42,7 +44,12 @@ class EthernetFrameHeader:
         src_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
         eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
         if eth_type in ALLOWED_ETHERTYPES:
-            return cls(dst_mac, src_mac, 0, eth_type, 14)
+            if eth_type == ETHERTYPE_8021Q:
+                vlan = int.from_bytes(upx.unpack_fopaque(2), 'big')
+                eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
+                return cls(dst_mac, src_mac, vlan, eth_type, 18)
+            else:
+                return cls(dst_mac, src_mac, 0, eth_type, 14)
         else:
             # scan back
             position = upx.get_position()
