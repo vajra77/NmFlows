@@ -42,7 +42,7 @@ class EthernetFrameHeader:
     def unpack(cls, upx: xdrlib.Unpacker):
         dst_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
         src_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
-        eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
+        eth_type = int.from_bytes(upx.unpack_fopaque(2), 'little')
 
         if eth_type < 1536:
             return cls(dst_mac, src_mac, 0, eth_type, 14)
