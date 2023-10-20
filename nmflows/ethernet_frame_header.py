@@ -51,13 +51,7 @@ class EthernetFrameHeader:
             else:
                 return cls(dst_mac, src_mac, 0, eth_type, 14)
         else:
-            # scan back
-            position = upx.get_position()
-            upx.set_position(position - 2)
-            vlan = upx.unpack_uint()
-            eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
-            assert eth_type in ALLOWED_ETHERTYPES, f"unable to recognize ethertype: {hex(eth_type):2x}"
-            return cls(dst_mac, src_mac, vlan, eth_type, 18)
+            raise Exception(f"Unrecognized ethertype: {eth_type}")
 
     def __repr__(self):
         return f"""
