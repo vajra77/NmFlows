@@ -49,7 +49,7 @@ class EthernetFrameHeader:
             upx.set_position(position - 2)
             vlan = upx.unpack_uint()
             eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
-            assert eth_type in ALLOWED_ETHERTYPES, f"unable to recognize ethertype: {eth_type}"
+            assert eth_type in ALLOWED_ETHERTYPES, f"unable to recognize ethertype: {hex(eth_type):2x}"
             return cls(dst_mac, src_mac, vlan, eth_type, 18)
 
     def __repr__(self):
