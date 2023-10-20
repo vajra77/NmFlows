@@ -2,7 +2,7 @@ import socketserver, threading, time
 from pprint import pprint
 from nmflows import SFlowDatagram
 import xdrlib
-import traceback
+import sys
 
 
 def create_sflow_datagram(upx: xdrlib.Unpacker):
@@ -21,10 +21,10 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
         try:
             unpacker = xdrlib.Unpacker(data)
             datagram = create_sflow_datagram(unpacker)
-        except EOFError as e:
-            print("[ERROR]: EOF while reading buffer")
+        except EOFError:
+            print("[ERROR]: EOF while reading buffer", file=sys.stderr)
         except Exception as e:
-            print(f"[ERROR]: {e}")
+            print(f"[ERROR]: {e}", file=sys.stderr)
         else:
             pprint(datagram)
 
@@ -33,7 +33,8 @@ class ThreadedUDPServer(socketserver.ThreadingMixIn, socketserver.UDPServer):
     pass
 
 if __name__ == "__main__":
-    HOST, PORT = "127.0.0.1", 5510
+    HOST = sys.argv[1]
+    PORT = int(sys.argv[2])
 
     server = ThreadedUDPServer((HOST, PORT), ThreadedUDPRequestHandler)
 
