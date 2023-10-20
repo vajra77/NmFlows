@@ -10,13 +10,15 @@ PROTO_IPV6 = 12
 
 class RawPacketHeader(FlowRecord):
 
-    def __init__(self, r_format, length, proto, content_length, stripped, header_length, header):
+    def __init__(self, r_format, length, proto, content_length, stripped, header_length, eth_hdr, ip_hdr, txp_hdr):
         super().__init__(r_format, length)
         self._proto = proto
         self._content_length = content_length
         self._stripped = stripped
         self._header_length = header_length
-        self._header = header
+        self._datalink_header = eth_hdr
+        self._network_header = ip_hdr
+        self._transport_header = txp_hdr
 
     @property
     def proto(self):
@@ -35,8 +37,16 @@ class RawPacketHeader(FlowRecord):
         return self._header_length
 
     @property
-    def header(self):
-        return self._header
+    def datalink_header(self):
+        return self._datalink_header
+
+    @property
+    def network_header(self):
+        return self._network_header
+
+    @property
+    def transport_header(self):
+        return self._transport_header
 
     @classmethod
     def unpack(cls, rformat, rlength, upx: xdrlib.Unpacker):
@@ -45,12 +55,11 @@ class RawPacketHeader(FlowRecord):
         stripped = upx.unpack_uint()
         header_length = upx.unpack_uint()
         if proto == PROTO_ETHERNET:
-            #header = EthernetFrameHeader.unpack(upx, header_length)
-            header = upx.unpack_fopaque(header_length)
-            return cls(rformat, rlength, proto, length, stripped, header_length, header)
+            ethernet = EthernetFrameHeader.unpack(upx, header_length)
+            return cls(rformat, rlength, proto, length, stripped, header_length, ethernet, None, None)
         else:
             header = upx.unpack_fopaque(header_length)
-            return cls(rformat, rlength, proto, length, stripped, header_length, header)
+            return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
 
     def __repr__(self):
         return f"""
@@ -60,4 +69,5 @@ class RawPacketHeader(FlowRecord):
                                 Content Length: {self.content_length}
                                 Stripped: {self.stripped}
                                 Header Length: {self.header_length}
+                                Datalink Header: {self.datalink_header}
         """
