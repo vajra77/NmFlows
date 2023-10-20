@@ -2,6 +2,7 @@ import socketserver, threading, time
 from pprint import pprint
 from nmflows import SFlowDatagram
 import xdrlib
+import traceback
 
 
 def create_sflow_datagram(upx: xdrlib.Unpacker):
@@ -22,6 +23,7 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
             datagram = create_sflow_datagram(unpacker)
         except Exception as e:
             print(f"[ERROR]: {e}")
+            traceback.print_exc()
         else:
             pprint(datagram)
 
