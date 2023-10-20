@@ -4,7 +4,7 @@ ETHERTYPE_IPV4 = 0x800
 ETHERTYPE_ARP = 0x806
 ETHTYPE_IPV6 = 0x86DD
 
-ALLOWED_ETHERTYPES = [ hex(ETHERTYPE_ARP), hex(ETHERTYPE_IPV4), hex(ETHTYPE_IPV6)]
+ALLOWED_ETHERTYPES = [ETHERTYPE_ARP, ETHERTYPE_IPV4, ETHTYPE_IPV6]
 
 
 class EthernetFrameHeader:
@@ -40,7 +40,7 @@ class EthernetFrameHeader:
     def unpack(cls, upx: xdrlib.Unpacker):
         dst_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
         src_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
-        eth_type = hex(int.from_bytes(upx.unpack_fopaque(2), 'big'))
+        eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
         if eth_type in ALLOWED_ETHERTYPES:
             return cls(dst_mac, src_mac, 0, eth_type, 14)
         else:
@@ -48,8 +48,8 @@ class EthernetFrameHeader:
             position = upx.get_position()
             upx.set_position(position - 2)
             vlan = upx.unpack_uint()
-            eth_type = hex(int.from_bytes(upx.unpack_fopaque(2), 'big'))
-            assert eth_type in ALLOWED_ETHERTYPES, "unable to recognize ethertype"
+            eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
+            assert eth_type in ALLOWED_ETHERTYPES, f"unable to recognize ethertype: {eth_type}"
             return cls(dst_mac, src_mac, vlan, eth_type, 18)
 
     def __repr__(self):

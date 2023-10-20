@@ -62,7 +62,7 @@ class RawPacketHeader(FlowRecord):
         header_length = upx.unpack_uint()
         if proto == PROTO_ETHERNET:
             ethernet = EthernetFrameHeader.unpack(upx)
-            if ethernet.type == hex(ETHERTYPE_IPV4):
+            if ethernet.type == ETHERTYPE_IPV4:
                 ip = IPv4PacketHeader.unpack(upx)
                 upx.unpack_fopaque(header_length - ethernet.length - ip.length)
             else:
