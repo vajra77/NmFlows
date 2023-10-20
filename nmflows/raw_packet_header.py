@@ -79,4 +79,5 @@ class RawPacketHeader(FlowRecord):
                                 Stripped: {self.stripped}
                                 Header Length: {self.header_length}
                                 Datalink Header: {self.datalink_header}
+                                Network Header: {self.network_header}
         """
