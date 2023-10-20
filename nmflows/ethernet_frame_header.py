@@ -1,3 +1,4 @@
+from .exceptions import ParserException
 import xdrlib
 
 ETHERTYPE_IPV4 = 2048
@@ -43,10 +44,7 @@ class EthernetFrameHeader:
         dst_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
         src_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
         eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
-
-        if eth_type < 1536:
-            return cls(dst_mac, src_mac, 0, eth_type, 14)
-        elif eth_type in ALLOWED_ETHERTYPES:
+        if eth_type in ALLOWED_ETHERTYPES:
             if eth_type == ETHERTYPE_8021Q:
                 vlan = int.from_bytes(upx.unpack_fopaque(2), 'big')
                 eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
@@ -54,7 +52,7 @@ class EthernetFrameHeader:
             else:
                 return cls(dst_mac, src_mac, 0, eth_type, 14)
         else:
-            raise Exception(f"Unrecognized ethertype: {eth_type}")
+            raise ParserException(f"Unrecognized ethertype: {eth_type}")
 
     def __repr__(self):
         return f"""
