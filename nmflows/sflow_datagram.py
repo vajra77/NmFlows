@@ -85,8 +85,7 @@ class SFlowDatagram:
 
     @staticmethod
     def create_sflow_sample(upx: xdrlib.Unpacker):
-        format_data = upx.unpack_uint()
-        sformat = format_data & 0x0fff
+        sformat = upx.unpack_uint() & 0x0fff
 
         length = upx.unpack_uint()
 
