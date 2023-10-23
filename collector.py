@@ -15,7 +15,7 @@ def create_sflow_datagram(upx: xdrlib.Unpacker):
 class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
-        data = self.rfile.readline().strip()
+        data = self.request[0]
         try:
             unpacker = xdrlib.Unpacker(data)
             datagram = create_sflow_datagram(unpacker)
