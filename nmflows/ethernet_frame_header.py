@@ -1,4 +1,4 @@
-from .exceptions import ParserException
+from .exceptions import EthParserException
 import xdrlib
 import struct
 
@@ -55,7 +55,7 @@ class EthernetFrameHeader:
             else:
                 return cls(dst_mac, src_mac, 0, type_len, 14)
         else:
-            raise ParserException(f"Unrecognized ethertype: {type_len}")
+            raise EthParserException(f"Unrecognized ethertype: {type_len}")
 
 
     def __repr__(self):
