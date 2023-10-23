@@ -1,5 +1,7 @@
 from .exceptions import ParserException
 import xdrlib
+import struct
+
 
 ETHERTYPE_IPV4 = 2048
 ETHERTYPE_ARP = 2054
@@ -43,14 +45,13 @@ class EthernetFrameHeader:
     def unpack(cls, upx: xdrlib.Unpacker):
         dst_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
         src_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
-        big = upx.unpack_fopaque(1)
-        little = upx.unpack_fopaque(1)
-        eth_type = (big << 8) + little
-        #eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
+        eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
+        eth_type = eth_type & 0xfff
         if eth_type in ALLOWED_ETHERTYPES:
             if eth_type == ETHERTYPE_8021Q:
                 vlan = int.from_bytes(upx.unpack_fopaque(2), 'big')
                 eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
+                eth_type = eth_type & 0xfff
                 return cls(dst_mac, src_mac, vlan, eth_type, 18)
             else:
                 return cls(dst_mac, src_mac, 0, eth_type, 14)
