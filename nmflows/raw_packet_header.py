@@ -66,16 +66,14 @@ class RawPacketHeader(FlowRecord):
         position = upx.get_position()
         if proto == PROTO_ETHERNET:
             try:
-               data = upx.unpack_fopaque(24)
-               with open(uuid4().hex, "wb+") as f:
-                   f.write(data)
-                # ethernet = EthernetFrameHeader.unpack(upx)
+                ethernet = EthernetFrameHeader.unpack(upx)
                 # if ethernet.type == ETHERTYPE_IPV4:
                 #     ip = IPv4PacketHeader.unpack(upx)
                 #     upx.unpack_fopaque(header_length - ethernet.length - ip.length)
                 # else:
                 #     ip = None
                 #     upx.unpack_fopaque(header_length - ethernet.length)
+                upx.unpack_fopaque(header_length - ethernet.length)
             except ParserException:
                 upx.set_position(position)
                 upx.unpack_fopaque(header_length)
