@@ -49,23 +49,8 @@ class EthernetFrameHeader:
             if type_len == ETHERTYPE_8021Q:
                 vlan = int.from_bytes(upx.unpack_fopaque(2), 'big') & 0x0fff
                 type_len = int.from_bytes(upx.unpack_fopaque(2), 'big')
-                position = upx.get_position()
-                version = upx.unpack_uint()
-                if version == 4 or version == 6:
-                    upx.set_position(position)
-                else:
-                    upx.set_position(position)
-                    raise EthParserException(f"extra trailer might be present")
                 return cls(dst_mac, src_mac, vlan, type_len, 18)
             else:
-                position = upx.get_position()
-                version = upx.unpack_uint()
-                if version == 4 or version == 6:
-                    print("found ip header")
-                    upx.set_position(position)
-                else:
-                    upx.set_position(position)
-                    raise EthParserException(f"extra trailer might be present")
                 return cls(dst_mac, src_mac, 0, type_len, 14)
         else:
             raise EthParserException(f"Unrecognized ethertype: {type_len}")

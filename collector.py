@@ -21,6 +21,7 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
         try:
             unpacker = xdrlib.Unpacker(data)
             datagram = create_sflow_datagram(unpacker)
+            unpacker.done()
         except EOFError:
             print("[ERROR]: EOF while reading buffer", file=sys.stderr)
         except Exception as e:
