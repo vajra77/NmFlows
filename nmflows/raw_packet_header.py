@@ -63,8 +63,6 @@ class RawPacketHeader(FlowRecord):
         stripped = upx.unpack_uint()
         header_length = upx.unpack_uint()
         position = upx.get_position()
-        upx.unpack_fopaque(header_length)
-        return None
         if proto == PROTO_ETHERNET:
             try:
                 ethernet = EthernetFrameHeader.unpack(upx)
