@@ -73,18 +73,13 @@ class RawPacketHeader(FlowRecord):
                 # else:
                 #     ip = None
                 #     upx.unpack_fopaque(header_length - ethernet.length)
+                return cls(rformat, rlength, proto, length, stripped, header_length, ethernet, None, None)
             except EthParserException:
-                upx.set_position(position)
-                upx.unpack_fopaque(header_length)
                 return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
             except IPParserException:
-                upx.set_position(position)
-                upx.unpack_fopaque(header_length - ethernet.length)
                 return cls(rformat, rlength, proto, length, stripped, header_length, ethernet, None, None)
-            else:
-                return cls(rformat, rlength, proto, length, stripped, header_length, ethernet, ip, None)
         else:
-            upx.unpack_fopaque(header_length)
+            _ = upx.unpack_fopaque(header_length)
             return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
 
     def __repr__(self):
