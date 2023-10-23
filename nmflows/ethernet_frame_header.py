@@ -1,6 +1,5 @@
 from .exceptions import EthParserException
 import xdrlib
-import struct
 
 
 ETHERTYPE_IPV4 = 0x0800
@@ -45,14 +44,27 @@ class EthernetFrameHeader:
     def unpack(cls, upx: xdrlib.Unpacker):
         dst_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
         src_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
-        type_len = int.from_bytes(upx.unpack_fopaque(2), 'big')
+        type_len = int.from_bytes(upx.unpack_fopaque(2), 'big') & 0xffff
         if type_len in ALLOWED_ETHERTYPES:
             if type_len == ETHERTYPE_8021Q:
-                vlan_data = int.from_bytes(upx.unpack_fopaque(2), 'big')
-                vlan = vlan_data & 0x0fff
+                vlan = int.from_bytes(upx.unpack_fopaque(2), 'big') & 0x0fff
                 type_len = int.from_bytes(upx.unpack_fopaque(2), 'big')
+                position = upx.get_position()
+                version = upx.unpack_uint()
+                if version == 4 or version == 6:
+                    upx.set_position(position)
+                else:
+                    upx.set_position(position)
+                    raise EthParserException(f"extra trailer might be present")
                 return cls(dst_mac, src_mac, vlan, type_len, 18)
             else:
+                position = upx.get_position()
+                version = upx.unpack_uint()
+                if version == 4 or version == 6:
+                    upx.set_position(position)
+                else:
+                    upx.set_position(position)
+                    raise EthParserException(f"extra trailer might be present")
                 return cls(dst_mac, src_mac, 0, type_len, 14)
         else:
             raise EthParserException(f"Unrecognized ethertype: {type_len}")
