@@ -15,17 +15,16 @@ def create_sflow_datagram(upx: xdrlib.Unpacker):
 class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
-        data = self.request[0]
+        data = self.rfile.readline()
         try:
             unpacker = xdrlib.Unpacker(data)
             datagram = create_sflow_datagram(unpacker)
             unpacker.done()
+            pprint(datagram)
         except EOFError:
             print("[ERROR]: EOF while reading buffer", file=sys.stderr)
         except Exception as e:
             print(f"[ERROR]: {e}", file=sys.stderr)
-        else:
-            pprint(datagram)
 
 
 if __name__ == "__main__":
