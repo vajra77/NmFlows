@@ -6,7 +6,7 @@ UNSIGNED_INT_SIZE = 4
 class NenBuffer(Exception):
 
     def __init__(self, msg):
-        super().__init__(f"#buf not enough data to read: {msg}")
+        super().__init__(f"#buf not enough bytes to read: {msg}")
 
 
 class PtrBuffer:
@@ -41,7 +41,7 @@ class PtrBuffer:
             self._ptr += UNSIGNED_SHORT_SIZE
             return value
         else:
-            raise NenBuffer(f"{self.available_data()} bytes available")
+            raise NenBuffer(f"2 requested, {self.available_data()} available")
 
     def read_uint(self) -> int:
         if self.available_data() >= UNSIGNED_INT_SIZE:
@@ -50,7 +50,7 @@ class PtrBuffer:
             self._ptr += UNSIGNED_INT_SIZE
             return value
         else:
-            raise NenBuffer(f"{self.available_data()} bytes available")
+            raise NenBuffer(f"4 requested, {self.available_data()} available")
 
     def read_bytes(self, n) -> bytes:
         if self.available_data() >= n:
@@ -59,4 +59,4 @@ class PtrBuffer:
             self._ptr += n
             return value
         else:
-            raise NenBuffer(f"{self.available_data()} bytes available")
+            raise NenBuffer(f"{n} requested, {self.available_data()} available")
