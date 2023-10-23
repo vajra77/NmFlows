@@ -1,3 +1,4 @@
+from .ptr_buffer import PtrBuffer
 from .exceptions import ParserException
 from .flow_sample import FlowSample
 from .expanded_flow_sample import ExpandedFlowSample
@@ -62,20 +63,20 @@ class SFlowDatagram:
         return self._samples
 
     @classmethod
-    def unpack(cls, version, upx):
-        ip_version = upx.unpack_uint()
+    def unpack(cls, version, data: PtrBuffer):
+        ip_version = data.read_uint()
         if ip_version == IP_VERSION_4:
-            agent_address = socket.inet_ntop(socket.AF_INET, upx.unpack_fopaque(4))
+            agent_address = socket.inet_ntop(socket.AF_INET, data.read_bytes(4))
         else:
-            agent_address = socket.inet_ntop(socket.AF_INET6, upx.unpack_fopaque(16))
-        agent_id = upx.unpack_uint()
-        seq_number = upx.unpack_uint()
-        uptime = upx.unpack_uint()
-        n_samples = upx.unpack_uint()
+            agent_address = socket.inet_ntop(socket.AF_INET6, data.read_bytes(16))
+        agent_id = data.read_uint()
+        seq_number = data.read_uint()
+        uptime = data.read_uint()
+        n_samples = data.read_uint()
         samples = []
         for _ in range(n_samples):
             try:
-                sample = cls.create_sflow_sample(upx)
+                sample = cls.create_sflow_sample(data)
                 samples.append(sample)
             except NotImplementedError:
                 print(f"[INFO]: skipping not implemented sample type", file=sys.stderr)
@@ -84,20 +85,18 @@ class SFlowDatagram:
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, n_samples, samples)
 
     @staticmethod
-    def create_sflow_sample(upx: xdrlib.Unpacker):
-        sformat = upx.unpack_uint() & 0x0fff
-
-        length = upx.unpack_uint()
-
+    def create_sflow_sample(data: PtrBuffer):
+        sformat = data.read_uint() & 0x0fff
+        length = data.read_uint()
         if sformat == FORMAT_FLOW_SAMPLE:
-            return FlowSample.unpack(sformat, length, upx)
+            return FlowSample.unpack(sformat, length, data)
         elif sformat == FORMAT_COUNTER_SAMPLE:
-            upx.unpack_fopaque(length)
+            data.read_bytes(length)
             raise NotImplementedError
         elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
-            return ExpandedFlowSample.unpack(sformat, length, upx)
+            return ExpandedFlowSample.unpack(sformat, length, data)
         else:
-            upx.unpack_fopaque(length)
+            data.read_bytes(length)
             raise ParserException(f"unrecognized sample format: {sformat}")
 
     def __repr__(self):

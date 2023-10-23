@@ -1,5 +1,4 @@
 from .exceptions import EthParserException
-import xdrlib
 
 
 ETHERTYPE_IPV4 = 0x0800

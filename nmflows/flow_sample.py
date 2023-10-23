@@ -1,6 +1,6 @@
 from .sflow_sample import SFlowSample
 from .exceptions import ParserException
-import xdrlib
+from .ptr_buffer import PtrBuffer
 import sys
 
 
@@ -55,19 +55,19 @@ class FlowSample(SFlowSample):
         return self._records
 
     @classmethod
-    def unpack(cls, sformat, length, upx: xdrlib.Unpacker):
-        seq_no = upx.unpack_uint()
-        source = upx.unpack_uint()
-        sampling_rate = upx.unpack_uint()
-        sample_pool = upx.unpack_uint()
-        drops = upx.unpack_uint()
-        input_if = upx.unpack_uint()
-        output_if = upx.unpack_uint()
-        records_count = upx.unpack_uint()
+    def unpack(cls, sformat, length, data: PtrBuffer):
+        seq_no = data.read_uint()
+        source = data.read_uint()
+        sampling_rate = data.read_uint()
+        sample_pool = data.read_uint()
+        drops = data.read_uint()
+        input_if = data.read_uint()
+        output_if = data.read_uint()
+        records_count = data.read_uint()
         records = []
         for _ in range(records_count):
             try:
-                record = cls.create_flow_record(upx)
+                record = cls.create_flow_record(data)
                 records.append(record)
             except ParserException as e:
                 print(f"unrecognized flow record: {e}", file=sys.stderr)

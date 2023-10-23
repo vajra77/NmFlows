@@ -1,6 +1,6 @@
 from .raw_packet_header import RawPacketHeader
 from .exceptions import ParserException
-import xdrlib
+from .ptr_buffer import PtrBuffer
 
 
 FORMAT_FLOW_SAMPLE = 1
@@ -41,14 +41,14 @@ class SFlowSample:
         raise NotImplementedError
 
     @staticmethod
-    def create_flow_record(upx: xdrlib.Unpacker):
-        rformat = upx.unpack_uint()
-        length = upx.unpack_uint()
+    def create_flow_record(data: PtrBuffer):
+        rformat = data.read_uint()
+        length = data.read_uint()
         if rformat == RECORD_RAW_HEADER:
-            return RawPacketHeader.unpack(rformat, length, upx)
+            return RawPacketHeader.unpack(rformat, length, data)
         elif rformat == RECORD_ETHERNET_DATA:
-            upx.unpack_fopaque(length)
+            data.read_bytes(length)
             raise ParserException(f"unhandled Ethernet Data Record")
         else:
-            upx.unpack_fopaque(length)
+            data.read_bytes(length)
             raise ParserException(f"unrecognized flow record type")

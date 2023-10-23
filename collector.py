@@ -1,24 +1,22 @@
-from nmflows import SFlowDatagram
+from nmflows import SFlowDatagram, PtrBuffer
 import socketserver
 from pprint import pprint
-import xdrlib
 import sys
 
 
-def create_sflow_datagram(upx: xdrlib.Unpacker):
-    version = upx.unpack_uint()
+def create_sflow_datagram(data: PtrBuffer):
+    version = data.read_uint()
     if version != 5:
         raise Exception(f"sFlow version not supported: v{version}")
-    return SFlowDatagram.unpack(version, upx)
-
+    return SFlowDatagram.unpack(version, data)
 
 class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
         data = self.socket.recv(2048)
         try:
-            unpacker = xdrlib.Unpacker(data)
-            datagram = create_sflow_datagram(unpacker)
+            buffer = PtrBuffer(data, 2048)
+            datagram = create_sflow_datagram(buffer)
             pprint(datagram)
         except EOFError:
             print("[ERROR]: EOF while reading buffer", file=sys.stderr)

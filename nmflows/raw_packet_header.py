@@ -3,7 +3,7 @@ from .ethernet_frame_header import EthernetFrameHeader
 from .ipv4_packet_header import IPv4PacketHeader
 from .ipv6_packet_header import IPv6PacketHeader
 from .exceptions import ParserException
-import xdrlib
+from .ptr_buffer import PtrBuffer
 
 
 PROTO_ETHERNET = 1
@@ -58,14 +58,14 @@ class RawPacketHeader(FlowRecord):
         return self._transport_header
 
     @classmethod
-    def unpack(cls, rformat, rlength, upx: xdrlib.Unpacker):
-        proto = upx.unpack_uint()
-        length = upx.unpack_uint()
-        stripped = upx.unpack_uint()
-        header_length = upx.unpack_uint()
+    def unpack(cls, rformat, rlength, data: PtrBuffer):
+        proto = data.read_uint()
+        length = data.read_uint()
+        stripped = data.read_uint()
+        header_length = data.read_uint()
         if proto == PROTO_ETHERNET:
             try:
-                header_data = upx.unpack_fopaque(header_length)
+                header_data = data.read_bytes(header_length)
                 ethernet = EthernetFrameHeader.unpack(header_data)
                 ip = None
                 if ethernet.type == ETHERTYPE_IPV4:
@@ -77,7 +77,7 @@ class RawPacketHeader(FlowRecord):
             except ParserException:
                 return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
         else:
-            _ = upx.unpack_fopaque(header_length)
+            data.read_bytes(header_length)
             return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
 
     def __repr__(self):
