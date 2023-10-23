@@ -69,7 +69,7 @@ class RawPacketHeader(FlowRecord):
                 ip = None
                 if ethernet.type == ETHERTYPE_IPV4:
                     ip = IPv4PacketHeader.unpack(header_data[ethernet.length:])
-                return cls(rformat, rlength, proto, length, stripped, header_length, ethernet, None, None)
+                return cls(rformat, rlength, proto, length, stripped, header_length, ethernet, ip, None)
             except EthParserException:
                 return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
             except IPParserException:
