@@ -24,8 +24,12 @@ class IPv6PacketHeader:
     def unpack(cls, data: bytes):
         h1 = data[0:4]
         h2 = data[4:8]
-        src_addr = socket.inet_ntop(socket.AF_INET6, data[8:24])
-        dst_addr = socket.inet_ntop(socket.AF_INET6, data[24:30])
+        try:
+            src_addr = socket.inet_ntop(socket.AF_INET6, data[8:24])
+            dst_addr = socket.inet_ntop(socket.AF_INET6, data[24:30])
+        except Exception as e:
+            print("unable to parse IPv6 address")
+
         return cls(src_addr, dst_addr, 30)
 
     def __repr__(self):
