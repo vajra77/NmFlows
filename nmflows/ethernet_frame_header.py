@@ -3,12 +3,12 @@ import xdrlib
 import struct
 
 
-ETHERTYPE_IPV4 = 2048
-ETHERTYPE_ARP = 2054
-ETHERTYPE_8021Q = 33024
-ETHERTYPE_IPV6 = 34525
+ETHERTYPE_IPV4 = 0x0800
+ETHERTYPE_ARP = 0x0806
+ETHERTYPE_8021Q = 0x8100
+ETHERTYPE_IPV6 = 0x86dd
 
-
+TAGGING_ETHERTYPES = [0x8100, 0x88A8, 0x9100, 0x9200, 0x9300]
 ALLOWED_ETHERTYPES = [ETHERTYPE_ARP, ETHERTYPE_8021Q, ETHERTYPE_IPV4, ETHERTYPE_IPV6]
 
 
@@ -45,18 +45,17 @@ class EthernetFrameHeader:
     def unpack(cls, upx: xdrlib.Unpacker):
         dst_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
         src_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
-        eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
-        eth_type = eth_type & 0xffff
-        if eth_type in ALLOWED_ETHERTYPES:
-            if eth_type == ETHERTYPE_8021Q:
+        type_len = int.from_bytes(upx.unpack_fopaque(2), 'big')
+        if type_len in ALLOWED_ETHERTYPES:
+            if type_len == ETHERTYPE_8021Q:
                 vlan = int.from_bytes(upx.unpack_fopaque(2), 'big')
-                eth_type = int.from_bytes(upx.unpack_fopaque(2), 'big')
-                eth_type = eth_type & 0xffff
-                return cls(dst_mac, src_mac, vlan, eth_type, 18)
+                vlan = vlan & 0x0fff
+                type_len = int.from_bytes(upx.unpack_fopaque(2), 'big')
+                return cls(dst_mac, src_mac, vlan, type_len, 18)
             else:
-                return cls(dst_mac, src_mac, 0, eth_type, 14)
+                return cls(dst_mac, src_mac, 0, type_len, 14)
         else:
-            raise ParserException(f"Unrecognized ethertype: {eth_type}")
+            raise ParserException(f"Unrecognized ethertype: {type_len}")
 
 
     def __repr__(self):
