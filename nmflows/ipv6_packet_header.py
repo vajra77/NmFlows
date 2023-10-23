@@ -1,7 +1,7 @@
 import socket
 
 
-class IPv4PacketHeader:
+class IPv6PacketHeader:
 
     def __init__(self, src_addr, dst_addr, length):
         self._source_address = src_addr
@@ -24,11 +24,9 @@ class IPv4PacketHeader:
     def unpack(cls, data: bytes):
         h1 = data[0:4]
         h2 = data[4:8]
-        h3 = data[8:12]
-        src_addr = socket.inet_ntop(socket.AF_INET, data[12:16])
-        dst_addr = socket.inet_ntop(socket.AF_INET, data[16:20])
-        options = data[20:24]
-        return cls(src_addr, dst_addr, 24)
+        src_addr = socket.inet_ntop(socket.AF_INET6, data[8:24])
+        dst_addr = socket.inet_ntop(socket.AF_INET, data[24:30])
+        return cls(src_addr, dst_addr, 30)
 
     def __repr__(self):
         return f"""

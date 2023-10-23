@@ -1,7 +1,8 @@
 from .flow_record import FlowRecord
 from .ethernet_frame_header import EthernetFrameHeader
 from .ipv4_packet_header import IPv4PacketHeader
-from .exceptions import EthParserException, IPParserException
+from .ipv6_packet_header import IPv6PacketHeader
+from .exceptions import ParserException
 import xdrlib
 
 
@@ -69,10 +70,11 @@ class RawPacketHeader(FlowRecord):
                 ip = None
                 if ethernet.type == ETHERTYPE_IPV4:
                     ip = IPv4PacketHeader.unpack(header_data[ethernet.length:])
+                elif ethernet.type == ETHERTYPE_IPV6:
+                    ip = IPv6PacketHeader.unpack(header_data[ethernet.length:])
+
                 return cls(rformat, rlength, proto, length, stripped, header_length, ethernet, ip, None)
-            except EthParserException:
-                return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
-            except IPParserException:
+            except ParserException:
                 return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
         else:
             _ = upx.unpack_fopaque(header_length)
