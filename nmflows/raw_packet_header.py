@@ -63,6 +63,8 @@ class RawPacketHeader(FlowRecord):
         stripped = upx.unpack_uint()
         header_length = upx.unpack_uint()
         position = upx.get_position()
+        upx.unpack_fopaque(header_length)
+        return None
         if proto == PROTO_ETHERNET:
             try:
                 ethernet = EthernetFrameHeader.unpack(upx)
@@ -73,7 +75,6 @@ class RawPacketHeader(FlowRecord):
                     ip = None
                     upx.unpack_fopaque(header_length - ethernet.length)
             except ParserException:
-                print("error while parsing eth/ip")
                 upx.set_position(position)
                 upx.unpack_fopaque(header_length)
                 return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
