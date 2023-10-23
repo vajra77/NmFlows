@@ -1,7 +1,7 @@
 from .flow_record import FlowRecord
 from .ethernet_frame_header import EthernetFrameHeader
 from .ipv4_packet_header import IPv4PacketHeader
-from .exceptions import ParserException
+from .exceptions import EthParserException, IPParserException
 import xdrlib
 
 
