@@ -67,8 +67,7 @@ class SFlowDatagram:
         if ip_version == IP_VERSION_4:
             agent_address = socket.inet_ntop(socket.AF_INET, upx.unpack_fopaque(4))
         else:
-            raise NotImplementedError
-            # agent_address = socket.inet_ntop(socket.AF_INET6, upx.unpack_fopaque(16))
+            agent_address = socket.inet_ntop(socket.AF_INET6, upx.unpack_fopaque(16))
         agent_id = upx.unpack_uint()
         seq_number = upx.unpack_uint()
         uptime = upx.unpack_uint()
@@ -91,10 +90,7 @@ class SFlowDatagram:
     def create_sflow_sample(upx: xdrlib.Unpacker):
         format_data = upx.unpack_uint()
         sformat = format_data & 0x0fff
-        enterprise = (format_data >> 12) & 0xfffff
 
-        if sformat is None:
-            raise ParserException("unable to parse sflow sample format")
         length = upx.unpack_uint()
 
         if length is None:
@@ -103,6 +99,7 @@ class SFlowDatagram:
         if sformat == FORMAT_FLOW_SAMPLE:
             return FlowSample.unpack(sformat, length, upx)
         elif sformat == FORMAT_COUNTER_SAMPLE:
+            upx.unpack_fopaque(length)
             raise NotImplementedError
         elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
             return ExpandedFlowSample.unpack(sformat, length, upx)
