@@ -45,15 +45,10 @@ class EthernetFrameHeader:
         dst_mac = ''.join('%02x' % b for b in data[0:6])
         src_mac = ''.join('%02x' % b for b in data[6:12])
         type_len = int.from_bytes(data[12:14], 'big')
-        # dst_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
-        # src_mac = ''.join('%02x' % b for b in upx.unpack_fopaque(6))
-        # type_len = int.from_bytes(upx.unpack_fopaque(2), 'big') & 0xffff
         if type_len in ALLOWED_ETHERTYPES:
             if type_len == ETHERTYPE_8021Q:
                 vlan = int.from_bytes(data[14:16], 'big') & 0x0fff
                 type_len = int.from_bytes(data[16:18], 'big')
-                # vlan = int.from_bytes(upx.unpack_fopaque(2), 'big') & 0x0fff
-                # type_len = int.from_bytes(upx.unpack_fopaque(2), 'big')
                 return cls(dst_mac, src_mac, vlan, type_len, 18)
             else:
                 return cls(dst_mac, src_mac, 0, type_len, 14)
