@@ -4,6 +4,8 @@ from pprint import pprint
 import sys
 
 
+DEFAULT_BUFFER_SIZE = 4096
+
 def create_sflow_datagram(data: PtrBuffer):
     version = data.read_uint()
     if version != 5:
@@ -13,9 +15,9 @@ def create_sflow_datagram(data: PtrBuffer):
 class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
-        data = self.socket.recv(2048)
+        data = self.socket.recv(DEFAULT_BUFFER_SIZE)
         try:
-            buffer = PtrBuffer(data, 2048)
+            buffer = PtrBuffer(data, DEFAULT_BUFFER_SIZE)
             datagram = create_sflow_datagram(buffer)
             pprint(datagram)
         except EOFError:
