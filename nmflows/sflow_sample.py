@@ -44,8 +44,6 @@ class SFlowSample:
     def create_flow_record(upx: xdrlib.Unpacker):
         rformat = upx.unpack_uint()
         length = upx.unpack_uint()
-        if length is None:
-            raise ParserException(f"unable to parse flow record length")
         if rformat == RECORD_RAW_HEADER:
             return RawPacketHeader.unpack(rformat, length, upx)
         elif rformat == RECORD_ETHERNET_DATA:

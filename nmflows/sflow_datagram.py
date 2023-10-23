@@ -72,18 +72,15 @@ class SFlowDatagram:
         seq_number = upx.unpack_uint()
         uptime = upx.unpack_uint()
         n_samples = upx.unpack_uint()
-        if n_samples is None:
-            n_samples = 0
         samples = []
         for _ in range(n_samples):
             try:
                 sample = cls.create_sflow_sample(upx)
+                samples.append(sample)
             except NotImplementedError:
                 print(f"[INFO]: skipping not implemented sample type", file=sys.stderr)
             except ParserException as e:
                 print(f"[ERROR]: {e}", file=sys.stderr)
-            else:
-                samples.append(sample)
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, n_samples, samples)
 
     @staticmethod
@@ -92,9 +89,6 @@ class SFlowDatagram:
         sformat = format_data & 0x0fff
 
         length = upx.unpack_uint()
-
-        if length is None:
-            raise ParserException("unable to parse sflow sample length")
 
         if sformat == FORMAT_FLOW_SAMPLE:
             return FlowSample.unpack(sformat, length, upx)
