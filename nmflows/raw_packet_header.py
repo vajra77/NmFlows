@@ -3,17 +3,16 @@ from .ethernet_frame_header import EthernetFrameHeader
 from .ipv4_packet_header import IPv4PacketHeader
 from .exceptions import ParserException
 import xdrlib
-from uuid import uuid4
 
 
 PROTO_ETHERNET = 1
 PROTO_IPV4 = 11
 PROTO_IPV6 = 12
 
-ETHERTYPE_IPV4 = 2048
-ETHERTYPE_ARP = 2054
-ETHERTYPE_8021Q = 33024
-ETHERTYPE_IPV6 = 34525
+ETHERTYPE_IPV4 = 0x0800
+ETHERTYPE_ARP = 0x0806
+ETHERTYPE_8021Q = 0x8100
+ETHERTYPE_IPV6 = 0x86dd
 
 ALLOWED_ETHERTYPES = [ ETHERTYPE_ARP, ETHERTYPE_IPV4, ETHERTYPE_8021Q, ETHERTYPE_IPV6]
 
@@ -67,13 +66,12 @@ class RawPacketHeader(FlowRecord):
         if proto == PROTO_ETHERNET:
             try:
                 ethernet = EthernetFrameHeader.unpack(upx)
-                # if ethernet.type == ETHERTYPE_IPV4:
-                #     ip = IPv4PacketHeader.unpack(upx)
-                #     upx.unpack_fopaque(header_length - ethernet.length - ip.length)
-                # else:
-                #     ip = None
-                #     upx.unpack_fopaque(header_length - ethernet.length)
-                upx.unpack_fopaque(header_length - ethernet.length)
+                if ethernet.type == ETHERTYPE_IPV4:
+                    ip = IPv4PacketHeader.unpack(upx)
+                    upx.unpack_fopaque(header_length - ethernet.length - ip.length)
+                else:
+                    ip = None
+                    upx.unpack_fopaque(header_length - ethernet.length)
             except ParserException:
                 upx.set_position(position)
                 upx.unpack_fopaque(header_length)
