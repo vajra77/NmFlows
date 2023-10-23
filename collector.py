@@ -15,7 +15,7 @@ def create_sflow_datagram(upx: xdrlib.Unpacker):
 class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
-        data = self.rfile.readline().strip()
+        data = self.socket.recv(1024).strip()
         # socket = self.request[1]
         # current_thread = threading.current_thread()
         try:
