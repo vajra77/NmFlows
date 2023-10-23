@@ -61,6 +61,7 @@ class EthernetFrameHeader:
                 position = upx.get_position()
                 version = upx.unpack_uint()
                 if version == 4 or version == 6:
+                    print("found ip header")
                     upx.set_position(position)
                 else:
                     upx.set_position(position)
