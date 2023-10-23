@@ -37,7 +37,7 @@ class SFlowSample:
         return self._format == FORMAT_EXPANDED_FLOW_SAMPLE
 
     @classmethod
-    def unpack(cls, sformat, length, upx: xdrlib.Unpacker):
+    def unpack(cls, sformat, length, data: PtrBuffer):
         raise NotImplementedError
 
     @staticmethod
