@@ -1,6 +1,6 @@
-import socketserver, threading, time
-from pprint import pprint
 from nmflows import SFlowDatagram
+import socketserver
+from pprint import pprint
 import xdrlib
 import sys
 
@@ -12,10 +12,10 @@ def create_sflow_datagram(upx: xdrlib.Unpacker):
     return SFlowDatagram.unpack(version, upx)
 
 
-class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
+class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
-        data = self.request[0].strip()
+        data = self.rfile.readline().strip()
         # socket = self.request[1]
         # current_thread = threading.current_thread()
         try:
@@ -30,22 +30,14 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
             pprint(datagram)
 
 
-class ThreadedUDPServer(socketserver.ThreadingMixIn, socketserver.UDPServer):
-    pass
-
 if __name__ == "__main__":
     HOST = sys.argv[1]
     PORT = int(sys.argv[2])
 
-    server = ThreadedUDPServer((HOST, PORT), ThreadedUDPRequestHandler)
-
-    server_thread = threading.Thread(target=server.serve_forever)
-    server_thread.daemon = True
+    server = socketserver.ThreadingUDPServer((HOST, PORT), ThisUDPRequestHandler)
 
     try:
-        server_thread.start()
-        print("Server started at {} port {}".format(HOST, PORT))
-        while True: time.sleep(100)
+        server.serve_forever()
     except (KeyboardInterrupt, SystemExit):
         server.shutdown()
         server.server_close()
