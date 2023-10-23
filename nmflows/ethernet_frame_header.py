@@ -48,8 +48,9 @@ class EthernetFrameHeader:
         type_len = int.from_bytes(upx.unpack_fopaque(2), 'big')
         if type_len in ALLOWED_ETHERTYPES:
             if type_len == ETHERTYPE_8021Q:
-                vlan = int.from_bytes(upx.unpack_fopaque(2), 'big')
-                vlan = vlan & 0x0fff
+                vlan_data = int.from_bytes(upx.unpack_fopaque(2), 'big')
+                vlan = vlan_data & 0x0fff
+                # priority = vlan_data >> 13
                 type_len = int.from_bytes(upx.unpack_fopaque(2), 'big')
                 return cls(dst_mac, src_mac, vlan, type_len, 18)
             else:
