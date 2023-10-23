@@ -89,7 +89,9 @@ class SFlowDatagram:
 
     @staticmethod
     def create_sflow_sample(upx: xdrlib.Unpacker):
-        sformat = upx.unpack_uint()
+        format_data = upx.unpack_uint()
+        sformat = format_data & 0x0fff
+        enterprise = (format_data >> 12) & 0xfffff
 
         if sformat is None:
             raise ParserException("unable to parse sflow sample format")
