@@ -1,5 +1,5 @@
 from .sflow_sample import SFlowSample
-import xdrlib
+from .ptr_buffer import PtrBuffer
 
 
 class ExpandedFlowSample(SFlowSample):
@@ -71,23 +71,23 @@ class ExpandedFlowSample(SFlowSample):
         return self._records
 
     @classmethod
-    def unpack(cls, sformat, length, upx: xdrlib.Unpacker):
-        seq_no = upx.unpack_uint()
-        source_type = upx.unpack_uint()
-        source_index = upx.unpack_uint()
-        sampling_rate = upx.unpack_uint()
-        sample_pool = upx.unpack_uint()
-        drops = upx.unpack_uint()
-        input_if_format = upx.unpack_uint()
-        input_if_value = upx.unpack_uint()
-        output_if_format = upx.unpack_uint()
-        output_if_value = upx.unpack_uint()
-        records_count = upx.unpack_uint()
+    def unpack(cls, sformat, length, data: PtrBuffer):
+        seq_no = data.read_uint()
+        source_type = data.read_uint()
+        source_index = data.read_uint()
+        sampling_rate = data.read_uint()
+        sample_pool = data.read_uint()
+        drops = data.read_uint()
+        input_if_format = data.read_uint()
+        input_if_value = data.read_uint()
+        output_if_format = data.read_uint()
+        output_if_value = data.read_uint()
+        records_count = data.read_uint()
         if records_count is None:
             records_count = 0
         records = []
         for _ in range(records_count):
-            record = cls.create_flow_record(upx)
+            record = cls.create_flow_record(data)
             if record is not None:
                 records.append(record)
 
