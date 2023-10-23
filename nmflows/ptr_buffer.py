@@ -1,5 +1,14 @@
 
 
+UNSIGNED_SHORT_SIZE = 2
+UNSIGNED_INT_SIZE = 4
+
+class NenBuffer(Exception):
+
+    def __init__(self, msg):
+        super().__init__(f"#buf not enough data to read: {msg}")
+
+
 class PtrBuffer:
 
     def __init__(self, data, max_len):
@@ -15,22 +24,39 @@ class PtrBuffer:
     def length(self):
         return self._length
 
+    @property
+    def eof(self):
+        return self._ptr == self._length - 1
+
+    def reset(self):
+        self._ptr = 0
+
+    def available_data(self):
+        return self._length - self._ptr
+
     def read_short(self) -> int:
-        ptr = self._ptr
-        value = int.from_bytes(self._data[ptr:ptr+2], 'big')
-        self._ptr += 2
-        return value
+        if self.available_data() >= UNSIGNED_SHORT_SIZE:
+            ptr = self._ptr
+            value = int.from_bytes(self._data[ptr:ptr + UNSIGNED_SHORT_SIZE], 'big')
+            self._ptr += UNSIGNED_SHORT_SIZE
+            return value
+        else:
+            raise NenBuffer(f"{self.available_data()} bytes available")
 
     def read_uint(self) -> int:
-        ptr = self._ptr
-        value = int.from_bytes(self._data[ptr:ptr+4], 'big')
-        self._ptr += 4
-        return value
+        if self.available_data() >= UNSIGNED_INT_SIZE:
+            ptr = self._ptr
+            value = int.from_bytes(self._data[ptr:ptr+UNSIGNED_INT_SIZE], 'big')
+            self._ptr += UNSIGNED_INT_SIZE
+            return value
+        else:
+            raise NenBuffer(f"{self.available_data()} bytes available")
 
     def read_bytes(self, n) -> bytes:
-        ptr = self._ptr
-        value = self._data[ptr:ptr+n]
-        self._ptr += n
-        assert self._ptr < self._length
-        return value
-    
+        if self.available_data() >= n:
+            ptr = self._ptr
+            value = self._data[ptr:ptr+n]
+            self._ptr += n
+            return value
+        else:
+            raise NenBuffer(f"{self.available_data()} bytes available")
