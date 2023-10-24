@@ -79,7 +79,7 @@ class RawPacketHeader(FlowRecord):
                 elif ethernet.type == ETHERTYPE_IPV6:
                     ip = IPv6PacketHeader.unpack(header_data[ip_start:])
 
-                # txp = None
+                txp = None
                 # txp_start = ethernet.length + ip.length
                 # if ip.proto == PROTO_TCP:
                 #     txp = TCPPacketHeader.unpack(header_data[txp_start:])
