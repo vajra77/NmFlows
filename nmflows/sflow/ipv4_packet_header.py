@@ -27,7 +27,7 @@ class IPv4PacketHeader:
 
     @classmethod
     def unpack(cls, data: bytes):
-        proto = int.from_bytes(data[9:10], 'big')
+        proto = int.from_bytes(data[9:10], 'big') & 0xffff
         src_addr = socket.inet_ntop(socket.AF_INET, data[12:16])
         dst_addr = socket.inet_ntop(socket.AF_INET, data[16:20])
         return cls(src_addr, dst_addr, proto, 24)
