@@ -4,7 +4,7 @@ from pprint import pprint
 import sys
 
 
-DEFAULT_BUFFER_SIZE = 131072
+DEFAULT_BUFFER_SIZE = 4096 # 4k
 
 def create_sflow_datagram(data: PtrBuffer):
     version = data.read_uint()
