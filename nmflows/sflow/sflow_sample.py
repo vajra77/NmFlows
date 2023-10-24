@@ -42,7 +42,7 @@ class SFlowSample:
 
     @staticmethod
     def create_flow_record(data: PtrBuffer):
-        rformat = data.read_uint()
+        rformat = data.read_uint() & 0xfff
         length = data.read_uint()
         if rformat == RECORD_RAW_HEADER:
             return RawPacketHeader.unpack(rformat, length, data)

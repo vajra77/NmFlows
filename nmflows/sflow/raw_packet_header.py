@@ -90,6 +90,7 @@ class RawPacketHeader(FlowRecord):
             except ParserException:
                 return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
         else:
+            data.skip(header_length)
             return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
 
     def __repr__(self):
