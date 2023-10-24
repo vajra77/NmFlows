@@ -3,7 +3,7 @@ from nmflows.sflow.raw_packet_header import RawPacketHeader
 
 class StorableFlow:
 
-    def __init__(self, vlan, proto, src_mac, dst_mac, src_ip, dst_ip, src_port, dst_port, size):
+    def __init__(self, vlan, proto, src_mac, dst_mac, src_ip, dst_ip, src_port, dst_port, size, rate):
         self._vlan = vlan
         self._proto = proto
         self._src_mac = src_mac
@@ -13,6 +13,7 @@ class StorableFlow:
         self._src_port = src_port
         self._dst_port = dst_port
         self._size = size
+        self._sampling_rate = rate
 
     @property
     def vlan(self):
@@ -50,22 +51,27 @@ class StorableFlow:
     def size(self):
         return self._size
 
+    @property
+    def sampling_rate(self):
+        return self._sampling_rate
+
     @classmethod
-    def from_packet(cls, packet: RawPacketHeader):
+    def from_record(cls, record: RawPacketHeader, rate):
         return cls(
-            packet.datalink_header.vlan,
-            packet.datalink_header.type,
-            packet.datalink_header.src_mac,
-            packet.datalink_header.dst_mac,
-            packet.network_header.src_addr,
-            packet.network_header.dst_addr,
-            packet.transport_header.src_port,
-            packet.transport_header.dst_port,
-            packet.payload_length
+            record.datalink_header.vlan,
+            record.datalink_header.type,
+            record.datalink_header.src_mac,
+            record.datalink_header.dst_mac,
+            record.network_header.src_addr,
+            record.network_header.dst_addr,
+            record.transport_header.src_port,
+            record.transport_header.dst_port,
+            record.payload_length,
+            rate
         )
 
     def __repr__(self):
         return (f"FLOW: vlan: {self.vlan}, proto: {self.proto} | "
                 f"from {self.src_addr}:{self.src_port} via [{self.src_mac}] | "
                 f"to {self.dst_addr}:{self.dst_port} via [{self.dst_mac}] | "
-                f"size: {self.size}")
+                f"size: {self.size} | rate: {self.sampling_rate}")
