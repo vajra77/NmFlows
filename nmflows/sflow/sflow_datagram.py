@@ -86,7 +86,7 @@ class SFlowDatagram:
                 continue
             except ParserException as e:
                 print(f"[ERROR]: {e}", file=sys.stderr)
-                break
+                continue
         drops = n_samples - len(samples)
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, drops)
 
