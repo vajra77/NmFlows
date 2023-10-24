@@ -98,15 +98,15 @@ class SFlowDatagram:
             return FlowSample.unpack(sformat, length, data)
         elif sformat == FORMAT_COUNTER_SAMPLE:
             length = data.read_uint()
-            data.skip(length)
+            data.skip(length - 8)
             raise NotImplementedError
         elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
             length = data.read_uint()
             return ExpandedFlowSample.unpack(sformat, length, data)
         else:
-            length = data.read_uint()
-            data.skip(length)
-            raise ParserException(f"unrecognized sample format: {sformat}, len: {length}")
+            # length = data.read_uint()
+            # data.skip(length)
+            raise ParserException(f"unrecognized sample format: {sformat}")
 
     def __repr__(self):
         return f"""
