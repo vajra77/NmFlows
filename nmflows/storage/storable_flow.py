@@ -67,5 +67,5 @@ class StorableFlow:
     def __repr__(self):
         return (f"FLOW: vlan: {self.vlan}, proto: {self.proto} | "
                 f"from {self.src_addr}:{self.src_port} via [{self.src_mac}] | "
-                f"to {self.dst_addr}:{self.dst_port} via [{self.dst_mac} | "
+                f"to {self.dst_addr}:{self.dst_port} via [{self.dst_mac}] | "
                 f"size: {self.size}")
