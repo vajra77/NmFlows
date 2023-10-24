@@ -3,17 +3,17 @@
 class UDPPacketHeader:
 
     def __init__(self, src_port, dst_port, p_len):
-        self._source_port = src_port
-        self._dest_port = dst_port
+        self._src_port = src_port
+        self._dst_port = dst_port
         self._payload_length = p_len
 
     @property
-    def source_port(self):
-        return self._source_port
+    def src_port(self):
+        return self._src_port
 
     @property
-    def dest_port(self):
-        return self._dest_port
+    def dst_port(self):
+        return self._dst_port
 
     @property
     def payload_length(self):
@@ -29,8 +29,8 @@ class UDPPacketHeader:
     def __repr__(self):
         return f"""
                                     UDP Packet:
-                                        Src Port: {self.source_port}
-                                        Dst Port: {self.dest_port}
+                                        Src Port: {self.src_port}
+                                        Dst Port: {self.dst_port}
                                         Payload Len: {self.payload_length}
         """
 
