@@ -2,13 +2,17 @@ from .flow_record import FlowRecord
 from .ethernet_frame_header import EthernetFrameHeader
 from .ipv4_packet_header import IPv4PacketHeader
 from .ipv6_packet_header import IPv6PacketHeader
+from .tcp_packet_header import TCPPacketHeader
+from .udp_packet_header import UDPPacketHeader
 from .exceptions import ParserException
 from nmflows.utils.ptr_buffer import PtrBuffer
 
 
 PROTO_ETHERNET = 1
+PROTO_TCP = 6
 PROTO_IPV4 = 11
 PROTO_IPV6 = 12
+PROTO_UDP = 17
 
 ETHERTYPE_IPV4 = 0x0800
 ETHERTYPE_ARP = 0x0806
@@ -67,17 +71,26 @@ class RawPacketHeader(FlowRecord):
             try:
                 header_data = data.read_bytes(header_length)
                 ethernet = EthernetFrameHeader.unpack(header_data)
-                ip = None
-                if ethernet.type == ETHERTYPE_IPV4:
-                    ip = IPv4PacketHeader.unpack(header_data[ethernet.length:])
-                elif ethernet.type == ETHERTYPE_IPV6:
-                    ip = IPv6PacketHeader.unpack(header_data[ethernet.length:])
 
-                return cls(rformat, rlength, proto, length, stripped, header_length, ethernet, ip, None)
+                ip = None
+                ip_start = ethernet.length
+                if ethernet.type == ETHERTYPE_IPV4:
+                    ip = IPv4PacketHeader.unpack(header_data[ip_start:])
+                elif ethernet.type == ETHERTYPE_IPV6:
+                    ip = IPv6PacketHeader.unpack(header_data[ip_start:])
+
+                txp = None
+                txp_start = ethernet.length + ip.length
+                if ip.proto == PROTO_TCP:
+                    txp = TCPPacketHeader.unpack(header_data[txp_start:])
+                elif ip.proto == PROTO_UDP:
+                    txp = UDPPacketHeader.unpack(header_data[txp_start:])
+
+                return cls(rformat, rlength, proto, length, stripped, header_length, ethernet, ip, txp)
             except ParserException:
                 return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
         else:
-            data.read_bytes(header_length)
+            data.skip(header_length)
             return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
 
     def __repr__(self):
