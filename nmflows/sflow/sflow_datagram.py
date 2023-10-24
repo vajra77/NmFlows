@@ -16,7 +16,7 @@ IP_VERSION_6 = 2
 
 class SFlowDatagram:
 
-    def __init__(self, version, ip_version, agent_address, agent_id, sequence_number, switch_uptime, samples):
+    def __init__(self, version, ip_version, agent_address, agent_id, sequence_number, switch_uptime, samples, drops):
         self._version = version
         self._ip_version = ip_version
         self._agent_address = agent_address
@@ -24,7 +24,7 @@ class SFlowDatagram:
         self._sequence_number = sequence_number
         self._switch_uptime = switch_uptime
         self._samples = samples
-        self._drops = 0
+        self._drops = drops
 
     @property
     def version(self):
@@ -85,10 +85,10 @@ class SFlowDatagram:
                 print(f"[INFO]: skipping not implemented sample type", file=sys.stderr)
                 continue
             except ParserException as e:
-                self._drops += 1
                 print(f"[ERROR]: {e}", file=sys.stderr)
                 break
-        return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples)
+        drops = n_samples - len(samples)
+        return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, drops)
 
     @staticmethod
     def create_sflow_sample(data: PtrBuffer):
