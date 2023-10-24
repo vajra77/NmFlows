@@ -16,7 +16,7 @@ IP_VERSION_6 = 2
 
 class SFlowDatagram:
 
-    def __init__(self, version, ip_version, agent_address, agent_id, sequence_number, switch_uptime, samples, drops):
+    def __init__(self, version, ip_version, agent_address, agent_id, sequence_number, switch_uptime, samples, skipped):
         self._version = version
         self._ip_version = ip_version
         self._agent_address = agent_address
@@ -24,7 +24,7 @@ class SFlowDatagram:
         self._sequence_number = sequence_number
         self._switch_uptime = switch_uptime
         self._samples = samples
-        self._drops = drops
+        self._skipped = skipped
 
     @property
     def version(self):
@@ -58,8 +58,8 @@ class SFlowDatagram:
         return len(self._samples)
 
     @property
-    def drops(self):
-        return self._drops
+    def skipped(self):
+        return self._skipped
 
     @property
     def samples(self):
@@ -87,8 +87,8 @@ class SFlowDatagram:
             except ParserException as e:
                 print(f"[ERROR]: {e}", file=sys.stderr)
                 break
-        drops = n_samples - len(samples)
-        return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, drops)
+        skipped = n_samples - len(samples)
+        return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, skipped)
 
     @staticmethod
     def create_sflow_sample(data: PtrBuffer):
@@ -115,6 +115,6 @@ class SFlowDatagram:
             IP Version: {self.ip_version}
             Agent Address: {self.agent_address}
             Samples No.: {self.samples_count}
-            Drops: {self.drops}
+            Skipped: {self.skipped}
             Samples: {self.samples}
         """
