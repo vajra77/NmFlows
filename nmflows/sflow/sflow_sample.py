@@ -43,14 +43,12 @@ class SFlowSample:
     @staticmethod
     def create_flow_record(data: PtrBuffer):
         rformat = data.read_uint()
+        length = data.read_uint()
         if rformat == RECORD_RAW_HEADER:
-            length = data.read_uint()
             return RawPacketHeader.unpack(rformat, length, data)
         elif rformat == RECORD_ETHERNET_DATA:
-            length = data.read_uint()
             data.skip(length)
             raise ParserException(f"unhandled Ethernet Data Record")
         else:
-            length = data.read_uint()
             data.skip(length)
             raise ParserException(f"unrecognized flow record type")
