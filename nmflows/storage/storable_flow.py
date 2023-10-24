@@ -1,8 +1,8 @@
 from nmflows.sflow.raw_packet_header import RawPacketHeader
 
 KNOWN_IP_PROTO = {
-    2048: 'IPv4',
-    34525: 'IPv6'
+    2048: 'ipv4',
+    34525: 'ipv6'
 }
 
 KNOWN_PORTS = {
