@@ -102,7 +102,7 @@ class StorableFlow:
             record.payload_length
         )
 
-    def __dict__(self):
+    def to_json(self):
         return {
             'timestamp': self._timestamp,
             'sampling_rate': self._sampling_rate,
