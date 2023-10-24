@@ -22,8 +22,8 @@ class TCPPacketHeader:
 
     def __repr__(self):
         return f"""
-                                TCP Packet:
-                                    Src Port: {self.source_port}
-                                    Dst Port: {self.dest_port}
+                                    TCP Packet:
+                                        Src Port: {self.source_port}
+                                        Dst Port: {self.dest_port}
         """
 
