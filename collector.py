@@ -1,6 +1,7 @@
 from nmflows.sflow import SFlowDatagram
 from nmflows.utils import PtrBuffer
 from nmflows.storage import StorableFlow
+from nmflows.mq import SendQueue
 import socketserver
 import json
 import jsonpickle
@@ -20,6 +21,7 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
     def handle(self):
         data = self.socket.recv(DEFAULT_BUFFER_SIZE)
         try:
+            queue = SendQueue('localhost', 'nmflows')
             buffer = PtrBuffer(data, DEFAULT_BUFFER_SIZE)
             datagram = create_sflow_datagram(buffer)
             for sample in datagram.samples:
@@ -28,7 +30,7 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                 try:
                     for record in sample.records:
                         flow = StorableFlow.from_record(timestamp, rate, record)
-                        print(json.dumps(jsonpickle.encode(flow)))
+                        queue.send(json.dumps(jsonpickle.encode(flow)))
                 except AttributeError:
                     continue
         except EOFError:
