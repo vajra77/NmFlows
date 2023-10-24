@@ -80,11 +80,11 @@ class RawPacketHeader(FlowRecord):
                     ip = IPv6PacketHeader.unpack(header_data[ip_start:])
 
                 txp = None
-                # txp_start = ethernet.length + ip.length
-                # if ip.proto == PROTO_TCP:
-                #     txp = TCPPacketHeader.unpack(header_data[txp_start:])
-                # elif ip.proto == PROTO_UDP:
-                #     txp = UDPPacketHeader.unpack(header_data[txp_start:])
+                txp_start = ethernet.length + ip.length
+                if ip.proto == PROTO_TCP:
+                    txp = TCPPacketHeader.unpack(header_data[txp_start:])
+                elif ip.proto == PROTO_UDP:
+                    txp = UDPPacketHeader.unpack(header_data[txp_start:])
 
                 return cls(rformat, rlength, proto, length, stripped, header_length, ethernet, ip, txp)
             except ParserException:
