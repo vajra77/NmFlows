@@ -24,6 +24,7 @@ class SFlowDatagram:
         self._sequence_number = sequence_number
         self._switch_uptime = switch_uptime
         self._samples = samples
+        self._drops = 0
 
     @property
     def version(self):
@@ -57,6 +58,10 @@ class SFlowDatagram:
         return len(self._samples)
 
     @property
+    def drops(self):
+        return self._drops
+
+    @property
     def samples(self):
         return self._samples
 
@@ -80,6 +85,7 @@ class SFlowDatagram:
                 print(f"[INFO]: skipping not implemented sample type", file=sys.stderr)
                 continue
             except ParserException as e:
+                self._drops += 1
                 print(f"[ERROR]: {e}", file=sys.stderr)
                 break
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples)
@@ -108,4 +114,5 @@ class SFlowDatagram:
             Agent Address: {self.agent_address}
             Samples No.: {self.samples_count}
             Samples: {self.samples}
+            Drops: {self.drops}
         """
