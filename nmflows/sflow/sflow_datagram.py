@@ -106,7 +106,7 @@ class SFlowDatagram:
         else:
             length = data.read_uint()
             data.skip(length)
-            raise ParserException(f"unrecognized sample format: {sformat}")
+            raise ParserException(f"unrecognized sample format: {sformat}, len: {length}")
 
     def __repr__(self):
         return f"""
