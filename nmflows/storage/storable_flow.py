@@ -17,13 +17,13 @@ KNOWN_PORTS = {
 }
 
 def _ip(n):
-    if n in KNOWN_IP_PROTO:
+    if n in KNOWN_IP_PROTO.keys():
         return KNOWN_IP_PROTO[n]
     else:
         return n
 
 def _pp(n):
-    if n in KNOWN_PORTS:
+    if n in KNOWN_PORTS.keys():
         return KNOWN_PORTS[n]
     else:
         return n
