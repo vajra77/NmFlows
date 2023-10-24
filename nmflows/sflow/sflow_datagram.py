@@ -86,7 +86,7 @@ class SFlowDatagram:
                 continue
             except ParserException as e:
                 print(f"[ERROR]: {e}", file=sys.stderr)
-                continue
+                break
         drops = n_samples - len(samples)
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, drops)
 
@@ -104,8 +104,8 @@ class SFlowDatagram:
             length = data.read_uint()
             return ExpandedFlowSample.unpack(sformat, length, data)
         else:
-            # length = data.read_uint()
-            # data.skip(length)
+            length = data.read_uint()
+            data.skip(length - 8)
             raise ParserException(f"unrecognized sample format: {sformat}")
 
     def __repr__(self):
