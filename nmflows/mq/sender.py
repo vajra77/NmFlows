@@ -6,7 +6,6 @@ class SendQueue:
     def __init__(self, host, queue, user, passw):
         self._host = host
         self._queue = queue
-        print(f"user: {user}, pass: {passw}")
         credentials = pika.PlainCredentials(user, passw)
         parameters = pika.ConnectionParameters(host, 5672, '/', credentials)
         self._connection = pika.BlockingConnection(parameters)
