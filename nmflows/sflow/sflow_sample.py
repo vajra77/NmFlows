@@ -51,4 +51,6 @@ class SFlowSample:
             data.skip(length)
             raise ParserException(f"unhandled Ethernet Data Record")
         else:
+            length = data.read_uint()
+            data.skip(length)
             raise ParserException(f"unrecognized flow record type")

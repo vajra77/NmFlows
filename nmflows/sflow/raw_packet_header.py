@@ -67,8 +67,6 @@ class RawPacketHeader(FlowRecord):
         length = data.read_uint()
         stripped = data.read_uint()
         header_length = data.read_uint()
-        if header_length is None:
-            print("header length is none")
         if proto == PROTO_ETHERNET:
             try:
                 header_data = data.read_bytes(header_length)
