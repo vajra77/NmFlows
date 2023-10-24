@@ -4,18 +4,18 @@ import socket
 class IPv4PacketHeader:
 
     def __init__(self, src_addr, dst_addr, proto, length):
-        self._source_address = src_addr
-        self._dest_address = dst_addr
+        self._src_addr = src_addr
+        self._dst_addr = dst_addr
         self._proto = proto
         self._length = length
 
     @property
-    def source_address(self):
-        return self._source_address
+    def src_addr(self):
+        return self._src_addr
 
     @property
-    def dest_address(self):
-        return self._dest_address
+    def dst_addr(self):
+        return self._dst_addr
 
     @property
     def proto(self):
@@ -35,7 +35,7 @@ class IPv4PacketHeader:
 
     def __repr__(self):
         return f"""
-                                    Src Addr: {self.source_address}
-                                    Dst Addr: {self.dest_address}
+                                    Src Addr: {self.src_addr}
+                                    Dst Addr: {self.dst_addr}
         """
 

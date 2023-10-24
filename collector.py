@@ -1,5 +1,6 @@
 from nmflows.sflow import SFlowDatagram
 from nmflows.utils import PtrBuffer
+from nmflows.storage import StorableFlow
 import socketserver
 from pprint import pprint
 import sys
@@ -20,7 +21,9 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
         try:
             buffer = PtrBuffer(data, DEFAULT_BUFFER_SIZE)
             datagram = create_sflow_datagram(buffer)
-            pprint(datagram)
+            for sample in datagram.samples:
+                flow = StorableFlow.from_packet(sample)
+                pprint(flow)
         except EOFError:
             print("[ERROR]: EOF while reading buffer", file=sys.stderr)
         except Exception as e:
