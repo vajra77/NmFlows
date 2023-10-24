@@ -22,8 +22,9 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
             buffer = PtrBuffer(data, DEFAULT_BUFFER_SIZE)
             datagram = create_sflow_datagram(buffer)
             for sample in datagram.samples:
-                flow = StorableFlow.from_packet(sample)
-                pprint(flow)
+                for record in sample.records:
+                    flow = StorableFlow.from_packet(record)
+                    pprint(flow)
         except EOFError:
             print("[ERROR]: EOF while reading buffer", file=sys.stderr)
         except Exception as e:
