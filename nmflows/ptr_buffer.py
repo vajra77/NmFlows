@@ -60,3 +60,9 @@ class PtrBuffer:
             return value
         else:
             raise NenBuffer(f"{n} requested, {self.available_data()} available")
+
+    def skip(self, n):
+        ptr = self._ptr + n
+        if ptr >= self._length:
+            ptr = self._length - 1
+        self._ptr = ptr

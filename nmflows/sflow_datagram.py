@@ -3,7 +3,6 @@ from .exceptions import ParserException
 from .flow_sample import FlowSample
 from .expanded_flow_sample import ExpandedFlowSample
 import socket
-import xdrlib
 import sys
 
 
@@ -96,7 +95,7 @@ class SFlowDatagram:
         elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
             return ExpandedFlowSample.unpack(sformat, length, data)
         else:
-            data.read_bytes(length)
+            data.skip(length)
             raise ParserException(f"unrecognized sample format: {sformat}")
 
     def __repr__(self):
