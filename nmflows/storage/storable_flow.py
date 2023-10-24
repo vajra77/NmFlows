@@ -61,8 +61,9 @@ class StorableFlow:
         return self._sampling_rate
 
     @classmethod
-    def from_record(cls, record: RawPacketHeader, rate):
+    def from_record(cls, timestamp, rate, record: RawPacketHeader):
         return cls(
+            timestamp, rate,
             record.datalink_header.vlan,
             record.datalink_header.type,
             record.datalink_header.src_mac,
@@ -71,8 +72,7 @@ class StorableFlow:
             record.network_header.dst_addr,
             record.transport_header.src_port,
             record.transport_header.dst_port,
-            record.payload_length,
-            rate
+            record.payload_length
         )
 
     def __repr__(self):
