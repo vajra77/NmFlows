@@ -104,6 +104,8 @@ class SFlowDatagram:
             length = data.read_uint()
             return ExpandedFlowSample.unpack(sformat, length, data)
         else:
+            length = data.read_uint()
+            data.skip(length)
             raise ParserException(f"unrecognized sample format: {sformat}")
 
     def __repr__(self):
