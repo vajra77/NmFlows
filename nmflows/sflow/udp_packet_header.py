@@ -1,4 +1,3 @@
-import socket
 
 
 class UDPPacketHeader:
@@ -17,8 +16,8 @@ class UDPPacketHeader:
 
     @classmethod
     def unpack(cls, data: bytes):
-        src_port = socket.inet_ntop(socket.AF_INET, data[0:2])
-        dst_port = socket.inet_ntop(socket.AF_INET, data[2:4])
+        src_port = int.from_bytes(data[0:2], 'big') & 0xffff
+        dst_port = int.from_bytes(data[2:4], 'big') & 0xffff
         return cls(src_port, dst_port)
 
     def __repr__(self):
