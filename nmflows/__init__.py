@@ -1,2 +1,1 @@
-from .sflow_datagram import SFlowDatagram
-from .ptr_buffer import PtrBuffer
+from nmflows.utils.ptr_buffer import PtrBuffer

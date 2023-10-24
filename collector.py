@@ -1,4 +1,5 @@
-from nmflows import SFlowDatagram, PtrBuffer
+from nmflows.sflow import SFlowDatagram
+from nmflows.utils import PtrBuffer
 import socketserver
 from pprint import pprint
 import sys

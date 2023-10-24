@@ -1,5 +1,5 @@
 from .sflow_sample import SFlowSample
-from .ptr_buffer import PtrBuffer
+from nmflows.utils.ptr_buffer import PtrBuffer
 
 
 class ExpandedFlowSample(SFlowSample):

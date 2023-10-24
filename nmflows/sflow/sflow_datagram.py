@@ -1,4 +1,4 @@
-from .ptr_buffer import PtrBuffer
+from nmflows.utils.ptr_buffer import PtrBuffer
 from .exceptions import ParserException
 from .flow_sample import FlowSample
 from .expanded_flow_sample import ExpandedFlowSample

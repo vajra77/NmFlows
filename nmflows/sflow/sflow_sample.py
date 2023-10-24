@@ -1,6 +1,6 @@
 from .raw_packet_header import RawPacketHeader
 from .exceptions import ParserException
-from .ptr_buffer import PtrBuffer
+from nmflows.utils.ptr_buffer import PtrBuffer
 
 
 FORMAT_FLOW_SAMPLE = 1

@@ -1,6 +1,6 @@
 from .sflow_sample import SFlowSample
 from .exceptions import ParserException
-from .ptr_buffer import PtrBuffer
+from nmflows.utils.ptr_buffer import PtrBuffer
 import sys
 
 
