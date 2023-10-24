@@ -3,7 +3,9 @@ from nmflows.sflow.raw_packet_header import RawPacketHeader
 
 class StorableFlow:
 
-    def __init__(self, vlan, proto, src_mac, dst_mac, src_ip, dst_ip, src_port, dst_port, size, rate):
+    def __init__(self, ts, rate, vlan, proto, src_mac, dst_mac, src_ip, dst_ip, src_port, dst_port, size):
+        self._timestamp = ts
+        self._sampling_rate = rate
         self._vlan = vlan
         self._proto = proto
         self._src_mac = src_mac
@@ -13,7 +15,10 @@ class StorableFlow:
         self._src_port = src_port
         self._dst_port = dst_port
         self._size = size
-        self._sampling_rate = rate
+
+    @property
+    def timestamp(self):
+        return self._timestamp
 
     @property
     def vlan(self):
@@ -71,7 +76,7 @@ class StorableFlow:
         )
 
     def __repr__(self):
-        return (f"FLOW: vlan: {self.vlan}, proto: {self.proto} | "
+        return (f"FLOW [{self.timestamp}]: vlan: {self.vlan}, proto: {self.proto} | "
                 f"from {self.src_addr}:{self.src_port} via [{self.src_mac}] | "
                 f"to {self.dst_addr}:{self.dst_port} via [{self.dst_mac}] | "
                 f"size: {self.size} | rate: {self.sampling_rate}")

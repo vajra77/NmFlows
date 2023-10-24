@@ -1,6 +1,7 @@
 from .raw_packet_header import RawPacketHeader
 from .exceptions import ParserException
 from nmflows.utils.ptr_buffer import PtrBuffer
+from datetime import datetime
 
 
 FORMAT_FLOW_SAMPLE = 1
@@ -16,8 +17,13 @@ RECORD_IPV6_DATA = 4
 class SFlowSample:
 
     def __init__(self, sformat, length):
+        self._timestamp = datetime.now()
         self._format = sformat
         self._length = length
+
+    @property
+    def timestamp(self):
+        return self._timestamp
 
     @property
     def format(self):

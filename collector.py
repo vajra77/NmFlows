@@ -23,9 +23,10 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
             datagram = create_sflow_datagram(buffer)
             for sample in datagram.samples:
                 rate = sample.sampling_rate
+                timestamp = sample.timestamp
                 try:
                     for record in sample.records:
-                        flow = StorableFlow.from_record(record, rate)
+                        flow = StorableFlow.from_record(timestamp, rate, record)
                         pprint(flow)
                 except AttributeError:
                     continue
