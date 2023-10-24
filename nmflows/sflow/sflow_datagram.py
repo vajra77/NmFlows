@@ -113,6 +113,6 @@ class SFlowDatagram:
             IP Version: {self.ip_version}
             Agent Address: {self.agent_address}
             Samples No.: {self.samples_count}
-            Samples: {self.samples}
             Drops: {self.drops}
+            Samples: {self.samples}
         """
