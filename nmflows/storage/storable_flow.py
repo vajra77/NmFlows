@@ -102,6 +102,21 @@ class StorableFlow:
             record.payload_length
         )
 
+    def __dict__(self):
+        return {
+            'timestamp': self._timestamp,
+            'sampling_rate': self._sampling_rate,
+            'vlan': self._vlan,
+            'proto': self._proto,
+            'src_mac': self._src_mac,
+            'dst_mac': self._dst_mac,
+            'src_addr': self._src_addr,
+            'dst_addr': self._dst_addr,
+            'src_port': self._src_port,
+            'dst_port': self._dst_port,
+            'size': self._size
+        }
+
     def __repr__(self):
         return (f"FLOW [{self.timestamp}] | proto: {_ip(self.proto)} | "
                 f"from {self.src_addr}:{_pp(self.src_port)} via [{self.src_mac}] | "

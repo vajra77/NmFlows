@@ -2,7 +2,7 @@ from nmflows.sflow import SFlowDatagram
 from nmflows.utils import PtrBuffer
 from nmflows.storage import StorableFlow
 import socketserver
-from pprint import pprint
+import json
 import sys
 
 
@@ -27,7 +27,7 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                 try:
                     for record in sample.records:
                         flow = StorableFlow.from_record(timestamp, rate, record)
-                        pprint(flow)
+                        print(json.dumps(flow))
                 except AttributeError:
                     continue
         except EOFError:
