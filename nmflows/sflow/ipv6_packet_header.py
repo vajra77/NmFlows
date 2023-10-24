@@ -24,7 +24,7 @@ class IPv6PacketHeader:
     def unpack(cls, data: bytes):
         src_addr = socket.inet_ntop(socket.AF_INET6, data[8:24])
         dst_addr = socket.inet_ntop(socket.AF_INET6, data[24:40])
-        return cls(src_addr, dst_addr, 30)
+        return cls(src_addr, dst_addr, 40)
 
     def __repr__(self):
         return f"""
