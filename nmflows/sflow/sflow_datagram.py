@@ -82,10 +82,10 @@ class SFlowDatagram:
                 sample = cls.create_sflow_sample(data)
                 samples.append(sample)
             except NotImplementedError:
-                print(f"[INFO]: skipping not implemented sample type", file=sys.stderr)
+                # print(f"[INFO]: skipping not implemented sample type", file=sys.stderr)
                 continue
             except ParserException as e:
-                print(f"[ERROR]: {e}", file=sys.stderr)
+                # print(f"[ERROR]: {e}", file=sys.stderr)
                 break
         skipped = n_samples - len(samples)
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, skipped)
