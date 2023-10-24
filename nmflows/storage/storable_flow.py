@@ -1,9 +1,32 @@
 from nmflows.sflow.raw_packet_header import RawPacketHeader
 
-IP_PROTO = {
+KNOWN_IP_PROTO = {
     2048: 'IPv4',
     34525: 'IPv6'
 }
+
+KNOWN_PORTS = {
+    80: 'http',
+    443: 'https',
+    179: 'bgp',
+    25: 'smtp',
+    465: 'smtps',
+    993: 'imap',
+    22: 'ssh',
+    53: 'dns'
+}
+
+def _ip(n):
+    if n in KNOWN_IP_PROTO:
+        return KNOWN_IP_PROTO[n]
+    else:
+        return n
+
+def _pp(n):
+    if n in KNOWN_PORTS:
+        return KNOWN_PORTS[n]
+    else:
+        return n
 
 class StorableFlow:
 
@@ -80,7 +103,7 @@ class StorableFlow:
         )
 
     def __repr__(self):
-        return (f"FLOW [{self.timestamp}]: vlan: {self.vlan}, proto: {IP_PROTO[self.proto]} | "
-                f"from {self.src_addr}:{self.src_port} via [{self.src_mac}] | "
-                f"to {self.dst_addr}:{self.dst_port} via [{self.dst_mac}] | "
+        return (f"FLOW [{self.timestamp}] | proto: {_ip([self.proto])} | "
+                f"from {self.src_addr}:{_pp(self.src_port)} via [{self.src_mac}] | "
+                f"to {self.dst_addr}:{_pp(self.dst_port)} via [{self.dst_mac}] | "
                 f"size: {self.size} | rate: {self.sampling_rate}")
