@@ -90,7 +90,8 @@ class SFlowDatagram:
             length = data.read_uint()
             return FlowSample.unpack(sformat, length, data)
         elif sformat == FORMAT_COUNTER_SAMPLE:
-            data.read_bytes(length)
+            length = data.read_uint()
+            data.skip(length)
             raise NotImplementedError
         elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
             length = data.read_uint()
