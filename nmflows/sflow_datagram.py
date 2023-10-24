@@ -86,16 +86,16 @@ class SFlowDatagram:
     @staticmethod
     def create_sflow_sample(data: PtrBuffer):
         sformat = data.read_uint() & 0x0fff
-        length = data.read_uint()
         if sformat == FORMAT_FLOW_SAMPLE:
+            length = data.read_uint()
             return FlowSample.unpack(sformat, length, data)
         elif sformat == FORMAT_COUNTER_SAMPLE:
             data.read_bytes(length)
             raise NotImplementedError
         elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
+            length = data.read_uint()
             return ExpandedFlowSample.unpack(sformat, length, data)
         else:
-            data.skip(length)
             raise ParserException(f"unrecognized sample format: {sformat}")
 
     def __repr__(self):
