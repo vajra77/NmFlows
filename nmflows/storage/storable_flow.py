@@ -16,17 +16,17 @@ KNOWN_PORTS = {
     53: 'dns'
 }
 
-def _ip(n):
+def _ip(n: int):
     if n in KNOWN_IP_PROTO.keys():
         return KNOWN_IP_PROTO[n]
     else:
-        return n
+        return str(n)
 
-def _pp(n):
+def _pp(n: int):
     if n in KNOWN_PORTS.keys():
         return KNOWN_PORTS[n]
     else:
-        return n
+        return str(n)
 
 class StorableFlow:
 
@@ -103,7 +103,7 @@ class StorableFlow:
         )
 
     def __repr__(self):
-        return (f"FLOW [{self.timestamp}] | proto: {_ip([self.proto])} | "
+        return (f"FLOW [{self.timestamp}] | proto: {_ip(self.proto)} | "
                 f"from {self.src_addr}:{_pp(self.src_port)} via [{self.src_mac}] | "
                 f"to {self.dst_addr}:{_pp(self.dst_port)} via [{self.dst_mac}] | "
                 f"size: {self.size} | rate: {self.sampling_rate}")
