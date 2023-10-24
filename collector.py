@@ -21,7 +21,7 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
     def handle(self):
         data = self.socket.recv(DEFAULT_BUFFER_SIZE)
         try:
-            queue = SendQueue('localhost', 'nmflows')
+            queue = SendQueue('193.201.40.83', 'nmflows')
             buffer = PtrBuffer(data, DEFAULT_BUFFER_SIZE)
             datagram = create_sflow_datagram(buffer)
             for sample in datagram.samples:
