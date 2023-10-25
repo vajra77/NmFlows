@@ -21,7 +21,7 @@ if __name__ == '__main__':
     PASS = sys.argv[3]
 
     try:
-        main()
+        main(HOST, USER, PASS)
     except KeyboardInterrupt:
         print('Interrupted')
         try:
