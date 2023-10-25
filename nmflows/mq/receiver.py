@@ -12,3 +12,6 @@ class RecvQueue:
         self._channel.basic_consume(queue=self._queue,
                               auto_ack=True,
                               on_message_callback=callback)
+
+    def consume(self):
+        self._channel.start_consuming()
