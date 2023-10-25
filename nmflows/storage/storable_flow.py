@@ -16,17 +16,20 @@ KNOWN_PORTS = {
     53: 'dns'
 }
 
+
 def _ip(n: int):
     if n in KNOWN_IP_PROTO.keys():
         return KNOWN_IP_PROTO[n]
     else:
         return str(n)
 
+
 def _pp(n: int):
     if n in KNOWN_PORTS.keys():
         return KNOWN_PORTS[n]
     else:
         return str(n)
+
 
 class StorableFlow:
 
