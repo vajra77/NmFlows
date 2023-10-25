@@ -1,5 +1,5 @@
 from nmflows.mq import RecvQueue
-from config import CONFIG
+from config_sample import CONFIG
 import json
 import jsonpickle
 import sys

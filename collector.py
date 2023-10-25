@@ -2,7 +2,7 @@ from nmflows.sflow import SFlowDatagram
 from nmflows.utils import PtrBuffer
 from nmflows.storage import StorableFlow
 from nmflows.mq import SendQueue
-from config import CONFIG
+from config_sample import CONFIG
 import socketserver
 import json
 import jsonpickle
