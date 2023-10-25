@@ -1,2 +1,2 @@
-from .receiver import RecvQueue
-from .sender import SendQueue
+from .recv_queue import RecvQueue
+from .send_queue import SendQueue

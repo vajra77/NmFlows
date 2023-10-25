@@ -2,13 +2,15 @@ from nmflows.sflow import SFlowDatagram
 from nmflows.utils import PtrBuffer
 from nmflows.storage import StorableFlow
 from nmflows.mq import SendQueue
+from config import CONFIG
 import socketserver
 import json
 import jsonpickle
 import sys
 
 
-DEFAULT_BUFFER_SIZE = 4096 # 4k
+DEFAULT_BUFFER_SIZE = 4096  # 4k
+
 
 def create_sflow_datagram(data: PtrBuffer):
     version = data.read_uint()
@@ -16,14 +18,18 @@ def create_sflow_datagram(data: PtrBuffer):
         raise Exception(f"sFlow version not supported: v{version}")
     return SFlowDatagram.unpack(version, data)
 
+
 class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
         data = self.socket.recv(DEFAULT_BUFFER_SIZE)
         try:
-            queue = SendQueue('193.201.40.83', 'nmflows', USER, PASS)
-            buffer = PtrBuffer(data, DEFAULT_BUFFER_SIZE)
-            datagram = create_sflow_datagram(buffer)
+            queue = SendQueue(CONFIG['rabbitmq_host'],
+                              CONFIG['rabbitmq_port'],
+                              CONFIG['rabbitmq_queue'],
+                              CONFIG['rabbitmq_user'],
+                              CONFIG['rabbitmq_pass'])
+            datagram = create_sflow_datagram(PtrBuffer(data, DEFAULT_BUFFER_SIZE))
             for sample in datagram.samples:
                 rate = sample.sampling_rate
                 timestamp = sample.timestamp
@@ -40,13 +46,9 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
 
 
 if __name__ == "__main__":
-    HOST = sys.argv[1]
-    PORT = int(sys.argv[2])
-    USER = sys.argv[3]
-    PASS = sys.argv[4]
-
-    server = socketserver.ThreadingUDPServer((HOST, PORT), ThisUDPRequestHandler)
-
+    server = socketserver.ThreadingUDPServer((CONFIG['sflow_listener_address'],
+                                              CONFIG['sflow_listener_port']),
+                                             ThisUDPRequestHandler)
     try:
         server.serve_forever()
     except (KeyboardInterrupt, SystemExit):

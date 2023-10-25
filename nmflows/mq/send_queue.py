@@ -1,20 +1,20 @@
+from .queue import Queue
 import pika
 
 
-class SendQueue:
+class SendQueue(Queue):
 
-    def __init__(self, host, queue, user, passw):
-        self._host = host
-        self._queue = queue
+    def __init__(self, host, port, name, user, passw):
+        super().__init__(host, port, name)
         credentials = pika.PlainCredentials(user, passw)
-        parameters = pika.ConnectionParameters(host, 5672, '/', credentials)
+        parameters = pika.ConnectionParameters(host, port, '/', credentials)
         self._connection = pika.BlockingConnection(parameters)
         self._channel = self._connection.channel()
-        self._channel.queue_declare(queue)
+        self._channel.queue_declare(name)
 
     def send(self, msg):
         self._channel.basic_publish(
             exchange='',
-            routing_key=self._queue,
+            routing_key=self._name,
             body=msg
         )
