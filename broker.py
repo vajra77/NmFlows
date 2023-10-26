@@ -1,16 +1,22 @@
+from nmflows.peermatrix import PeerMatrix
 from nmflows.mq import RecvQueue
 from config_sample import CONFIG
 import json
 import jsonpickle
-import sys
+import threading
+import time
+
+
+matrix = PeerMatrix()
+lock = threading.Lock()
 
 
 def handle_msg(ch, method, properties, body):
     flow = jsonpickle.decode(json.loads(body))
-    print(flow)
+    with lock:
+        matrix.add_flow(flow)
 
-
-def main():
+def consume_task():
     queue = RecvQueue(CONFIG['rabbitmq_host'],
                       CONFIG['rabbitmq_port'],
                       CONFIG['rabbitmq_queue'],
@@ -19,13 +25,16 @@ def main():
                       handle_msg)
     queue.consume()
 
+def dump_task():
+    time.sleep(5)
+    with lock:
+        matrix.dump()
 
 if __name__ == '__main__':
     try:
-        main()
+        t1 = threading.Thread(target=consume_task)
+        t2 = threading.Thread(target=dump_task)
+        t1.join()
+        t2.join()
     except KeyboardInterrupt:
-        print('Interrupted')
-        try:
-            sys.exit(0)
-        except SystemExit:
-            exit()
+        exit()
