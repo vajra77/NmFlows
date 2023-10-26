@@ -90,6 +90,10 @@ class StorableFlow:
     def sampling_rate(self):
         return self._sampling_rate
 
+    @property
+    def computed_size(self):
+        return self._size * self._sampling_rate
+
     @classmethod
     def from_record(cls, timestamp, rate, record: RawPacketHeader):
         return cls(
