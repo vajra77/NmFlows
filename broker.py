@@ -7,14 +7,14 @@ import threading
 import time
 
 
-matrix = PeerMatrix()
-lock = threading.Lock()
+Matrix = PeerMatrix()
+Lock = threading.Lock()
 
 
 def handle_msg(ch, method, properties, body):
     flow = jsonpickle.decode(json.loads(body))
-    with lock:
-        matrix.add_flow(flow)
+    with Lock:
+        Matrix.add_flow(flow)
 
 def consume_task():
     queue = RecvQueue(CONFIG['rabbitmq_host'],
@@ -27,8 +27,8 @@ def consume_task():
 
 def dump_task():
     time.sleep(5)
-    with lock:
-        matrix.dump(CONFIG['elastic_url'])
+    with Lock:
+        Matrix.dump(CONFIG['elastic_url'])
 
 if __name__ == '__main__':
     try:
