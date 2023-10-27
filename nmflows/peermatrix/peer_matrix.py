@@ -24,7 +24,7 @@ class PeerMatrix:
                     'ipv6_bytes': dst_peer.ipv6_bytes,
                     'timestamp': datetime.now()
                 }
-                es.index(index=f"nmflows-{src_peer.code}", id=uuid4().hex, document=flow)
+                es.index(index="nmflows", id=uuid4().hex, document=flow)
         # cleanup matrix
         del self._peers
 
