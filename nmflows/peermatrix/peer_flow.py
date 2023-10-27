@@ -5,10 +5,8 @@ class PeerFlow:
     def __init__(self, code, src_mac):
         self._code = code
         self._mac = src_mac
-        self._ipv4_in_bytes = 0
-        self._ipv6_in_bytes = 0
-        self._ipv4_out_bytes = 0
-        self._ipv6_out_bytes = 0
+        self._ipv4_bytes = 0
+        self._ipv6_bytes = 0
         self._destinations = {}
 
     @property
@@ -24,28 +22,16 @@ class PeerFlow:
         return self._destinations.values()
 
     @property
-    def ipv4_in_bytes(self):
-        return self._ipv4_in_bytes
+    def ipv4_bytes(self):
+        return self._ipv4_bytes
 
     @property
-    def ipv6_in_bytes(self):
-        return self._ipv6_in_bytes
+    def ipv6_bytes(self):
+        return self._ipv6_bytes
 
     @property
-    def ipv4_out_bytes(self):
-        return self._ipv4_out_bytes
-
-    @property
-    def ipv6_out_bytes(self):
-        return self._ipv6_out_bytes
-
-    @property
-    def in_bytes(self):
-        return self._ipv4_in_bytes + self._ipv6_in_bytes
-
-    @property
-    def out_bytes(self):
-        return self._ipv4_out_bytes + self._ipv6_out_bytes
+    def bytes(self):
+        return self._ipv4_bytes + self._ipv6_bytes
 
     def exists_destination(self, key):
         return key in self._destinations.keys()

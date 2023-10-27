@@ -16,15 +16,15 @@ class PeerMatrix:
         for src_peer in self._peers.values():
             for dst_peer in src_peer.destinations():
                 flow = {
-                    'src': src_peer.mac,
-                    'dst': dst_peer.mac,
-                    'ipv4_in_bytes': dst_peer.ipv4_in_bytes,
-                    'ipv6_in_bytes': dst_peer.ipv6_in_bytes,
-                    'ipv4_out_bytes': dst_peer.ipv4_out_bytes,
-                    'ipv6_out_bytes': dst_peer.ipv6_out_bytes,
+                    'src_code': src_peer.code,
+                    'src_mac': src_peer.mac,
+                    'dst_code': dst_peer.code,
+                    'dst_mac': dst_peer.mac,
+                    'ipv4_bytes': dst_peer.ipv4_bytes,
+                    'ipv6_bytes': dst_peer.ipv6_bytes,
                     'timestamp': datetime.now()
                 }
-                es.index(index=src_peer.code, id=uuid4().hex, document=flow)
+                es.index(index=f"nmflows-{src_peer.code}", id=uuid4().hex, document=flow)
         # cleanup matrix
         del self._peers
 
@@ -44,8 +44,8 @@ class PeerMatrix:
             dest = PeerFlow(code, flow.dst_mac)
 
         if flow.proto == 4:
-            dest.account_ipv4_bytes_in(flow.computed_size)
-            source.account_ipv4_bytes_out(flow.computed_size)
+            source.account_ipv4_bytes(flow.computed_size)
+            dest.account_ipv4_bytes(flow.computed_size)
         else:
-            dest.account_ipv6_bytes_in(flow.computed_size)
-            source.account_ipv6_bytes_out(flow.computed_size)
+            dest.account_ipv6_bytes(flow.computed_size)
+            source.account_ipv6_bytes(flow.computed_size)
