@@ -1,21 +1,22 @@
+from nmflows.utils import MACEntry
 
 
 class PeerFlow:
 
-    def __init__(self, code, src_mac):
-        self._code = code
-        self._mac = src_mac
+    def __init__(self, entry: MACEntry):
+        self._name = entry.name
+        self._mac = entry.mac
         self._ipv4_bytes = 0
         self._ipv6_bytes = 0
         self._destinations = {}
 
     @property
-    def code(self):
-        return self._code
+    def name(self):
+        return self._name
 
     @property
     def mac(self):
-        return hash(self._mac)
+        return self._mac
 
     @property
     def destinations(self):
@@ -41,6 +42,12 @@ class PeerFlow:
 
     def add_destination(self, peer):
         self._destinations[peer.mac] = peer
+
+    def account_bytes(self, size, proto):
+        if proto == 4:
+            self._ipv4_bytes += size
+        else:
+            self._ipv6_bytes += size
 
     def __hash__(self):
         return self._mac

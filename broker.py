@@ -7,7 +7,7 @@ import threading
 import time
 
 
-Matrix = PeerMatrix()
+Matrix = PeerMatrix(CONFIG['ixf_url'])
 Lock = threading.Lock()
 
 

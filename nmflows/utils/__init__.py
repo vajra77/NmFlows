@@ -1,2 +1,3 @@
 from .ptr_buffer import PtrBuffer
-from .helpers import get_peer_code
+from .mac_directory import MACDirectory
+from .mac_entry import MACEntry

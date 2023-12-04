@@ -1,5 +1,5 @@
 from nmflows.storage import StorableFlow
-from nmflows.utils import get_peer_code
+from nmflows.utils import MACDirectory
 from nmflows.peermatrix.peer_flow import PeerFlow
 from datetime import datetime
 from elasticsearch import Elasticsearch
@@ -8,17 +8,18 @@ from uuid import uuid4
 
 class PeerMatrix:
 
-    def __init__(self):
+    def __init__(self, ixf_url):
         self._peers = {}
+        self._directory = MACDirectory(ixf_url)
 
     def dump(self, es_url):
         es = Elasticsearch(es_url)
         for src_peer in self._peers.values():
             for dst_peer in src_peer.destinations():
                 flow = {
-                    'src_code': src_peer.code,
+                    'src_name': src_peer.name,
                     'src_mac': src_peer.mac,
-                    'dst_code': dst_peer.code,
+                    'dst_name': dst_peer.name,
                     'dst_mac': dst_peer.mac,
                     'ipv4_bytes': dst_peer.ipv4_bytes,
                     'ipv6_bytes': dst_peer.ipv6_bytes,
@@ -34,18 +35,15 @@ class PeerMatrix:
         if flow.src_mac in self._peers.keys():
             source = self._peers.get(flow.src_mac)
         else:
-            code = get_peer_code(flow.src_mac)
-            source = PeerFlow(code, flow.src_mac)
+            entry = self._directory.get(flow.src_mac)
+            source = PeerFlow(entry)
 
         if source.exists_destination(flow.dst_mac):
             dest = source.get_destination(flow.dst_mac)
         else:
-            code = get_peer_code(flow.dst_mac)
-            dest = PeerFlow(code, flow.dst_mac)
+            entry = self._directory.get(flow.dst_mac)
+            dest = PeerFlow(entry)
+            source.add_destination(dest)
 
-        if flow.proto == 4:
-            source.account_ipv4_bytes(flow.computed_size)
-            dest.account_ipv4_bytes(flow.computed_size)
-        else:
-            dest.account_ipv6_bytes(flow.computed_size)
-            source.account_ipv6_bytes(flow.computed_size)
+        source.account_bytes(flow.computed_size, flow.proto)
+        dest.account_bytes(flow.computed_size, flow.proto)
