@@ -17,8 +17,10 @@ class PeerMatrix:
         for src_peer in self._peers.values():
             for dst_peer in src_peer.destinations():
                 flow = {
+                    'src_asn': src_peer.asnum,
                     'src_name': src_peer.name,
                     'src_mac': src_peer.mac,
+                    'dst_asn': dst_peer.asnum,
                     'dst_name': dst_peer.name,
                     'dst_mac': dst_peer.mac,
                     'ipv4_bytes': dst_peer.ipv4_bytes,

@@ -32,6 +32,7 @@ class MACEntry:
     def __repr__(self):
         return f"""
             MAC Entry for {self.name}
+            - asn: {self.asnum}
             - mac: {self.mac}
             - ipv4: {self.ipv4}
             - ipv6: {self.ipv6}

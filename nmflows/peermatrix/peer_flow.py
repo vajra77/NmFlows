@@ -4,11 +4,16 @@ from nmflows.utils import MACEntry
 class PeerFlow:
 
     def __init__(self, entry: MACEntry):
+        self._asnum = entry.asnum
         self._name = entry.name
         self._mac = entry.mac
         self._ipv4_bytes = 0
         self._ipv6_bytes = 0
         self._destinations = {}
+
+    @property
+    def asnum(self):
+        return self._asnum
 
     @property
     def name(self):
