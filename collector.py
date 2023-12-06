@@ -3,6 +3,7 @@ from nmflows.utils import PtrBuffer
 from nmflows.storage import StorableFlow
 from nmflows.mq import SendQueue
 from config import CONFIG
+import traceback
 import socketserver
 # import json
 # import jsonpickle
@@ -43,6 +44,7 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
             print("[ERROR]: EOF while reading buffer", file=sys.stderr)
         except Exception as e:
             print(f"[ERROR]: {e}", file=sys.stderr)
+            traceback.print_exc()
 
 
 if __name__ == "__main__":
