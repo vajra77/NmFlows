@@ -30,15 +30,18 @@ def consume_task():
 
 
 def dump_task():
-    time.sleep(5)
-    with Lock:
-        Matrix.dump(CONFIG['elastic_url'])
+    while True:
+        time.sleep(5)
+        with Lock:
+            Matrix.dump(CONFIG['elastic_url'])
 
 
 if __name__ == '__main__':
     try:
         t1 = threading.Thread(target=consume_task)
         t2 = threading.Thread(target=dump_task)
+        t1.start()
+        t2.start()
         t1.join()
         t2.join()
     except KeyboardInterrupt:
