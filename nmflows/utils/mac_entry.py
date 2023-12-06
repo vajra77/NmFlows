@@ -2,14 +2,12 @@ import re
 
 
 def _normalize_mac(mac: str):
-    result = mac
     if ':' in mac:
-        result = re.sub(r":", "", mac)
+        return mac.replace(':', '')
     elif '-' in mac:
-        result = re.sub(r"-", "", mac)
-    print(f"normalize: {result}")
-    return result
-
+        return mac.replace('-', '')
+    else:
+        return mac
 
 class MACEntry:
 
