@@ -46,7 +46,6 @@ class PeerMatrix:
                 source = PeerFlow(entry)
                 self._peers[flow.src_mac] = source
 
-        pprint(source)
         if source is not None:
             dest = None
             if source.exists_destination(flow.dst_mac):
