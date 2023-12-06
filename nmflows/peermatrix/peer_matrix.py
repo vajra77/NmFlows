@@ -13,24 +13,27 @@ class PeerMatrix:
         self._directory = MACDirectory(ixf_url)
 
     def dump(self, es_url):
-        es = Elasticsearch(es_url)
-        for src_peer in self._peers.values():
-            for dst_peer in src_peer.destinations():
-                flow = {
-                    'src_asn': src_peer.asnum,
-                    'src_name': src_peer.name,
-                    'src_mac': src_peer.mac,
-                    'dst_asn': dst_peer.asnum,
-                    'dst_name': dst_peer.name,
-                    'dst_mac': dst_peer.mac,
-                    'ipv4_bytes': dst_peer.ipv4_bytes,
-                    'ipv6_bytes': dst_peer.ipv6_bytes,
-                    'timestamp': datetime.now()
-                }
-                es.index(index="nmflows", id=uuid4().hex, document=flow)
-        # cleanup matrix
-        del self._peers
-        self._peers = {}
+        try:
+            es = Elasticsearch(es_url)
+            for src_peer in self._peers.values():
+                for dst_peer in src_peer.destinations():
+                    flow = {
+                        'src_asn': src_peer.asnum,
+                        'src_name': src_peer.name,
+                        'src_mac': src_peer.mac,
+                        'dst_asn': dst_peer.asnum,
+                        'dst_name': dst_peer.name,
+                        'dst_mac': dst_peer.mac,
+                        'ipv4_bytes': dst_peer.ipv4_bytes,
+                        'ipv6_bytes': dst_peer.ipv6_bytes,
+                        'timestamp': datetime.now()
+                    }
+                    es.index(index="nmflows", id=uuid4().hex, document=flow)
+            # cleanup matrix
+            del self._peers
+            self._peers = {}
+        except Exception as e:
+            print(f"Error while dumping to ES: {e}")
 
     def add_flow(self, flow: StorableFlow):
         source = None
