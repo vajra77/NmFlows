@@ -33,7 +33,7 @@ class PeerMatrix:
         self._peers = {}
 
     def add_flow(self, flow: StorableFlow):
-
+        source = None
         if flow.src_mac in self._peers.keys():
             source = self._peers.get(flow.src_mac)
         else:
@@ -41,14 +41,15 @@ class PeerMatrix:
                 entry = self._directory.get(flow.src_mac)
                 source = PeerFlow(entry)
                 self._peers[flow.src_mac] = source
-
-        if source.exists_destination(flow.dst_mac):
-            dest = source.get_destination(flow.dst_mac)
-        else:
-            if self._directory.has(flow.dst_mac):
-                entry = self._directory.get(flow.dst_mac)
-                dest = PeerFlow(entry)
-                source.add_destination(dest)
-
-        source.account_bytes(flow.computed_size, flow.proto)
-        dest.account_bytes(flow.computed_size, flow.proto)
+        if source is not None:
+            dest = None
+            if source.exists_destination(flow.dst_mac):
+                dest = source.get_destination(flow.dst_mac)
+            else:
+                if self._directory.has(flow.dst_mac):
+                    entry = self._directory.get(flow.dst_mac)
+                    dest = PeerFlow(entry)
+                    source.add_destination(dest)
+            if dest is not None:
+                source.account_bytes(flow.computed_size, flow.proto)
+                dest.account_bytes(flow.computed_size, flow.proto)
