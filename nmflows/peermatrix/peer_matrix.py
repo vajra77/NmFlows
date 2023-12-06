@@ -47,6 +47,7 @@ class PeerMatrix:
                 entry = self._directory.get(flow.src_mac)
                 source = PeerFlow(entry)
                 self._peers[flow.src_mac] = source
+
         if source is not None:
             dest = None
             if source.exists_destination(flow.dst_mac):
