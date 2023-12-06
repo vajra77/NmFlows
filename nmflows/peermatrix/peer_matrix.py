@@ -37,15 +37,18 @@ class PeerMatrix:
         if flow.src_mac in self._peers.keys():
             source = self._peers.get(flow.src_mac)
         else:
-            entry = self._directory.get(flow.src_mac)
-            source = PeerFlow(entry)
+            if flow.src_mac in self._directory.keys():
+                entry = self._directory.get(flow.src_mac)
+                source = PeerFlow(entry)
+                self._peers[flow.src_mac] = source
 
         if source.exists_destination(flow.dst_mac):
             dest = source.get_destination(flow.dst_mac)
         else:
-            entry = self._directory.get(flow.dst_mac)
-            dest = PeerFlow(entry)
-            source.add_destination(dest)
+            if flow.dst_mac in self._directory.keys():
+                entry = self._directory.get(flow.dst_mac)
+                dest = PeerFlow(entry)
+                source.add_destination(dest)
 
         source.account_bytes(flow.computed_size, flow.proto)
         dest.account_bytes(flow.computed_size, flow.proto)
