@@ -3,7 +3,7 @@ from nmflows.mq import RecvQueue
 from nmflows.storage import StorableFlow
 from config import CONFIG
 import json
-# import jsonpickle
+import jsonpickle
 import threading
 import time
 
@@ -13,8 +13,8 @@ Lock = threading.Lock()
 
 
 def handle_msg(ch, method, properties, body):
-    # flow = jsonpickle.decode(json.loads(body))
-    flow = StorableFlow.from_pmacct_json(json.loads(body))
+    flow = jsonpickle.decode(json.loads(body))
+    # flow = StorableFlow.from_pmacct_json(json.loads(body))
     with Lock:
         Matrix.add_flow(flow)
 

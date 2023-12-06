@@ -5,8 +5,8 @@ from nmflows.mq import SendQueue
 from config import CONFIG
 import traceback
 import socketserver
-# import json
-# import jsonpickle
+import json
+import jsonpickle
 import sys
 
 
@@ -37,7 +37,8 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                 try:
                     for record in sample.records:
                         flow = StorableFlow.from_record(timestamp, rate, record)
-                        queue.send(flow.to_pmacct_json())
+                        # queue.send(flow.to_pmacct_json())
+                        queue.send(json.dumps(jsonpickle.encode(flow)))
                 except AttributeError:
                     continue
         except EOFError:
