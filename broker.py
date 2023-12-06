@@ -31,7 +31,7 @@ def consume_task():
 
 def dump_task():
     while True:
-        time.sleep(5)
+        time.sleep(30)
         with Lock:
             print("dumping matrix ...")
             Matrix.dump(CONFIG['elastic_url'])

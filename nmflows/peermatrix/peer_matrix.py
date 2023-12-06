@@ -14,6 +14,7 @@ class PeerMatrix:
 
     def dump(self, es_url):
         try:
+            print("dumping ES")
             es = Elasticsearch(es_url)
             for src_peer in self._peers.values():
                 for dst_peer in src_peer.destinations():
