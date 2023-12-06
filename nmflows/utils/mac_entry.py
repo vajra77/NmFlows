@@ -1,9 +1,19 @@
+import re
+
+
+def _normalize_mac(mac: str):
+    result = mac
+    if ':' in mac:
+        result = re.sub(r":", "", mac)
+    elif '-' in mac:
+        result = re.sub(r"-", "", mac)
+    return result
 
 
 class MACEntry:
 
     def __init__(self, mac, asnum, name, ipv4, ipv6):
-        self._mac = mac
+        self._mac = _normalize_mac(mac)
         self._asnum = asnum
         self._name = name
         self._ipv4 = ipv4
@@ -37,4 +47,3 @@ class MACEntry:
             - ipv4: {self.ipv4}
             - ipv6: {self.ipv6}
         """
-
