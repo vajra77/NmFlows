@@ -17,6 +17,7 @@ class MACEntry:
         self._name = name
         self._ipv4 = ipv4
         self._ipv6 = ipv6
+        print(f"my mac is {self._mac}")
 
     @property
     def mac(self):
