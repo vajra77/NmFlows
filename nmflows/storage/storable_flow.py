@@ -16,6 +16,11 @@ KNOWN_PORTS = {
     53: 'dns'
 }
 
+PMACCT_RETARDED_CONVERSION = {
+    '800': 0x800,
+    '86dd': 0x86dd
+}
+
 
 def _ip(n: int):
     if n in KNOWN_IP_PROTO.keys():
@@ -108,6 +113,37 @@ class StorableFlow:
             record.transport_header.dst_port,
             record.payload_length
         )
+
+    @classmethod
+    def from_pmacct_json(cls, data):
+        return cls(
+            data['timestamp_export'],
+            data['sampling_rate'],
+            data['vlan_in'],
+            PMACCT_RETARDED_CONVERSION[data['etype']],
+            data['mac_src'],
+            data['mac_dst'],
+            data['ip_src'],
+            data['ip_dst'],
+            data['port_src'],
+            data['port_dst'],
+            data['bytes']
+        )
+
+    def to_pmacct_json(self):
+        return {
+            'timestamp_export': self._timestamp,
+            'sampling_rate': self._sampling_rate,
+            'vlan_in': self._vlan,
+            'etype': self._proto,
+            'mac_src': self._src_mac,
+            'mac_dst': self._dst_mac,
+            'ip_src': self._src_addr,
+            'ip_dst': self._dst_addr,
+            'port_src': self._src_port,
+            'port_dst': self._dst_port,
+            'bytes': self._size
+        }
 
     def to_json(self):
         return {
