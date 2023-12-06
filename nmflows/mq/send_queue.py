@@ -6,15 +6,11 @@ class SendQueue(Queue):
 
     def __init__(self, host, port, name, user, passw):
         super().__init__(host, port, name)
-        print("QUI 1")
         credentials = pika.PlainCredentials(user, passw)
-        print("QUI 2")
         parameters = pika.ConnectionParameters(host, port, '/', credentials)
-        print("QUI 3")
+        print(f"connecting to {host}:{port} with user {user} and pass {passw}")
         self._connection = pika.BlockingConnection(parameters)
-        print("QUI 4")
         self._channel = self._connection.channel()
-        print("QUI 5")
         self._channel.queue_declare(name)
 
     def send(self, msg):
