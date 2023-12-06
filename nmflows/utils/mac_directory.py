@@ -37,4 +37,4 @@ class MACDirectory:
                                     address6 = vlan['ipv6']['address']
                                 if mac is not None:
                                     entry = MACEntry(mac, asnum, name, address4, address6)
-                                    self._entries[mac] = entry
+                                    self._entries[entry.mac] = entry
