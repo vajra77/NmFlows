@@ -15,12 +15,9 @@ class PeerMatrix:
 
     def dump(self, es_url):
         try:
-            print("dumping ES")
             es = Elasticsearch(es_url)
             for src_peer in self._peers.values():
-                print("loop esterno")
                 for dst_peer in src_peer.destinations():
-                    print("loop interno")
                     flow = {
                         'src_asn': src_peer.asnum,
                         'src_name': src_peer.name,

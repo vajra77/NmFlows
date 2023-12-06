@@ -16,8 +16,6 @@ def handle_msg(ch, method, properties, body):
     flow = jsonpickle.decode(json.loads(body))
     # flow = StorableFlow.from_pmacct_json(json.loads(body))
     with Lock:
-        print("adding flow")
-        pprint(flow)
         Matrix.add_flow(flow)
 
 
