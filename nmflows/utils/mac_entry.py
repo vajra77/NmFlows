@@ -7,6 +7,7 @@ def _normalize_mac(mac: str):
         result = re.sub(r":", "", mac)
     elif '-' in mac:
         result = re.sub(r"-", "", mac)
+    print(f"normalize: {result}")
     return result
 
 
