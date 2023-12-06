@@ -30,7 +30,7 @@ class PeerMatrix:
                 es.index(index="nmflows", id=uuid4().hex, document=flow)
         # cleanup matrix
         del self._peers
-
+        self._peers = {}
 
     def add_flow(self, flow: StorableFlow):
 
