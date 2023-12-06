@@ -13,6 +13,9 @@ class MACDirectory:
     def get(self, mac):
         return self._entries[mac]
 
+    def has(self, mac):
+        return mac in self._entries.keys()
+
     def __iter__(self):
         return iter(self._entries.values())
 
