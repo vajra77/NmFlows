@@ -10,7 +10,7 @@ class SendQueue(Queue):
         parameters = pika.ConnectionParameters(host=host, port=port,
                                                virtual_host='/',
                                                credentials=credentials,
-                                               heartbeat_interval=600,
+                                               heartbeat=600,
                                                blocked_connection_timeout=300)
         self._connection = pika.BlockingConnection(parameters)
         self._channel = self._connection.channel()
