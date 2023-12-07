@@ -16,7 +16,7 @@ KNOWN_PORTS = {
     53: 'dns'
 }
 
-PMACCT_RETARDED_CONVERSION = {
+PMACCT_CONVERSION = {
     '800': 0x800,
     '86dd': 0x86dd
 }
@@ -120,7 +120,7 @@ class StorableFlow:
             data['timestamp_export'],
             data['sampling_rate'],
             data['vlan_in'],
-            PMACCT_RETARDED_CONVERSION[data['etype']],
+            PMACCT_CONVERSION[data['etype']],
             data['mac_src'],
             data['mac_dst'],
             data['ip_src'],

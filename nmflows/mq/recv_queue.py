@@ -16,3 +16,9 @@ class RecvQueue(Queue):
 
     def consume(self):
         self._channel.start_consuming()
+
+    def close(self):
+        self._connection.close()
+
+    def __del__(self):
+        self.close()

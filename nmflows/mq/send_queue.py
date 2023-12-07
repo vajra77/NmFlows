@@ -18,3 +18,9 @@ class SendQueue(Queue):
             routing_key=self._name,
             body=msg
         )
+
+    def close(self):
+        self._connection.close()
+
+    def __del__(self):
+        self.close()

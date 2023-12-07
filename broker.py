@@ -7,27 +7,23 @@ import threading
 import time
 
 
-Matrix = PeeringMatrix(CONFIG['ixf_url'])
-Lock = threading.Lock()
-
-
 def handle_msg(ch, method, properties, body):
-    flow = jsonpickle.decode(json.loads(body))
     with Lock:
-        Matrix.add_flow(flow)
-
+        Matrix.add_flow(jsonpickle.decode(json.loads(body)))
 
 def consume_task():
-    queue = RecvQueue(CONFIG['rabbitmq_host'],
+    Queue.consume()
+
+Matrix = PeeringMatrix(CONFIG['ixf_url'])
+Lock = threading.Lock()
+Queue = RecvQueue(CONFIG['rabbitmq_host'],
                       CONFIG['rabbitmq_port'],
                       CONFIG['rabbitmq_queue'],
                       CONFIG['rabbitmq_user'],
                       CONFIG['rabbitmq_pass'],
                       handle_msg)
-    queue.consume()
 
-
-def dump_task():
+def flush_task():
     while True:
         time.sleep(300)
         with Lock:
@@ -37,10 +33,11 @@ def dump_task():
 if __name__ == '__main__':
     try:
         t1 = threading.Thread(target=consume_task)
-        t2 = threading.Thread(target=dump_task)
+        t2 = threading.Thread(target=flush_task)
         t1.start()
         t2.start()
         t1.join()
         t2.join()
+        Queue.close()
     except KeyboardInterrupt:
         exit()
