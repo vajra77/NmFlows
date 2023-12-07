@@ -11,7 +11,7 @@ import sys
 
 
 DEFAULT_BUFFER_SIZE = 4096  # 4k
-
+DEBUG = False
 
 def create_sflow_datagram(data: PtrBuffer):
     version = data.read_uint()
@@ -41,9 +41,13 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                 except AttributeError:
                     continue
         except EOFError:
-            print("[ERROR]: EOF while reading buffer", file=sys.stderr)
+            if DEBUG:
+                print("[ERROR]: EOF while reading buffer", file=sys.stderr)
+            return
         except Exception as e:
-            print(f"[ERROR]: {e}", file=sys.stderr)
+            if DEBUG:
+                print(f"[ERROR]: {e}", file=sys.stderr)
+            return
 
 
 if __name__ == "__main__":

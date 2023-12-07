@@ -88,6 +88,23 @@ class PeeringMatrix:
         except Exception as e:
             print(f"Error while dumping to ES: {e}")
 
+    def dump(self, filename):
+        with open(filename, 'w+') as f:
+            f.write(str(self))
+
     def _do_log(self, msg):
         timestamp = datetime.now()
         self._log.append(f"{timestamp}: {msg}")
+
+    def __repr__(self):
+        msg = ""
+        for src in self._sources.values():
+            msg += f"FROM: {src.name}[{src.mac}] TO: "
+            tot4 = 0
+            tot6 = 0
+            for dst in src.destinations:
+                msg += f"{dst.name}[{dst.mac}]=({dst.ipv4_bytes}/{dst.ipv6_bytes}) "
+                tot4 += dst.ipv4_bytes
+                tot6 += dst.ipv6_bytes
+            msg += f"| SUM({tot4}/{tot6}) TOT({src.ipv4_bytes}/{src.ipv6_bytes})\n"
+        return msg    
