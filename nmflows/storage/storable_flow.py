@@ -102,7 +102,8 @@ class StorableFlow:
     @classmethod
     def from_record(cls, timestamp, rate, record: RawPacketHeader):
         return cls(
-            timestamp, rate,
+            timestamp,
+            rate,
             record.datalink_header.vlan,
             record.datalink_header.type,
             record.datalink_header.src_mac,

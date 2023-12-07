@@ -52,6 +52,8 @@ class PeeringFlow:
         self._destinations[peer.mac] = peer
 
     def account_bytes(self, size, proto):
+        print(type(proto))
+        print(proto)
         if int(proto) == 2048:
             self._ipv4_bytes += size
         else:

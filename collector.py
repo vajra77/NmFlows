@@ -13,7 +13,6 @@ import sys
 DEFAULT_BUFFER_SIZE = 4096  # 4k
 
 
-
 def create_sflow_datagram(data: PtrBuffer):
     version = data.read_uint()
     if version != 5:
