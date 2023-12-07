@@ -55,5 +55,4 @@ if __name__ == "__main__":
     except (KeyboardInterrupt, SystemExit):
         server.shutdown()
         server.server_close()
-        Queue.close()
         exit()
