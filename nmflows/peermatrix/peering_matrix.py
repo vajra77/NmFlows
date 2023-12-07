@@ -8,10 +8,16 @@ from uuid import uuid4
 
 class PeeringMatrix:
 
-    def __init__(self, ixf_url):
+    def __init__(self, ixf_url, es_url):
         self._sources = {}
         self._directory = MACDirectory(ixf_url)
         self._log = []
+        self._es = Elasticsearch(es_url)
+        self._is_dirty = False
+
+    @property
+    def is_dirty(self) -> bool:
+        return self._is_dirty
 
     def has_source(self, mac):
         return mac in self._sources.keys()
@@ -22,7 +28,7 @@ class PeeringMatrix:
         else:
             return None
 
-    def add_source(self, source):
+    def _add_source(self, source):
         self._sources[source.mac] = source
 
     def _checkin_source(self, flow: StorableFlow) -> PeeringFlow:
@@ -31,7 +37,7 @@ class PeeringMatrix:
             entry = self._directory.get(flow.src_mac)
             if entry is not None:
                 source = PeeringFlow.from_mac_entry(entry)
-                self.add_source(source)
+                self._add_source(source)
             else:
                 source = PeeringFlow.make_unknown(flow.src_mac)
         return source
@@ -50,6 +56,7 @@ class PeeringMatrix:
         return dest
 
     def add_flow(self, flow: StorableFlow):
+        self._is_dirty = True
         source = self._checkin_source(flow)
         dest = self._checkin_destination(flow)
         if source.is_unknown() or dest.is_unknown():
@@ -59,24 +66,25 @@ class PeeringMatrix:
             source.account_bytes(flow.computed_size, flow.proto)
             dest.account_bytes(flow.computed_size, flow.proto)
 
-    def flush(self, es_url):
+    def flush(self):
         try:
-            es = Elasticsearch(es_url)
-            for src in self._sources.values():
-                for dst in src.destinations:
-                    flow = {
-                        'src_asn': src.asnum,
-                        'src_name': src.name,
-                        'src_mac': src.mac,
-                        'dst_asn': dst.asnum,
-                        'dst_name': dst.name,
-                        'dst_mac': dst.mac,
-                        'ipv4_bytes': dst.ipv4_bytes,
-                        'ipv6_bytes': dst.ipv6_bytes,
-                        'timestamp': datetime.now()
-                    }
-                    es.index(index="nmflows", id=uuid4().hex, document=flow)
-                src.cleanup()
+            if self.is_dirty:
+                for src in self._sources.values():
+                    for dst in src.destinations:
+                        flow = {
+                            'src_asn': src.asnum,
+                            'src_name': src.name,
+                            'src_mac': src.mac,
+                            'dst_asn': dst.asnum,
+                            'dst_name': dst.name,
+                            'dst_mac': dst.mac,
+                            'ipv4_bytes': dst.ipv4_bytes,
+                            'ipv6_bytes': dst.ipv6_bytes,
+                            'timestamp': datetime.now()
+                        }
+                        self._es.index(index="nmflows", id=uuid4().hex, document=flow)
+                    src.cleanup()
+                self._is_dirty = False
         except Exception as e:
             print(f"Error while dumping to ES: {e}")
 
