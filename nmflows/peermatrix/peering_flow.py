@@ -54,7 +54,6 @@ class PeeringFlow:
     def account_bytes(self, size, proto):
         if int(proto) == 2048:
             self._ipv4_bytes += size
-            print(f"accounted {size} bytes [tot: {self._ipv4_bytes}]")
         else:
             self._ipv6_bytes += size
 
