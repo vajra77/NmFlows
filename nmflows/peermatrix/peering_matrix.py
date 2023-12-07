@@ -4,6 +4,7 @@ from nmflows.peermatrix.peering_flow import PeeringFlow
 from datetime import datetime
 from elasticsearch import Elasticsearch
 from uuid import uuid4
+from pprint import pprint
 
 
 class PeeringMatrix:
