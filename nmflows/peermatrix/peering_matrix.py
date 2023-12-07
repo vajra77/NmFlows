@@ -4,6 +4,7 @@ from nmflows.peermatrix.peering_flow import PeeringFlow
 from datetime import datetime
 from elasticsearch import Elasticsearch
 from uuid import uuid4
+from pprint import pprint
 
 
 class PeeringMatrix:
@@ -56,6 +57,7 @@ class PeeringMatrix:
             self._do_log(f"source/dest unknown: [{flow.src_mac}/{flow.dst_mac}]")
             return
         else:
+            pprint(flow.proto)
             source.account_bytes(flow.computed_size, flow.proto)
             dest.account_bytes(flow.computed_size, flow.proto)
 
