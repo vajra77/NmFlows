@@ -12,11 +12,7 @@ import sys
 
 DEFAULT_BUFFER_SIZE = 4096  # 4k
 
-Queue = SendQueue(CONFIG['rabbitmq_host'],
-                  CONFIG['rabbitmq_port'],
-                  CONFIG['rabbitmq_queue'],
-                  CONFIG['rabbitmq_user'],
-                  CONFIG['rabbitmq_pass'])
+
 
 def create_sflow_datagram(data: PtrBuffer):
     version = data.read_uint()
@@ -29,6 +25,11 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
         data = self.socket.recv(DEFAULT_BUFFER_SIZE)
+        queue = SendQueue(CONFIG['rabbitmq_host'],
+                          CONFIG['rabbitmq_port'],
+                          CONFIG['rabbitmq_queue'],
+                          CONFIG['rabbitmq_user'],
+                          CONFIG['rabbitmq_pass'])
         try:
             datagram = create_sflow_datagram(PtrBuffer(data, DEFAULT_BUFFER_SIZE))
             for sample in datagram.samples:
@@ -37,13 +38,15 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                 try:
                     for record in sample.records:
                         flow = StorableFlow.from_record(timestamp, rate, record)
-                        Queue.send(json.dumps(jsonpickle.encode(flow)))
+                        queue.send(json.dumps(jsonpickle.encode(flow)))
                 except AttributeError:
                     continue
         except EOFError:
             print("[ERROR]: EOF while reading buffer", file=sys.stderr)
         except Exception as e:
             print(f"[ERROR]: {e}", file=sys.stderr)
+        finally:
+            queue.close()
 
 
 if __name__ == "__main__":
