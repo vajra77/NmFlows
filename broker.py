@@ -14,7 +14,7 @@ def handle_msg(ch, method, properties, body):
 def consume_task():
     Queue.consume()
 
-Matrix = PeeringMatrix(CONFIG['ixf_url'])
+Matrix = PeeringMatrix(CONFIG['ixf_url'], CONFIG['elastic_url'])
 Lock = threading.Lock()
 Queue = RecvQueue(CONFIG['rabbitmq_host'],
                       CONFIG['rabbitmq_port'],
@@ -27,7 +27,7 @@ def flush_task():
     while True:
         time.sleep(300)
         with Lock:
-            Matrix.flush(CONFIG['elastic_url'])
+            Matrix.flush()
 
 
 if __name__ == '__main__':
