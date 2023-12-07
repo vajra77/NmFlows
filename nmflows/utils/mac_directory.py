@@ -3,6 +3,15 @@ from urllib.request import urlopen
 import json
 
 
+def _normalize(mac: str):
+    if ':' in mac:
+        return mac.replace(':', '')
+    elif '-' in mac:
+        return mac.replace('-', '')
+    else:
+        return mac
+
+
 class MACDirectory:
 
     def __init__(self, url):
@@ -10,8 +19,14 @@ class MACDirectory:
         self._entries = {}
         self._parse()
 
+    def add(self, entry):
+        self._entries[entry.mac] = entry
+
     def get(self, mac):
-        return self._entries[mac]
+        if mac in self._entries.keys():
+            return self._entries[mac]
+        else:
+            return None
 
     def has(self, mac):
         return mac in self._entries.keys()
@@ -36,5 +51,5 @@ class MACDirectory:
                                 if 'ipv6' in vlan.keys():
                                     address6 = vlan['ipv6']['address']
                                 if mac is not None:
-                                    entry = MACEntry(mac, asnum, name, address4, address6)
-                                    self._entries[entry.mac] = entry
+                                    entry = MACEntry(_normalize(mac), asnum, name, address4, address6)
+                                    self.add(entry)

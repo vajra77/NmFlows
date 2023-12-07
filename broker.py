@@ -1,20 +1,18 @@
-from nmflows.peermatrix import PeerMatrix
+from nmflows.peermatrix import PeeringMatrix
 from nmflows.mq import RecvQueue
 from config import CONFIG
 import json
 import jsonpickle
 import threading
 import time
-from pprint import pprint
 
 
-Matrix = PeerMatrix(CONFIG['ixf_url'])
+Matrix = PeeringMatrix(CONFIG['ixf_url'])
 Lock = threading.Lock()
 
 
 def handle_msg(ch, method, properties, body):
     flow = jsonpickle.decode(json.loads(body))
-    # flow = StorableFlow.from_pmacct_json(json.loads(body))
     with Lock:
         Matrix.add_flow(flow)
 
@@ -33,7 +31,7 @@ def dump_task():
     while True:
         time.sleep(30)
         with Lock:
-            Matrix.dump(CONFIG['elastic_url'])
+            Matrix.flush(CONFIG['elastic_url'])
 
 
 if __name__ == '__main__':

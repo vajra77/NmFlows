@@ -1,23 +1,15 @@
-import re
 
 
-def _normalize_mac(mac: str):
-    if ':' in mac:
-        return mac.replace(':', '')
-    elif '-' in mac:
-        return mac.replace('-', '')
-    else:
-        return mac
+
 
 class MACEntry:
 
     def __init__(self, mac, asnum, name, ipv4, ipv6):
-        self._mac = _normalize_mac(mac)
+        self._mac = mac
         self._asnum = asnum
         self._name = name
         self._ipv4 = ipv4
         self._ipv6 = ipv6
-        print(f"my mac is {self._mac}")
 
     @property
     def mac(self):
@@ -38,6 +30,12 @@ class MACEntry:
     @property
     def ipv6(self):
         return self._ipv6
+
+    def __eq__(self, other):
+        return self.mac == other.mac
+
+    def __hash__(self):
+        return hash(self._mac)
 
     def __repr__(self):
         return f"""
