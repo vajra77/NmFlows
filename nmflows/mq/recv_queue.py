@@ -5,29 +5,13 @@ import pika
 class RecvQueue(Queue):
 
     def __init__(self, host, port, name, user, passw, callback):
-        super().__init__(host, port, name)
-        credentials = pika.PlainCredentials(user, passw)
-        parameters = pika.ConnectionParameters(host=host, port=port,
-                                               virtual_host='/',
-                                               credentials=credentials,
-                                               heartbeat=600,
-                                               blocked_connection_timeout=300)
-        self._connection = pika.BlockingConnection(parameters)
+        super().__init__(host, port, name, pika.PlainCredentials(user, passw))
         self._callback = callback
-        #self._channel = self._connection.channel()
-        #self._channel.basic_consume(queue=self._name,
-        #                            auto_ack=True,
-        #                            on_message_callback=callback)
 
     def consume(self):
-        channel = self._connection.channel()
+        connection = pika.BlockingConnection(self._parameters)
+        channel = connection.channel()
         channel.basic_consume(queue=self.name,
                               auto_ack=True,
                               on_message_callback=self._callback)
         channel.start_consuming()
-
-    def close(self):
-        self._connection.close()
-
-    def __del__(self):
-        self.close()
