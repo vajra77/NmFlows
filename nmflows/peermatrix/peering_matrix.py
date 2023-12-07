@@ -32,14 +32,14 @@ class PeeringMatrix:
             if entry is not None:
                 source = PeeringFlow.from_mac_entry(entry)
                 self.add_source(source)
-                return source
             else:
-                return PeeringFlow.make_unknown(flow.src_mac)
+                source = PeeringFlow.make_unknown(flow.src_mac)
+        return source
 
     def _checkin_destination(self, flow: StorableFlow) -> PeeringFlow:
         source = self._checkin_source(flow)
         if source.is_unknown():
-            return PeeringFlow.make_unknown(flow.dst_mac)
+            dest = PeeringFlow.make_unknown(flow.dst_mac)
         else:
             dest = source.get_destination(flow.dst_mac)
             if dest.is_unknown():
@@ -47,7 +47,7 @@ class PeeringMatrix:
                 if entry is not None:
                     dest = PeeringFlow.from_mac_entry(entry)
                     source.add_destination(dest)
-            return dest
+        return dest
 
     def add_flow(self, flow: StorableFlow):
         source = self._checkin_source(flow)
