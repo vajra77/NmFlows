@@ -64,8 +64,8 @@ class PeeringMatrix:
         try:
             es = Elasticsearch(es_url)
             for src in self._sources.values():
+                pprint(src)
                 for dst in src.destinations():
-                    pprint(src)
                     pprint(dst)
                 #     flow = {
                 #         'src_asn': src.asnum,
