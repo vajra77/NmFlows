@@ -13,13 +13,18 @@ class RecvQueue(Queue):
                                                heartbeat=600,
                                                blocked_connection_timeout=300)
         self._connection = pika.BlockingConnection(parameters)
-        self._channel = self._connection.channel()
-        self._channel.basic_consume(queue=self._name,
-                                    auto_ack=True,
-                                    on_message_callback=callback)
+        self._callback = callback
+        #self._channel = self._connection.channel()
+        #self._channel.basic_consume(queue=self._name,
+        #                            auto_ack=True,
+        #                            on_message_callback=callback)
 
     def consume(self):
-        self._channel.start_consuming()
+        channel = self._connection.channel()
+        channel.basic_consume(queue=self.name,
+                              auto_ack=True,
+                              on_message_callback=self._callback)
+        channel.start_consuming()
 
     def close(self):
         self._connection.close()

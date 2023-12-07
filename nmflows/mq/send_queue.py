@@ -13,11 +13,13 @@ class SendQueue(Queue):
                                                heartbeat=600,
                                                blocked_connection_timeout=300)
         self._connection = pika.BlockingConnection(parameters)
-        self._channel = self._connection.channel()
-        self._channel.queue_declare(name)
+        # self._channel = self._connection.channel()
+        # self._channel.queue_declare(name)
 
     def send(self, msg):
-        self._channel.basic_publish(
+        channel = self._connection.channel()
+        channel.queue_declare(self._name)
+        channel.basic_publish(
             exchange='',
             routing_key=self._name,
             body=msg
