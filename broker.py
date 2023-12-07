@@ -27,8 +27,8 @@ def flush_task():
     while True:
         time.sleep(300)
         with Lock:
-            Matrix.flush()
             Matrix.dump('/tmp/bgp-matrix.txt')
+            Matrix.flush()
 
 
 if __name__ == '__main__':
