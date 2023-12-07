@@ -64,19 +64,21 @@ class PeeringMatrix:
             es = Elasticsearch(es_url)
             for src in self._sources.values():
                 for dst in src.destinations():
-                    flow = {
-                        'src_asn': src.asnum,
-                        'src_name': src.name,
-                        'src_mac': src.mac,
-                        'dst_asn': dst.asnum,
-                        'dst_name': dst.name,
-                        'dst_mac': dst.mac,
-                        'ipv4_bytes': dst.ipv4_bytes,
-                        'ipv6_bytes': dst.ipv6_bytes,
-                        'timestamp': datetime.now()
-                    }
-                    es.index(index="nmflows", id=uuid4().hex, document=flow)
-                src.cleanup()
+                    pprint(src)
+                    pprint(dst)
+                #     flow = {
+                #         'src_asn': src.asnum,
+                #         'src_name': src.name,
+                #         'src_mac': src.mac,
+                #         'dst_asn': dst.asnum,
+                #         'dst_name': dst.name,
+                #         'dst_mac': dst.mac,
+                #         'ipv4_bytes': dst.ipv4_bytes,
+                #         'ipv6_bytes': dst.ipv6_bytes,
+                #         'timestamp': datetime.now()
+                #     }
+                #     es.index(index="nmflows", id=uuid4().hex, document=flow)
+                # src.cleanup()
         except Exception as e:
             print(f"Error while dumping to ES: {e}")
 
