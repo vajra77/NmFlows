@@ -32,6 +32,7 @@ class PeeringMatrix:
             if entry is not None:
                 source = PeeringFlow.from_mac_entry(entry)
                 self.add_source(source)
+                return source
             else:
                 return PeeringFlow.make_unknown(flow.src_mac)
 
