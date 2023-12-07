@@ -52,7 +52,7 @@ class PeeringFlow:
         self._destinations[peer.mac] = peer
 
     def account_bytes(self, size, proto):
-        if proto == 4:
+        if proto == 0x800:
             self._ipv4_bytes += size
         else:
             self._ipv6_bytes += size
