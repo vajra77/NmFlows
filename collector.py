@@ -41,12 +41,11 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                         queue.send(json.dumps(jsonpickle.encode(flow)))
                 except AttributeError:
                     continue
+            queue.close()
         except EOFError:
             print("[ERROR]: EOF while reading buffer", file=sys.stderr)
         except Exception as e:
             print(f"[ERROR]: {e}", file=sys.stderr)
-        finally:
-            queue.close()
 
 
 if __name__ == "__main__":
