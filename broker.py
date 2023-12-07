@@ -29,7 +29,7 @@ def consume_task():
 
 def dump_task():
     while True:
-        time.sleep(5)
+        time.sleep(30)
         with Lock:
             Matrix.flush(CONFIG['elastic_url'])
 
