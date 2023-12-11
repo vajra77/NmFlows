@@ -1,7 +1,6 @@
 from .sflow_sample import SFlowSample
 from .exceptions import ParserException
 from nmflows.utils.ptr_buffer import PtrBuffer
-import sys
 
 
 class FlowSample(SFlowSample):
@@ -68,8 +67,7 @@ class FlowSample(SFlowSample):
             try:
                 record = cls.create_flow_record(data)
                 records.append(record)
-            except ParserException as e:
-                print(f"unrecognized flow record: {e}", file=sys.stderr)
+            except ParserException:
                 break
 
         return cls(sformat, length, seq_no, source, sampling_rate,

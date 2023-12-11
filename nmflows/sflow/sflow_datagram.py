@@ -3,7 +3,6 @@ from .exceptions import ParserException
 from .flow_sample import FlowSample
 from .expanded_flow_sample import ExpandedFlowSample
 import socket
-import sys
 
 
 FORMAT_FLOW_SAMPLE = 1
@@ -82,10 +81,8 @@ class SFlowDatagram:
                 sample = cls.create_sflow_sample(data)
                 samples.append(sample)
             except NotImplementedError:
-                # print(f"[INFO]: skipping not implemented sample type", file=sys.stderr)
                 continue
-            except ParserException as e:
-                # print(f"[ERROR]: {e}", file=sys.stderr)
+            except ParserException:
                 break
         skipped = n_samples - len(samples)
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, skipped)
