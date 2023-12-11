@@ -8,11 +8,10 @@ import logging
 import socketserver
 import json
 import jsonpickle
-import sys
 
 
 DEFAULT_BUFFER_SIZE = 4096  # 4k
-DEBUG = False
+
 
 def create_sflow_datagram(data: PtrBuffer):
     version = data.read_uint()
@@ -42,12 +41,12 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                 except AttributeError:
                     continue
         except EOFError:
-            if DEBUG:
-                print("[ERROR]: EOF while reading buffer", file=sys.stderr)
+            if CONFIG['debug']:
+                logger.error("[ERROR]: EOF while reading buffer")
             return
         except Exception as e:
-            if DEBUG:
-                print(f"[ERROR]: {e}", file=sys.stderr)
+            if CONFIG['debug']:
+                logger.error(f"[ERROR]: {e}")
             return
 
 def do_main():
