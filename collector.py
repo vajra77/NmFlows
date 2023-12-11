@@ -3,7 +3,8 @@ from nmflows.utils import PtrBuffer
 from nmflows.storage import StorableFlow
 from nmflows.mq import SendQueue
 from config import CONFIG
-# import traceback
+from daemonize import Daemonize
+import logging
 import socketserver
 import json
 import jsonpickle
@@ -49,8 +50,7 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                 print(f"[ERROR]: {e}", file=sys.stderr)
             return
 
-
-if __name__ == "__main__":
+def do_main():
     server = socketserver.ThreadingUDPServer((CONFIG['sflow_listener_address'],
                                               CONFIG['sflow_listener_port']),
                                              ThisUDPRequestHandler)
@@ -60,3 +60,16 @@ if __name__ == "__main__":
         server.shutdown()
         server.server_close()
         exit()
+
+if __name__ == "__main__":
+    pid = "/tmp/nmflows-collector.pid"
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    logger.propagate = False
+    fh = logging.FileHandler("/var/log/nmflows-collector.log", "w")
+    fh.setLevel(logging.DEBUG)
+    logger.addHandler(fh)
+    keep_fds = [fh.stream.fileno()]
+
+    daemon = Daemonize(app="nmflows-collector", pid=pid, action=do_main, keep_fds=keep_fds)
+    daemon.start()
