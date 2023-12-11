@@ -66,7 +66,7 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
-    fh = logging.FileHandler("/var/log/nmflows-collector.log", "w")
+    fh = logging.FileHandler("/tmp/nmflows-collector.log", "w")
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
     keep_fds = [fh.stream.fileno()]
