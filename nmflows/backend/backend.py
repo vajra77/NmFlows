@@ -1,4 +1,4 @@
-from nmflows.peermatrix import PeeringFlow
+from nmflows.peermatrix.peering_flow import PeeringFlow
 from abc import ABCMeta, abstractmethod
 
 class Backend(metaclass=ABCMeta):

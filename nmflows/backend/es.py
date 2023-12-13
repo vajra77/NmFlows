@@ -1,4 +1,4 @@
-from nmflows.peermatrix import PeeringFlow
+from nmflows.peermatrix.peering_flow import PeeringFlow
 from .backend import Backend
 from elasticsearch import Elasticsearch
 from datetime import datetime
