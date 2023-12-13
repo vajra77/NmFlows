@@ -16,14 +16,7 @@ def handle_msg(ch, method, properties, body):
 def consume_task():
     Queue.consume()
 
-Matrix = PeeringMatrix(CONFIG['ixf_url'], CONFIG['elastic_url'])
-Lock = threading.Lock()
-Queue = RecvQueue(CONFIG['rabbitmq_host'],
-                      CONFIG['rabbitmq_port'],
-                      CONFIG['rabbitmq_queue'],
-                      CONFIG['rabbitmq_user'],
-                      CONFIG['rabbitmq_pass'],
-                      handle_msg)
+
 
 def flush_task():
     while True:
@@ -42,14 +35,22 @@ def do_main():
     t2.join()
 
 if __name__ == "__main__":
-    pid = "/tmp/nmflows-broker.pid"
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
-    fh = logging.FileHandler("/tmp/nmflows-broker.log", "w")
+    fh = logging.FileHandler(CONFIG['broker_log'], "w")
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
     keep_fds = [fh.stream.fileno()]
 
-    daemon = Daemonize(app="nmflows-broker", pid=pid, action=do_main, keep_fds=keep_fds)
+    Matrix = PeeringMatrix(CONFIG['ixf_url'], CONFIG['elastic_url'], logger)
+    Lock = threading.Lock()
+    Queue = RecvQueue(CONFIG['rabbitmq_host'],
+                      CONFIG['rabbitmq_port'],
+                      CONFIG['rabbitmq_queue'],
+                      CONFIG['rabbitmq_user'],
+                      CONFIG['rabbitmq_pass'],
+                      handle_msg)
+
+    daemon = Daemonize(app="nmflows-broker", pid=CONFIG['broker_pid'], action=do_main, keep_fds=keep_fds)
     daemon.start()

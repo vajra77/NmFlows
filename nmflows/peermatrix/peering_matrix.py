@@ -8,10 +8,10 @@ from uuid import uuid4
 
 class PeeringMatrix:
 
-    def __init__(self, ixf_url, es_url):
+    def __init__(self, ixf_url, es_url, logger):
         self._sources = {}
         self._directory = MACDirectory(ixf_url)
-        self._log = []
+        self._logger = logger
         self._es = Elasticsearch(es_url)
         self._is_dirty = False
 
@@ -31,7 +31,7 @@ class PeeringMatrix:
     def _add_source(self, source):
         self._sources[source.mac] = source
 
-    def _checkin_source(self, flow: StorableFlow) -> PeeringFlow:
+    def _get_flow_source(self, flow: StorableFlow) -> PeeringFlow:
         source = self.get_source(flow.src_mac)
         if source is None:
             entry = self._directory.get(flow.src_mac)
@@ -42,8 +42,8 @@ class PeeringMatrix:
                 source = PeeringFlow.make_unknown(flow.src_mac)
         return source
 
-    def _checkin_destination(self, flow: StorableFlow) -> PeeringFlow:
-        source = self._checkin_source(flow)
+    def _get_flow_destination(self, flow: StorableFlow) -> PeeringFlow:
+        source = self._get_flow_source(flow)
         if source.is_unknown():
             dest = PeeringFlow.make_unknown(flow.dst_mac)
         else:
@@ -55,46 +55,69 @@ class PeeringMatrix:
                     source.add_destination(dest)
         return dest
 
+    def _get_flow_destination_as_source(self, flow: StorableFlow) -> PeeringFlow:
+        das = self.get_source(flow.dst_mac)
+        if das is None:
+            entry = self._directory.get(flow.dst_mac)
+            if entry is not None:                                                                                       # This should always be true at the point method is called
+                das = PeeringFlow.from_mac_entry(entry)
+                self._add_source(das)
+        return das
+
+
     def add_flow(self, flow: StorableFlow):
         self._is_dirty = True
-        source = self._checkin_source(flow)
-        dest = self._checkin_destination(flow)
+        source = self._get_flow_source(flow)
+        dest = self._get_flow_destination(flow)
         if source.is_unknown() or dest.is_unknown():
-            self._do_log(f"source/dest unknown: [{flow.src_mac}/{flow.dst_mac}]")
+            self._logger.info(f"source/dest unknown: [{flow.src_mac}/{flow.dst_mac}]")
             return
         else:
-            source.account_bytes(flow.computed_size, flow.proto)
-            dest.account_bytes(flow.computed_size, flow.proto)
+            source.account_out_bytes(flow.computed_size, flow.proto)
+            dest.account_in_bytes(flow.computed_size, flow.proto)
+            dest_as_source = self._get_flow_destination_as_source(flow)
+            dest_as_source.account_in_bytes(flow.computed_size, flow.proto)
 
     def flush(self):
         try:
             if self.is_dirty:
                 for src in self._sources.values():
+                    peer = {
+                        'timestamp': datetime.now(),
+                        'type': 'peer',
+                        'asn': src.asnum,
+                        'name': src.name,
+                        'mac': src.mac,
+                        'ipv4_in_bytes': src.ip4_in_bytes,
+                        'ipv4_out_bytes': src.ipv4_out_bytes,
+                        'ipv6_in_bytes': src.ipv6_in_bytes,
+                        'ipv6_out_bytes': src.ipv6_out_bytes,
+                        'in_bytes': src.ipv4_in_bytes + src.ipv6_in_bytes,
+                        'out_bytes': src.ipv5_out_bytes + src.ipv6_out_bytes
+                    }
+                    self._es.index(index="nmflows", id=uuid4().hex, document=peer)
                     for dst in src.destinations:
                         flow = {
+                            'timestamp': datetime.now(),
+                            'type': 'flow',
                             'src_asn': src.asnum,
                             'src_name': src.name,
                             'src_mac': src.mac,
                             'dst_asn': dst.asnum,
                             'dst_name': dst.name,
                             'dst_mac': dst.mac,
-                            'ipv4_bytes': dst.ipv4_bytes,
-                            'ipv6_bytes': dst.ipv6_bytes,
-                            'timestamp': datetime.now()
+                            'ipv4_bytes': dst.ipv4_in_bytes,
+                            'ipv6_bytes': dst.ipv6_in_bytes,
                         }
                         self._es.index(index="nmflows", id=uuid4().hex, document=flow)
                     src.cleanup()
                 self._is_dirty = False
         except Exception as e:
-            print(f"Error while dumping to ES: {e}")
+            self._logger.error(f"Error while dumping to ES: {e}")
 
     def dump(self, filename):
         with open(filename, 'w+') as f:
             f.write(str(self))
-
-    def _do_log(self, msg):
-        timestamp = datetime.now()
-        self._log.append(f"{timestamp}: {msg}")
 
     def __repr__(self):
         msg = ""

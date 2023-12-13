@@ -7,8 +7,10 @@ class PeeringFlow:
         self._asnum = asnum
         self._name = name
         self._mac = mac
-        self._ipv4_bytes = 0
-        self._ipv6_bytes = 0
+        self._ipv4_in_bytes = 0
+        self._ipv6_in_bytes = 0
+        self._ipv4_out_bytes = 0
+        self._ipv6_out_bytes = 0
         self._destinations = {}
 
     @property
@@ -28,16 +30,28 @@ class PeeringFlow:
         return self._destinations.values()
 
     @property
-    def ipv4_bytes(self):
-        return self._ipv4_bytes
+    def ipv4_in_bytes(self):
+        return self._ipv4_in_bytes
 
     @property
-    def ipv6_bytes(self):
-        return self._ipv6_bytes
+    def ipv4_out_bytes(self):
+        return self._ipv4_out_bytes
 
     @property
-    def bytes(self):
-        return self._ipv4_bytes + self._ipv6_bytes
+    def ipv6_in_bytes(self):
+        return self._ipv6_in_bytes
+
+    @property
+    def ipv6_out_bytes(self):
+        return self._ipv6_out_bytes
+
+    @property
+    def in_bytes(self):
+        return self._ipv4_in_bytes + self._ipv6_in_bytes
+
+    @property
+    def out_bytes(self):
+        return self._ipv4_out_bytes + self._ipv6_out_bytes
 
     def has_destination(self, mac):
         return mac in self._destinations.keys()
@@ -51,11 +65,17 @@ class PeeringFlow:
     def add_destination(self, peer):
         self._destinations[peer.mac] = peer
 
-    def account_bytes(self, size, proto):
+    def account_in_bytes(self, size, proto):
         if int(proto) == 2048:
-            self._ipv4_bytes += size
+            self._ipv4_in_bytes += size
         else:
-            self._ipv6_bytes += size
+            self._ipv6_in_bytes += size
+
+    def account_out_bytes(self, size, proto):
+        if int(proto) == 2048:
+            self._ipv4_out_bytes += size
+        else:
+            self._ipv6_out_bytes += size
 
     def is_unknown(self) -> bool:
         return self._asnum is None and self._name is None
@@ -67,8 +87,10 @@ class PeeringFlow:
         return len(self._destinations) == 0
 
     def cleanup(self):
-        self._ipv6_bytes = 0
-        self._ipv4_bytes = 0
+        self._ipv6_in_bytes = 0
+        self._ipv4_in_bytes = 0
+        self._ipv6_out_bytes = 0
+        self._ipv4_out_bytes = 0
         for p in self._destinations.values():
             p.cleanup()
 
