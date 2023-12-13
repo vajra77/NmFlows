@@ -39,7 +39,10 @@ if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
     fh = logging.FileHandler(CONFIG['broker_log'], "w")
-    fh.setLevel(logging.DEBUG)
+    if CONFIG['debug']:
+        fh.setLevel(logging.DEBUG)
+    else:
+        fh.setLevel(logging.ERROR)
     logger.addHandler(fh)
     keep_fds = [fh.stream.fileno()]
 
