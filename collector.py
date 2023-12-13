@@ -61,14 +61,13 @@ def do_main():
         exit()
 
 if __name__ == "__main__":
-    pid = "/tmp/nmflows-collector.pid"
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
-    fh = logging.FileHandler("/tmp/nmflows-collector.log", "w")
+    fh = logging.FileHandler(CONFIG['collector_log'], "w")
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
     keep_fds = [fh.stream.fileno()]
 
-    daemon = Daemonize(app="nmflows-collector", pid=pid, action=do_main, keep_fds=keep_fds)
+    daemon = Daemonize(app="nmflows-collector", pid=CONFIG['collector_pid'], action=do_main, keep_fds=keep_fds)
     daemon.start()
