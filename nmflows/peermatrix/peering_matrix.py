@@ -1,18 +1,16 @@
 from nmflows.storage import StorableFlow
 from nmflows.utils import MACDirectory
 from nmflows.peermatrix.peering_flow import PeeringFlow
-from datetime import datetime
-from elasticsearch import Elasticsearch
-from uuid import uuid4
+from nmflows.backend import Backend
 
 
 class PeeringMatrix:
 
-    def __init__(self, ixf_url, es_url, logger):
+    def __init__(self, ixf_url, backend: Backend, logger):
         self._sources = {}
         self._directory = MACDirectory(ixf_url)
         self._logger = logger
-        self._es = Elasticsearch(es_url)
+        self._backend = backend
         self._is_dirty = False
 
     @property
@@ -82,38 +80,12 @@ class PeeringMatrix:
         try:
             if self.is_dirty:
                 for src in self._sources.values():
-                    peer = {
-                        'timestamp': datetime.now(),
-                        'type': 'peer',
-                        'asn': src.asnum,
-                        'name': src.name,
-                        'mac': src.mac,
-                        'ipv4_in_bytes': src.ip4_in_bytes,
-                        'ipv4_out_bytes': src.ipv4_out_bytes,
-                        'ipv6_in_bytes': src.ipv6_in_bytes,
-                        'ipv6_out_bytes': src.ipv6_out_bytes,
-                        'in_bytes': src.ipv4_in_bytes + src.ipv6_in_bytes,
-                        'out_bytes': src.ipv5_out_bytes + src.ipv6_out_bytes
-                    }
-                    self._es.index(index="nmflows", id=uuid4().hex, document=peer)
-                    for dst in src.destinations:
-                        flow = {
-                            'timestamp': datetime.now(),
-                            'type': 'flow',
-                            'src_asn': src.asnum,
-                            'src_name': src.name,
-                            'src_mac': src.mac,
-                            'dst_asn': dst.asnum,
-                            'dst_name': dst.name,
-                            'dst_mac': dst.mac,
-                            'ipv4_bytes': dst.ipv4_in_bytes,
-                            'ipv6_bytes': dst.ipv6_in_bytes,
-                        }
-                        self._es.index(index="nmflows", id=uuid4().hex, document=flow)
+                    self._backend.store_peer(src)
+                    self._backend.store_flows(src)
                     src.cleanup()
                 self._is_dirty = False
         except Exception as e:
-            self._logger.error(f"Error while dumping to ES: {e}")
+            self._logger.error(f"Error while dumping to backend[{self._backend}]: {e}")
 
     def dump(self, filename):
         with open(filename, 'w+') as f:

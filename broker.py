@@ -1,5 +1,6 @@
 from nmflows.peermatrix import PeeringMatrix
 from nmflows.mq import RecvQueue
+from nmflows.backend import ESBackend
 from config import CONFIG
 from daemonize import Daemonize
 import logging
@@ -15,8 +16,6 @@ def handle_msg(ch, method, properties, body):
 
 def consume_task():
     Queue.consume()
-
-
 
 def flush_task():
     while True:
@@ -46,7 +45,7 @@ if __name__ == "__main__":
     logger.addHandler(fh)
     keep_fds = [fh.stream.fileno()]
 
-    Matrix = PeeringMatrix(CONFIG['ixf_url'], CONFIG['elastic_url'], logger)
+    Matrix = PeeringMatrix(CONFIG['ixf_url'], ESBackend(CONFIG['elastic_url'], 'nmflows'), logger)
     Lock = threading.Lock()
     Queue = RecvQueue(CONFIG['rabbitmq_host'],
                       CONFIG['rabbitmq_port'],
