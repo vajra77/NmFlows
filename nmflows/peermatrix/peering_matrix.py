@@ -93,9 +93,9 @@ class PeeringMatrix:
             tot6 = 0
             for dst in src.destinations:
                 # msg += f"{dst.name}[{dst.mac}]=({dst.ipv4_in_bytes}/{dst.ipv6_in_bytes}) "
-                msg += f"{dst.name}[{dst.mac}], "
+                msg += f"{dst.name}[{dst.mac}] | "
                 tot4 += dst.ipv4_in_bytes
                 tot6 += dst.ipv6_in_bytes
             # msg += f"| SUM({tot4}/{tot6}) TOT({src.ipv4_out_bytes}/{src.ipv6_out_bytes})\n"
-            msg += "-----------------------------------------------------------\n"
+            msg += "\n-----------------------------------------------------------\n"
         return msg    
