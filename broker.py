@@ -25,7 +25,6 @@ def flush_task():
     while True:
         time.sleep(300)
         try:
-            logger.info("Flushing ...")
             with Lock:
                 Matrix.dump(CONFIG['bgp_matrix_dump'])
                 Matrix.flush()
@@ -52,7 +51,6 @@ if __name__ == "__main__":
         fh.setLevel(logging.INFO)
     logger.addHandler(fh)
     keep_fds = [fh.stream.fileno()]
-    logger.info("Initializing broker app ...")
 
     Matrix = PeeringMatrix(MACDirectory(CONFIG['ixf_url']), RRDBackend(CONFIG['rrd_base_path']))
     Lock = threading.Lock()
@@ -62,7 +60,6 @@ if __name__ == "__main__":
                       CONFIG['rabbitmq_user'],
                       CONFIG['rabbitmq_pass'],
                       handle_msg)
-    logger.info("Daemonizing broker app ...")
 
     daemon = Daemonize(app="nmflows-broker", pid=CONFIG['broker_pid'], action=do_main, keep_fds=keep_fds)
     daemon.start()
