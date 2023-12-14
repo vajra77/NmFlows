@@ -21,7 +21,7 @@ def flush_task():
     while True:
         time.sleep(300)
         with Lock:
-            Matrix.dump('/tmp/bgp-matrix.txt')
+            Matrix.dump(CONFIG['bgp_matrix_dump'])
             Matrix.flush()
 
 
