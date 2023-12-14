@@ -41,7 +41,7 @@ if __name__ == "__main__":
     if CONFIG['debug']:
         fh.setLevel(logging.DEBUG)
     else:
-        fh.setLevel(logging.ERROR)
+        fh.setLevel(logging.INFO)
     logger.addHandler(fh)
     keep_fds = [fh.stream.fileno()]
 
