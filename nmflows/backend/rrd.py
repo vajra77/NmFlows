@@ -10,11 +10,11 @@ class RRDBackend(Backend):
         self._base_path = base_path
 
     def store_flows(self, src: PeeringFlow):
-        path = self._base_path + f"/{src.name}"
+        path = self._base_path + f"/as{src.asnum}"
         if not os.path.exists(path):
             os.makedirs(path)
         for dst in src.destinations:
-            filename = f"{path}/from_{src.name}-{src.mac}_to_{dst.name}-{dst.mac}.rrd"
+            filename = f"{path}/from__as{src.asnum}-{src.mac}__to__as{dst.asnum}-{dst.mac}.rrd"
             if not os.path.isfile(filename):
                 rrdtool.create(filename,
                                "--step", "300",
@@ -33,10 +33,10 @@ class RRDBackend(Backend):
             rrdtool.update(filename, "N:%s:%s" % (dst.ipv4_in_bytes, dst.ipv6_in_bytes))
 
     def store_peer(self, src: PeeringFlow):
-        path = self._base_path + f"/{src.name}"
+        path = self._base_path + f"/as{src.asnum}"
         if not os.path.exists(path):
             os.makedirs(path)
-        filename = f"{path}/iface_{src.name}-{src.mac}.rrd"
+        filename = f"{path}/iface__AS{src.asnum}-{src.mac}.rrd"
         if not os.path.isfile(filename):
             rrdtool.create(filename,
                            "--step", "300",
