@@ -78,6 +78,7 @@ class PeeringMatrix:
 
     def flush(self):
         try:
+            print("flushing matrix")
             if self.is_dirty:
                 for src in self._sources.values():
                     self._backend.store_peer(src)
