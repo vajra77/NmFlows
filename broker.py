@@ -26,6 +26,7 @@ def flush_task():
     while True:
         time.sleep(300)
         try:
+            logger.info("Flushing ...")
             with Lock:
                 Matrix.dump(CONFIG['bgp_matrix_dump'])
                 Matrix.flush()
