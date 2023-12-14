@@ -16,7 +16,6 @@ def handle_msg(ch, method, properties, body):
         with Lock:
             Matrix.add_flow(jsonpickle.decode(json.loads(body)))
     except Exception as e:
-        Lock.release()
         logger.error(f"Error while adding flow: {e}")
 
 def consume_task():
@@ -31,7 +30,6 @@ def flush_task():
                 Matrix.dump(CONFIG['bgp_matrix_dump'])
                 Matrix.flush()
         except Exception as e:
-            Lock.release()
             logger.error(f"Error while flushing matrix: {e}")
             continue
 
@@ -55,6 +53,7 @@ if __name__ == "__main__":
     logger.addHandler(fh)
     keep_fds = [fh.stream.fileno()]
     logger.info("Initializing broker app ...")
+
     Matrix = PeeringMatrix(MACDirectory(CONFIG['ixf_url']), RRDBackend(CONFIG['rrd_base_path']))
     Lock = threading.Lock()
     Queue = RecvQueue(CONFIG['rabbitmq_host'],
@@ -64,5 +63,6 @@ if __name__ == "__main__":
                       CONFIG['rabbitmq_pass'],
                       handle_msg)
     logger.info("Daemonizing broker app ...")
+
     daemon = Daemonize(app="nmflows-broker", pid=CONFIG['broker_pid'], action=do_main, keep_fds=keep_fds)
     daemon.start()

@@ -61,9 +61,7 @@ class PeeringMatrix:
                 self._add_source(das)
         return das
 
-
     def add_flow(self, flow: StorableFlow):
-        self._is_dirty = True
         source = self._get_flow_source(flow)
         dest = self._get_flow_destination(flow)
         if source.is_unknown() or dest.is_unknown():
@@ -73,6 +71,7 @@ class PeeringMatrix:
             dest.account_in_bytes(flow.computed_size, flow.proto)
             dest_as_source = self._get_flow_destination_as_source(flow)
             dest_as_source.account_in_bytes(flow.computed_size, flow.proto)
+            self._is_dirty = True
 
     def flush(self):
         if self.is_dirty:
