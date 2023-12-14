@@ -55,3 +55,6 @@ class RRDBackend(Backend):
                            "RRA:MAX:0.5:444:797"
             )
         rrdtool.update(filename, "N:%s:%s:%s:%s" % (src.ipv4_in_bytes, src.ipv4_out_bytes, src.ipv6_in_bytes, src.ipv6_out_bytes))
+
+    def __repr__(self):
+        return "RRD"
