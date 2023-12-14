@@ -6,10 +6,9 @@ from nmflows.backend import Backend
 
 class PeeringMatrix:
 
-    def __init__(self, ixf_url, backend: Backend, logger):
+    def __init__(self, directory: MACDirectory, backend: Backend):
         self._sources = {}
-        self._directory = MACDirectory(ixf_url)
-        self._logger = logger
+        self._directory = directory
         self._backend = backend
         self._is_dirty = False
 
@@ -68,7 +67,6 @@ class PeeringMatrix:
         source = self._get_flow_source(flow)
         dest = self._get_flow_destination(flow)
         if source.is_unknown() or dest.is_unknown():
-            self._logger.info(f"source/dest unknown: [{flow.src_mac}/{flow.dst_mac}]")
             return
         else:
             source.account_out_bytes(flow.computed_size, flow.proto)
@@ -77,16 +75,12 @@ class PeeringMatrix:
             dest_as_source.account_in_bytes(flow.computed_size, flow.proto)
 
     def flush(self):
-        try:
-            self._logger.info("flushing matrix")
-            if self.is_dirty:
-                for src in self._sources.values():
-                    self._backend.store_peer(src)
-                    self._backend.store_flows(src)
-                    src.cleanup()
-                self._is_dirty = False
-        except Exception as e:
-            self._logger.error(f"Error while dumping to backend[{self._backend}]: {e}")
+        if self.is_dirty:
+            for src in self._sources.values():
+                self._backend.store_peer(src)
+                self._backend.store_flows(src)
+                src.cleanup()
+            self._is_dirty = False
 
     def dump(self, filename):
         with open(filename, 'w+') as f:

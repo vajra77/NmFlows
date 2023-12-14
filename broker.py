@@ -1,4 +1,5 @@
 from nmflows.peermatrix import PeeringMatrix
+from nmflows.utils import MACDirectory
 from nmflows.mq import RecvQueue
 from nmflows.backend import RRDBackend
 from config import CONFIG
@@ -11,8 +12,12 @@ import time
 
 
 def handle_msg(ch, method, properties, body):
-    with Lock:
-        Matrix.add_flow(jsonpickle.decode(json.loads(body)))
+    try:
+        with Lock:
+            Matrix.add_flow(jsonpickle.decode(json.loads(body)))
+    except Exception as e:
+        Lock.release()
+        logger.error(f"Error while adding flow: {e}")
 
 def consume_task():
     Queue.consume()
@@ -20,10 +25,14 @@ def consume_task():
 def flush_task():
     while True:
         time.sleep(300)
-        with Lock:
-            Matrix.dump(CONFIG['bgp_matrix_dump'])
-            Matrix.flush()
-
+        try:
+            with Lock:
+                Matrix.dump(CONFIG['bgp_matrix_dump'])
+                Matrix.flush()
+        except Exception as e:
+            Lock.release()
+            logger.error(f"Error while flushing matrix: {e}")
+            continue
 
 def do_main():
     t1 = threading.Thread(target=consume_task)
@@ -45,7 +54,7 @@ if __name__ == "__main__":
     logger.addHandler(fh)
     keep_fds = [fh.stream.fileno()]
 
-    Matrix = PeeringMatrix(CONFIG['ixf_url'], RRDBackend(CONFIG['rrd_base_path']), logger)
+    Matrix = PeeringMatrix(MACDirectory(CONFIG['ixf_url']), RRDBackend(CONFIG['rrd_base_path']))
     Lock = threading.Lock()
     Queue = RecvQueue(CONFIG['rabbitmq_host'],
                       CONFIG['rabbitmq_port'],
