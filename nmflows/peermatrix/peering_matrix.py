@@ -97,4 +97,5 @@ class PeeringMatrix:
                 tot4 += dst.ipv4_in_bytes
                 tot6 += dst.ipv6_in_bytes
             # msg += f"| SUM({tot4}/{tot6}) TOT({src.ipv4_out_bytes}/{src.ipv6_out_bytes})\n"
+            msg += "-----------------------------------------------------------\n"
         return msg    
