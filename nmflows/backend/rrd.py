@@ -30,7 +30,7 @@ class RRDBackend(Backend):
                                "RRA:MAX:0.5:24:775",
                                "RRA:MAX:0.5:444:797"
                 )
-            rrdtool.update(filename, "N:%s:%s" % (dst.ipv4_in_bytes, dst.ipv6_in_bytes))
+            rrdtool.update(filename, "N:%s:%s" % (dst.ipv4_in_bytes * 8, dst.ipv6_in_bytes * 8))
 
     def store_peer(self, src: PeeringFlow):
         path = self._base_path + f"/AS{src.asnum}"
@@ -54,7 +54,7 @@ class RRDBackend(Backend):
                            "RRA:MAX:0.5:24:775",
                            "RRA:MAX:0.5:444:797"
             )
-        rrdtool.update(filename, "N:%s:%s:%s:%s" % (src.ipv4_in_bytes, src.ipv4_out_bytes, src.ipv6_in_bytes, src.ipv6_out_bytes))
+        rrdtool.update(filename, "N:%s:%s:%s:%s" % (src.ipv4_in_bytes * 8, src.ipv4_out_bytes * 8, src.ipv6_in_bytes * 8, src.ipv6_out_bytes * 8))
 
     def __repr__(self):
         return "RRD"
