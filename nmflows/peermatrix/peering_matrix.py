@@ -56,7 +56,7 @@ class PeeringMatrix:
         das = self.get_source(flow.dst_mac)
         if das is None:
             entry = self._directory.get(flow.dst_mac)
-            if entry is not None:                                                                                       # This should always be true at the point method is called
+            if entry is not None:
                 das = PeeringFlow.from_mac_entry(entry)
                 self._add_source(das)
         return das
@@ -88,12 +88,12 @@ class PeeringMatrix:
     def __repr__(self):
         msg = ""
         for src in self._sources.values():
-            msg += f"FROM: {src.name}[{src.mac}] TO: "
+            msg += f"FROM: {src.name}[:{src.mac[-2:]}] TO: "
             tot4 = 0
             tot6 = 0
             for dst in src.destinations:
                 # msg += f"{dst.name}[{dst.mac}]=({dst.ipv4_in_bytes}/{dst.ipv6_in_bytes}) "
-                msg += f"{dst.name}[{dst.mac}] | "
+                msg += f"{dst.name}[:{dst.mac[:-2]}] | "
                 tot4 += dst.ipv4_in_bytes
                 tot6 += dst.ipv6_in_bytes
             # msg += f"| SUM({tot4}/{tot6}) TOT({src.ipv4_out_bytes}/{src.ipv6_out_bytes})\n"
