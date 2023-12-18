@@ -26,10 +26,14 @@ class IPv6PacketHeader:
     def length(self):
         return self._length
 
+    @property
+    def payload_length(self):
+        return self._payload_length
+
     @classmethod
     def unpack(cls, data: bytes):
-        p_len = int.from_bytes(data[4:5], 'big')
-        proto = int.from_bytes(data[6], 'big') & 0xff
+        p_len = int.from_bytes(data[4:6], 'big') & 0xffff
+        proto = int.from_bytes(data[6:7], 'big') & 0xff
         src_addr = socket.inet_ntop(socket.AF_INET6, data[8:24])
         dst_addr = socket.inet_ntop(socket.AF_INET6, data[24:40])
         return cls(src_addr, dst_addr, proto, 40, p_len)
@@ -38,5 +42,6 @@ class IPv6PacketHeader:
         return f"""
                                     Src Addr: {self.src_addr}
                                     Dst Addr: {self.dst_addr}
+                                    Payload Len: {self.payload_length}
         """
 
