@@ -5,6 +5,7 @@ from config import CONFIG
 
 app = Flask(__name__)
 
+
 @app.route('/', methods=['GET'])
 def index():
     response = make_response(render_template('static/index.html'), 200)
@@ -29,5 +30,5 @@ def get_flow():
         response = make_response(data, 200)
         response.headers.set('Content-Type', 'image/png')
         return response, 200
-    except Exception as e:
+    except FileNotFoundError:
         return make_response(render_template("static/404.html"), 404)
