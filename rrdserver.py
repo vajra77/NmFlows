@@ -20,10 +20,10 @@ def get_flow():
         'monthly': 'm',
         'yearly': 'y',
     }
-    src_asn = request.args.get('src_asn')
-    src_mac = request.args.get('src_mac')
-    dst_asn = request.args.get('dst_asn')
-    dst_mac = request.args.get('dst_mac')
+    src = request.args.get('src')
+    dst = request.args.get('dst')
+    src_asn, src_mac = src.split('-')
+    dst_asn, dst_mac  = dst.split('-')
     try:
         backend = RRDBackend(CONFIG['rrd_base_path'])
         data = backend.graph_flow(schedule[period], src_asn, src_mac, dst_asn, dst_mac)

@@ -56,15 +56,16 @@ class RRDBackend(Backend):
             )
         rrdtool.update(filename, "N:%s:%s:%s:%s" % (src.ipv4_in_bytes, src.ipv4_out_bytes, src.ipv6_in_bytes, src.ipv6_out_bytes))
 
-    def graph_flow(self, schedule, src_asn, src_mac, dst_asn, dst_mac):
+    def graph_flow(self, schedule, src, dst):
         """Create temporary PNG file of RRD flow data
         and returns as byte-stream"""
-        path = self._base_path + f"/AS{src_asn}"
-        rrdfile = f"{path}/from__AS{src_asn}-{src_mac}__to__AS{dst_asn}-{dst_mac}.rrd"
+        src_asn = src.split('-')[0]
+        path = self._base_path + f"/{src_asn}"
+        rrdfile = f"{path}/from__{src}__to__{dst}.rrd"
         if not os.path.isfile(rrdfile):
             raise FileNotFoundError
         else:
-            imgfile = f"/tmp/from__AS{src_asn}-{src_mac}__to__AS{dst_asn}-{dst_mac}.png"
+            imgfile = f"/tmp/from__{src}__to__{dst}.png"
             rrdtool.graph(imgfile,
                           "--imgformat", "PNG",
                           "--width", "640",
