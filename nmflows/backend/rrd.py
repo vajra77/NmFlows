@@ -67,13 +67,13 @@ class RRDBackend(Backend):
             imgfile = f"/tmp/from__AS{src_asn}-{src_mac}__to__AS{dst_asn}-{dst_mac}.png"
             rrdtool.graph(imgfile,
                           "--imgformat", "PNG",
-                          "--width", "800",
-                          "--height", "540",
+                          "--width", "640",
+                          "--height", "320",
                           "--start", f"-1{schedule}",
                           f"DEF:flow4={rrdfile}:ipv4_bytes:AVERAGE",
                           f"DEF:flow6={rrdfile}:ipv6_bytes:AVERAGE",
-                          "LINE1:flow4#0000FF:ipv4_bytes\r",
-                          "LINE2:flow6#00FF00:ipv6_bytes\r"
+                          "LINE1:flow4#0000FF:IPv4\r",
+                          "LINE2:flow6#00FF00:IPv6\r"
             )
             #              "GPRINT:flow4:AVERAGE:Avg IPv4:%6.0lf ",
             #              "GPRINT:flow4:MAX:Max IPv4:%6.0lf \r",
