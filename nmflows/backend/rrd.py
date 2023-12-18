@@ -76,7 +76,7 @@ class RRDBackend(Backend):
                           "COMMENT:                 ",
                           "AREA:bits4#00FF00:IPv4",
                           "GPRINT:bits4:MAX:Max %6.2lf %Sbps",
-                          "GPRINT:bits4:AVERAGE:Avg %6.2lf %Sbpsr,
+                          "GPRINT:bits4:AVERAGE:Avg %6.2lf %Sbpsr",
                           "GPRINT:bits4:LAST:Cur %6.2lf %Sbps\l",
                           "LINE:bits6#FF0000:IPv6",
                           "GPRINT:bits6:MAX:Max %6.2lf %Sbps",
