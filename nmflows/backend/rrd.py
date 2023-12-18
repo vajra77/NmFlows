@@ -100,5 +100,43 @@ class RRDBackend(Backend):
         else:
             raise FileNotFoundError([f_rrdfile, r_rrdfile])
 
+    def graph_peer(self, schedule, src, proto):
+        src_asn, src_mac = src.split('-')
+        if_path = self._base_path + f"/{src_asn}"
+        rrdfile = f"{if_path}/iface__{src}.rrd"
+        if os.path.isfile(rrdfile):
+            imgfile = f"/tmp/iface__{src}.png"
+            date = datetime.today()
+            rrdtool.graph(imgfile,
+                          "--imgformat", "PNG",
+                          "--width", "640",
+                          "--height", "256",
+                          "--start", f"-1{schedule}",
+                          "--title", f"{proto.upper()} Interface Traffic {src_asn}[:{src_mac[-2:]}]\r\r",
+                          "--watermark", f"Generated: {date} / NmFlows by Namex IXP",
+                          "--vertical-label", "bits / seconds",
+                          f"DEF:in_flow={rrdfile}:{proto}_in_bytes:AVERAGE",
+                          f"DEF:out_flow={rrdfile}:{proto}_out_bytes:AVERAGE",
+                          "CDEF:in_bits=f_flow,8,*",
+                          "CDEF:out_bits=r_flow,8,*",
+                          "COMMENT:                 \l",
+                          f"AREA:out_bits#00FF00:Outbound \t",
+                          "GPRINT:out_bits:MAX:Max %3.3lf%s\t",
+                          "GPRINT:out_bits:AVERAGE:Avg %3.3lf%s\t",
+                          "GPRINT:out_bits:LAST:Cur %3.3lf%s\l",
+                          f"LINE:in_bits#0000FF:Inbound\t",
+                          "GPRINT:in_bits:MAX:Max %3.3lf%s\t",
+                          "GPRINT:in_bits:AVERAGE:Avg %3.3lf%s\t",
+                          "GPRINT:in_bits:LAST:Cur %3.3lf%s\l",
+                          "COMMENT:                 \l",
+                          )
+            f = open(imgfile, mode="rb")
+            data = f.read()
+            f.close()
+            os.unlink(imgfile)
+            return data
+        else:
+            raise FileNotFoundError(rrdfile)
+
     def __repr__(self):
         return "RRD"

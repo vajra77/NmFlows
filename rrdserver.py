@@ -37,3 +37,29 @@ def get_flow():
         return make_response(render_template("404.html", error=e), 404)
     except Exception as e:
         return make_response(render_template("error.html", error=e), 500)
+
+@app.route('/peer', methods=['GET'])
+def get_peer():
+    period = request.args.get('period')
+    schedule = {
+        'daily': 'd',
+        'weekly': 'w',
+        'monthly': 'm',
+        'yearly': 'y',
+    }
+    src = request.args.get('src')
+    proto = request.args.get('proto')
+
+    if proto not in ['ipv4', 'ipv6']:
+        return make_response(render_template("error.html", error="unknown protocol"), 500)
+
+    try:
+        backend = RRDBackend(CONFIG['rrd_base_path'])
+        data = backend.graph_peer(schedule[period], src, proto)
+        response = make_response(data, 200)
+        response.headers.set('Content-Type', 'image/png')
+        return response
+    except FileNotFoundError as e:
+        return make_response(render_template("404.html", error=e), 404)
+    except Exception as e:
+        return make_response(render_template("error.html", error=e), 500)
