@@ -87,7 +87,7 @@ class RRDBackend(Backend):
                           "GPRINT:r_bits:MAX:Max %3.3lf%s\t",
                           "GPRINT:r_bits:AVERAGE:Avg %3.3lf%s\t",
                           "GPRINT:r_bits:LAST:Cur %3.3lf%s\l",
-                          "COMMENT:                 \l",
+                          "COMMENT:         Made with Namex IXP NmFlows        \l",
                           )
             f = open(imgfile, mode="rb")
             data = f.read()
