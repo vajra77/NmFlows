@@ -32,3 +32,5 @@ def get_flow():
         return response, 200
     except FileNotFoundError:
         return make_response(render_template("static/404.html"), 404)
+    except Exception as e:
+        return make_response(render_template("static/error.html", error=e), 500)
