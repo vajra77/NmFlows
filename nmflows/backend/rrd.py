@@ -62,9 +62,7 @@ class RRDBackend(Backend):
         src_asn = src.split('-')[0]
         path = self._base_path + f"/{src_asn}"
         rrdfile = f"{path}/from__{src}__to__{dst}.rrd"
-        if not os.path.isfile(rrdfile):
-            raise FileNotFoundError(rrdfile)
-        else:
+        if os.path.isfile(rrdfile):
             imgfile = f"/tmp/from__{src}__to__{dst}.png"
             rrdtool.graph(imgfile,
                           "--imgformat", "PNG",
@@ -90,6 +88,8 @@ class RRDBackend(Backend):
             f.close()
             os.unlink(imgfile)
             return data
+        else:
+            raise FileNotFoundError(rrdfile)
 
     def __repr__(self):
         return "RRD"
