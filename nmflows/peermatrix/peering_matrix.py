@@ -1,7 +1,7 @@
 from nmflows.storage import StorableFlow
 from nmflows.utils import MACDirectory
 from nmflows.peermatrix.peering_flow import PeeringFlow
-from nmflows.backend import Backend
+from nmflows.backend.backend import Backend
 
 
 class PeeringMatrix:
