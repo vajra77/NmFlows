@@ -60,9 +60,11 @@ class RRDBackend(Backend):
         """Create temporary PNG file of RRD flow data
         and returns as byte-stream"""
         src_asn = src.split('-')[0]
-        path = self._base_path + f"/{src_asn}"
-        f_rrdfile = f"{path}/from__{src}__to__{dst}.rrd"
-        r_rrdfile = f"{path}/from__{dst}__to__{src}.rrd"
+        dst_asn = dst.split('-')[0]
+        f_path = self._base_path + f"/{src_asn}"
+        r_path = self._base_path + f"/{dst_asn}"
+        f_rrdfile = f"{f_path}/from__{src}__to__{dst}.rrd"
+        r_rrdfile = f"{r_path}/from__{dst}__to__{src}.rrd"
         if os.path.isfile(f_rrdfile) and os.path.isfile(r_rrdfile):
             imgfile = f"/tmp/from__{src}__to__{dst}.png"
             rrdtool.graph(imgfile,
