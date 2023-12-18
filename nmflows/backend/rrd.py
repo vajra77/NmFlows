@@ -80,13 +80,13 @@ class RRDBackend(Backend):
                           "CDEF:r_bits=r_flow,8,*",
                           "COMMENT:                 \l",
                           f"AREA:f_bits#00FF00:{src_asn} -> {dst_asn}",
-                          "GPRINT:f_bits:MAX:Max %3.3lf%sbps\t",
-                          "GPRINT:f_bits:AVERAGE:Avg %3.3lf%sbps\t",
-                          "GPRINT:f_bits:LAST:Cur %3.3lf%sbps\l",
+                          "GPRINT:f_bits:MAX:Max %3.3lf%s\t",
+                          "GPRINT:f_bits:AVERAGE:Avg %3.3lf%s\t",
+                          "GPRINT:f_bits:LAST:Cur %3.3lf%s\l",
                           f"LINE:r_bits#0000FF:{src_asn} <- {dst_asn}",
-                          "GPRINT:r_bits:MAX:Max %3.3lf%sbps\t",
-                          "GPRINT:r_bits:AVERAGE:Avg %3.3lf%sbps\t",
-                          "GPRINT:r_bits:LAST:Cur %3.3lf%sbps\l",
+                          "GPRINT:r_bits:MAX:Max %3.3lf%s\t",
+                          "GPRINT:r_bits:AVERAGE:Avg %3.3lf%s\t",
+                          "GPRINT:r_bits:LAST:Cur %3.3lf%s\l",
             )
             f = open(imgfile, mode="rb")
             data = f.read()
