@@ -5,6 +5,10 @@ from config import CONFIG
 
 app = Flask(__name__)
 
+@app.route('/', methods=['GET'])
+def index():
+    response = make_response("<p>It works!</p>", 200)
+    return response
 
 @app.route('/flow', methods=['GET'])
 def get_flow():
