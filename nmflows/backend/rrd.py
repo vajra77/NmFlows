@@ -30,7 +30,7 @@ class RRDBackend(Backend):
                                "RRA:MAX:0.5:24:775",
                                "RRA:MAX:0.5:444:797"
                 )
-            rrdtool.update(filename, "N:%s:%s" % (dst.ipv4_out_bytes * 8, dst.ipv6_out_bytes * 8))
+            rrdtool.update(filename, "N:%s:%s" % (dst.ipv4_out_bytes, dst.ipv6_out_bytes))
 
     def store_peer(self, src: PeeringFlow):
         path = self._base_path + f"/AS{src.asnum}"
@@ -54,7 +54,7 @@ class RRDBackend(Backend):
                            "RRA:MAX:0.5:24:775",
                            "RRA:MAX:0.5:444:797"
             )
-        rrdtool.update(filename, "N:%s:%s:%s:%s" % (src.ipv4_in_bytes * 8, src.ipv4_out_bytes * 8, src.ipv6_in_bytes * 8, src.ipv6_out_bytes * 8))
+        rrdtool.update(filename, "N:%s:%s:%s:%s" % (src.ipv4_in_bytes, src.ipv4_out_bytes, src.ipv6_in_bytes, src.ipv6_out_bytes))
 
     def graph_flow(self, schedule, src_asn, src_mac, dst_asn, dst_mac):
         """Create temporary PNG file of RRD flow data
@@ -75,13 +75,15 @@ class RRDBackend(Backend):
                           "CDEF:bits4=flow4,8,*",
                           "CDEF:bits6=flow6,8,*",
                           "COMMENT:                 ",
-                          "AREA:bits4#00FF00:IPv4 ",
-                          "LINE:bits6#FF0000:IPv6 ",
-                          "GPRINT:bits4:AVERAGE:Avg IPv4:\"%6.0lf %Sbps\"",
-                          "GPRINT:bits4:MAX:Max IPv4:\"%6.0lf %Sbps\"\r",
-                          "GPRINT:bits6:AVERAGE:Avg IPv6:\"%6.0lf %Sbps\"",
-                          "GPRINT:bits6:MAX:Max IPv6:\"%6.0lf %Sbps\"\r"
-            )
+                          "AREA:bits4#00FF00:IPv4",
+                          "LINE:bits6#FF0000:IPv6\r",
+                          "GPRINT:bits4:MAX:Max: %6.0lf %Sbps ",
+                          "GPRINT:bits4:AVERAGE:Avg: %6.0lf %Sbps \r",
+                          "GPRINT:bits4:LAST:Cur: %6.0lf %Sbps \r",
+                          "GPRINT:bits6:MAX:Max: %6.0lf %Sbps ",
+                          "GPRINT:bits6:AVERAGE:Avg: %6.0lf %Sbps \r",
+                          "GPRINT:bits6:LAST:Cur: %6.0lf %Sbps \r",
+                          )
             f = open(imgfile, mode="rb")
             data = f.read()
             f.close()
