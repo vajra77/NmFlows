@@ -56,5 +56,35 @@ class RRDBackend(Backend):
             )
         rrdtool.update(filename, "N:%s:%s:%s:%s" % (src.ipv4_in_bytes * 8, src.ipv4_out_bytes * 8, src.ipv6_in_bytes * 8, src.ipv6_out_bytes * 8))
 
+    def graph_flow(self, schedule, src_asn, src_mac, dst_asn, dst_mac):
+        """Create temporary PNG file of RRD flow data
+        and returns as byte-stream"""
+        path = self._base_path + f"/AS{src_asn}"
+        rrdfile = f"{path}/from__AS{src_asn}-{src_mac}__to__AS{dst_asn}-{dst_mac}.rrd"
+        if not os.path.isfile(rrdfile):
+            raise FileNotFoundError
+        else:
+            imgfile = f"/tmp/from__AS{src_asn}-{src_mac}__to__AS{dst_asn}-{dst_mac}.png"
+            rrdtool.graph(imgfile,
+                          "--imgformat", "PNG",
+                          "--width", "800",
+                          "--height", "540",
+                          "--start", f"-1{schedule}",
+                          f"DEF:flow4={rrdfile}:ipv4_bytes:AVERAGE",
+                          f"DEF:flow6={rrdfile}:ipv6_bytes:AVERAGE",
+                          "LINE1:flow4#0000FF:ipv4_bytes\r",
+                          "LINE2:flow6#00FF00:ipv6_bytes\r",
+                          "GPRINT:flow4:AVERAGE:Avg IPv4: %2.0lf ",
+                          "GPRINT:flow4:MAX:Max IPv4: %2.0lf \r",
+                          "GPRINT:flow6:AVERAGE:Avg IPv6: %2.0lf ",
+                          "GPRINT:flow6:MAX:Max IPv6: %2.0lf \r"
+            )
+            f = open(imgfile, mode="rb")
+            data = f.read()
+            f.close()
+            os.unlink(imgfile)
+            return data
+
+
     def __repr__(self):
         return "RRD"
