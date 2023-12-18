@@ -74,10 +74,10 @@ class RRDBackend(Backend):
                           f"DEF:flow6={rrdfile}:ipv6_bytes:AVERAGE",
                           "LINE1:flow4#0000FF:ipv4_bytes\r",
                           "LINE2:flow6#00FF00:ipv6_bytes\r",
-                          "GPRINT:flow4:AVERAGE:Avg IPv4: '%2.0lf' ",
-                          "GPRINT:flow4:MAX:Max IPv4: '%2.0lf' \r",
-                          "GPRINT:flow6:AVERAGE:Avg IPv6: '%2.0lf' ",
-                          "GPRINT:flow6:MAX:Max IPv6: '%2.0lf' \r"
+                          "GPRINT:flow4:AVERAGE:Avg IPv4:%6.0lf ",
+                          "GPRINT:flow4:MAX:Max IPv4:%6.0lf \r",
+                          "GPRINT:flow6:AVERAGE:Avg IPv6:%6.0lf ",
+                          "GPRINT:flow6:MAX:Max IPv6:%6.0lf \r"
             )
             f = open(imgfile, mode="rb")
             data = f.read()
