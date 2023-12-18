@@ -3,7 +3,7 @@ from flask import Flask, request, make_response, render_template
 from config import CONFIG
 
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='static')
 
 
 @app.route('/', methods=['GET'])
