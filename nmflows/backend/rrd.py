@@ -72,8 +72,8 @@ class RRDBackend(Backend):
                           "--start", f"-1{schedule}",
                           f"DEF:flow4={rrdfile}:ipv4_bytes:AVERAGE",
                           f"DEF:flow6={rrdfile}:ipv6_bytes:AVERAGE",
-                          "LINE1:flow4#0000FF:IPv4\r",
-                          "LINE2:flow6#00FF00:IPv6\r"
+                          "AREA1:flow4#00FF00:\rIPv4\r",
+                          "LINE2:flow6#FF0000:\rIPv6\r"
             )
             #              "GPRINT:flow4:AVERAGE:Avg IPv4:%6.0lf ",
             #              "GPRINT:flow4:MAX:Max IPv4:%6.0lf \r",
