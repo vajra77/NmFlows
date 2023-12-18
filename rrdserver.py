@@ -8,7 +8,7 @@ app = Flask(__name__, template_folder='static')
 
 @app.route('/', methods=['GET'])
 def index():
-    response = make_response(render_template('static/index.html'), 200)
+    response = make_response(render_template('index.html'), 200)
     return response
 
 @app.route('/flow', methods=['GET'])
@@ -31,6 +31,6 @@ def get_flow():
         response.headers.set('Content-Type', 'image/png')
         return response, 200
     except FileNotFoundError:
-        return make_response(render_template("static/404.html"), 404)
+        return make_response(render_template("404.html"), 404)
     except Exception as e:
-        return make_response(render_template("static/error.html", error=e), 500)
+        return make_response(render_template("error.html", error=e), 500)
