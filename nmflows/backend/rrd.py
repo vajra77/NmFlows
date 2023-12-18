@@ -74,7 +74,7 @@ class RRDBackend(Backend):
                           "--start", f"-1{schedule}",
                           "--title", f"P2P Traffic {src}:{dst}\l",
                           "--vertical-label", "bits / seconds",
-                          f"DEF:f_flow{f_rrdfile}:{proto}_bytes:AVERAGE",
+                          f"DEF:f_flow={f_rrdfile}:{proto}_bytes:AVERAGE",
                           f"DEF:r_flow={r_rrdfile}:{proto}_bytes:AVERAGE",
                           "CDEF:f_bits=f_flow,8,*",
                           "CDEF:r_bits=r_flow,8,*",
