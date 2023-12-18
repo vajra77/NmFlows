@@ -27,8 +27,8 @@ def get_flow():
         data = backend.graph_flow(schedule[period], src, dst)
         response = make_response(data, 200)
         response.headers.set('Content-Type', 'image/png')
-        return response, 200
-    except FileNotFoundError:
-        return make_response(render_template("404.html"), 404)
+        return response
+    except FileNotFoundError as e:
+        return make_response(render_template("404.html", error=e), 404)
     except Exception as e:
         return make_response(render_template("error.html", error=e), 500)
