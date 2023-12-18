@@ -59,8 +59,8 @@ class RRDBackend(Backend):
     def graph_flow(self, schedule, src, dst, proto):
         """Create temporary PNG file of RRD flow data
         and returns as byte-stream"""
-        src_asn = src.split('-')[0]
-        dst_asn = dst.split('-')[0]
+        src_asn, src_mac = src.split('-')
+        dst_asn, dst_mac = dst.split('-')
         f_path = self._base_path + f"/{src_asn}"
         r_path = self._base_path + f"/{dst_asn}"
         f_rrdfile = f"{f_path}/from__{src}__to__{dst}.rrd"
@@ -72,18 +72,18 @@ class RRDBackend(Backend):
                           "--width", "640",
                           "--height", "320",
                           "--start", f"-1{schedule}",
-                          "--title", f"P2P Traffic {src}:{dst}\l",
+                          "--title", f"P2P Traffic {src_asn}[:{src_mac[-2:]}] -> {dst_asn}[:{dst_mac[-2:]}]\r\r",
                           "--vertical-label", "bits / seconds",
                           f"DEF:f_flow={f_rrdfile}:{proto}_bytes:AVERAGE",
                           f"DEF:r_flow={r_rrdfile}:{proto}_bytes:AVERAGE",
                           "CDEF:f_bits=f_flow,8,*",
                           "CDEF:r_bits=r_flow,8,*",
                           "COMMENT:                 \l",
-                          "AREA:f_bits#00FF00:Forward",
+                          f"AREA:f_bits#00FF00:{src_asn} to {dst_asn}",
                           "GPRINT:f_bits:MAX:Max %6.2lf %Sbps",
                           "GPRINT:f_bits:AVERAGE:Avg %6.2lf %Sbps",
                           "GPRINT:f_bits:LAST:Cur %6.2lf %Sbps\l",
-                          "LINE:r_bits#FF0000:Reverse",
+                          f"LINE:r_bits#FF0000:{dst_asn} to {src_asn}",
                           "GPRINT:r_bits:MAX:Max %6.2lf %Sbps",
                           "GPRINT:r_bits:AVERAGE:Avg %6.2lf %Sbps",
                           "GPRINT:r_bits:LAST:Cur %6.2lf %Sbps\l",
