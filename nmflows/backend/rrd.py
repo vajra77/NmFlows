@@ -91,6 +91,5 @@ class RRDBackend(Backend):
             os.unlink(imgfile)
             return data
 
-
     def __repr__(self):
         return "RRD"
