@@ -73,7 +73,7 @@ class RRDBackend(Backend):
                           f"DEF:flow6={rrdfile}:ipv6_bytes:AVERAGE",
                           "CDEF:bits4=flow4,8,*",
                           "CDEF:bits6=flow6,8,*",
-                          "COMMENT:                 ",
+                          "COMMENT:                 \l",
                           "AREA:bits4#00FF00:IPv4",
                           "GPRINT:bits4:MAX:Max %6.2lf %Sbps",
                           "GPRINT:bits4:AVERAGE:Avg %6.2lf %Sbpsr",
