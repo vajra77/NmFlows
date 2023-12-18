@@ -36,6 +36,8 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                 timestamp = sample.timestamp
                 try:
                     for record in sample.records:
+                        if CONFIG['debug']:
+                            logger.debug(f"[RECORD]: {record}")
                         flow = StorableFlow.from_record(timestamp, rate, record)
                         queue.send(json.dumps(jsonpickle.encode(flow)))
                 except AttributeError:

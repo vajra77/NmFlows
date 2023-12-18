@@ -23,14 +23,19 @@ ALLOWED_ETHERTYPES = [ ETHERTYPE_ARP, ETHERTYPE_IPV4, ETHERTYPE_8021Q, ETHERTYPE
 
 class RawPacketHeader(FlowRecord):
 
-    def __init__(self, r_format, length, proto, stripped, header_length, eth_hdr, ip_hdr, txp_hdr):
+    def __init__(self, r_format, length, proto, original_length, stripped, header_length, eth_hdr, ip_hdr, txp_hdr):
         super().__init__(r_format, length)
         self._proto = proto
+        self._original_length = original_length
         self._stripped = stripped
         self._header_length = header_length
         self._datalink_header = eth_hdr
         self._network_header = ip_hdr
         self._transport_header = txp_hdr
+
+    @property
+    def original_length(self):
+        return self._original_length
 
     @property
     def proto(self):
@@ -66,7 +71,7 @@ class RawPacketHeader(FlowRecord):
     @classmethod
     def unpack(cls, rformat, rlength, data: PtrBuffer):
         proto = data.read_uint()
-        length = data.read_uint()
+        original_length = data.read_uint()
         stripped = data.read_uint()
         header_length = data.read_uint()
         if proto == PROTO_ETHERNET:
@@ -88,20 +93,20 @@ class RawPacketHeader(FlowRecord):
                 elif ip.proto == PROTO_UDP:
                     txp = UDPPacketHeader.unpack(header_data[txp_start:])
 
-                return cls(rformat, rlength, proto, stripped, header_length, ethernet, ip, txp)
+                return cls(rformat, rlength, proto, original_length, stripped, header_length, ethernet, ip, txp)
             except ParserException:
-                return cls(rformat, rlength, proto, stripped, header_length, None, None, None)
+                return cls(rformat, rlength, proto, original_length, header_length, None, None, None)
         else:
             data.skip(header_length)
-            return cls(rformat, rlength, proto, stripped, header_length, None, None, None)
+            return cls(rformat, rlength, proto, original_length, stripped, header_length, None, None, None)
 
     def __repr__(self):
         return f"""
                                 Class: {self.__class__.__name__}
                                 Proto: {self.proto}
-                                Length: {self.length}
-                                Payload Length: {self.payload_length}
+                                Original Length: {self.original_length}
                                 Stripped: {self.stripped}
+                                Payload Length: {self.payload_length}
                                 Header Length: {self.header_length}
                                 Datalink Header: {self.datalink_header}
                                 Network Header: {self.network_header}
