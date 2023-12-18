@@ -6,7 +6,7 @@ from config import CONFIG
 app = Flask(__name__)
 
 
-@app.route('/graph/flow', methods=['GET'])
+@app.route('/flow', methods=['GET'])
 def get_flow():
     period = request.args.get('period')
     schedule = {
