@@ -95,7 +95,7 @@ class RawPacketHeader(FlowRecord):
 
                 return cls(rformat, rlength, proto, original_length, stripped, header_length, ethernet, ip, txp)
             except ParserException:
-                return cls(rformat, rlength, proto, original_length, header_length, None, None, None)
+                return cls(rformat, rlength, proto, original_length, header_length, None, None, None, None)
         else:
             data.skip(header_length)
             return cls(rformat, rlength, proto, original_length, stripped, header_length, None, None, None)
