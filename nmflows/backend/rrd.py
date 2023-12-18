@@ -70,7 +70,7 @@ class RRDBackend(Backend):
                           "--height", "320",
                           "--start", f"-1{schedule}",
                           "--title", f"Traffic flowing from {src} to {dst}",
-                          "--vertical-label", "bits / seconds"
+                          "--vertical-label", "bits / seconds",
                           f"DEF:flow4={rrdfile}:ipv4_bytes:AVERAGE",
                           f"DEF:flow6={rrdfile}:ipv6_bytes:AVERAGE",
                           "CDEF:bits4=flow4,8,*",
