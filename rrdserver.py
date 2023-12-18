@@ -1,5 +1,5 @@
 from nmflows.backend import RRDBackend
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, render_template
 from config import CONFIG
 
 
@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def index():
-    response = make_response("<p>It works!</p>", 200)
+    response = make_response(render_template('static/index.html'), 200)
     return response
 
 @app.route('/flow', methods=['GET'])
@@ -30,4 +30,4 @@ def get_flow():
         response.headers.set('Content-Type', 'image/png')
         return response, 200
     except Exception as e:
-        return make_response(f"error while retrieving file: {e}", 404)
+        return make_response(render_template("static/404.html"), 404)
