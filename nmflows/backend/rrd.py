@@ -69,6 +69,8 @@ class RRDBackend(Backend):
                           "--width", "640",
                           "--height", "320",
                           "--start", f"-1{schedule}",
+                          "--title", f"Traffic flowing from {src} to {dst}",
+                          "--vertical-label", "bits / seconds"
                           f"DEF:flow4={rrdfile}:ipv4_bytes:AVERAGE",
                           f"DEF:flow6={rrdfile}:ipv6_bytes:AVERAGE",
                           "CDEF:bits4=flow4,8,*",
@@ -76,7 +78,7 @@ class RRDBackend(Backend):
                           "COMMENT:                 \l",
                           "AREA:bits4#00FF00:IPv4",
                           "GPRINT:bits4:MAX:Max %6.2lf %Sbps",
-                          "GPRINT:bits4:AVERAGE:Avg %6.2lf %Sbpsr",
+                          "GPRINT:bits4:AVERAGE:Avg %6.2lf %Sbps",
                           "GPRINT:bits4:LAST:Cur %6.2lf %Sbps\l",
                           "LINE:bits6#FF0000:IPv6",
                           "GPRINT:bits6:MAX:Max %6.2lf %Sbps",
