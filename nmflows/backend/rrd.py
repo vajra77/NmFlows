@@ -63,7 +63,7 @@ class RRDBackend(Backend):
         path = self._base_path + f"/{src_asn}"
         rrdfile = f"{path}/from__{src}__to__{dst}.rrd"
         if not os.path.isfile(rrdfile):
-            raise FileNotFoundError
+            raise FileNotFoundError(rrdfile)
         else:
             imgfile = f"/tmp/from__{src}__to__{dst}.png"
             rrdtool.graph(imgfile,
@@ -84,7 +84,7 @@ class RRDBackend(Backend):
                           "GPRINT:bits6:MAX:Max: %6.0lf %Sbps ",
                           "GPRINT:bits6:AVERAGE:Avg: %6.0lf %Sbps \r",
                           "GPRINT:bits6:LAST:Cur: %6.0lf %Sbps \r",
-                          )
+            )
             f = open(imgfile, mode="rb")
             data = f.read()
             f.close()
