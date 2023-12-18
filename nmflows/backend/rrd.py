@@ -1,5 +1,6 @@
 from nmflows.peermatrix.peering_flow import PeeringFlow
 from .backend import Backend
+from datetime import datetime
 import rrdtool
 import os
 
@@ -67,12 +68,14 @@ class RRDBackend(Backend):
         r_rrdfile = f"{r_path}/from__{dst}__to__{src}.rrd"
         if os.path.isfile(f_rrdfile) and os.path.isfile(r_rrdfile):
             imgfile = f"/tmp/from__{src}__to__{dst}.png"
+            date = datetime.today()
             rrdtool.graph(imgfile,
                           "--imgformat", "PNG",
                           "--width", "640",
                           "--height", "320",
                           "--start", f"-1{schedule}",
                           "--title", f"{proto.upper()} Traffic {src_asn}[:{src_mac[-2:]}] -> {dst_asn}[:{dst_mac[-2:]}]\r\r",
+                          "--watermark", f"Generated: {date} / NmFlows by Namex IXP",
                           "--vertical-label", "bits / seconds",
                           f"DEF:f_flow={f_rrdfile}:{proto}_bytes:AVERAGE",
                           f"DEF:r_flow={r_rrdfile}:{proto}_bytes:AVERAGE",
@@ -88,7 +91,6 @@ class RRDBackend(Backend):
                           "GPRINT:r_bits:AVERAGE:Avg %3.3lf%s\t",
                           "GPRINT:r_bits:LAST:Cur %3.3lf%s\l",
                           "COMMENT:                 \l",
-                          "COMMENT:Made with Namex IXP NmFlows#00FF00\l",
                           )
             f = open(imgfile, mode="rb")
             data = f.read()
