@@ -86,7 +86,7 @@ class RRDBackend(Backend):
                           f"LINE:r_bits#0000FF:{src_asn} <- {dst_asn}",
                           "GPRINT:r_bits:MAX:Max %3.2lf %Sbps\t\t",
                           "GPRINT:r_bits:AVERAGE:Avg %3.2lf %Sbps\t\t",
-                          "GPRINT:r_bits:LAST:Cur %3.l2f %Sbps\l",
+                          "GPRINT:r_bits:LAST:Cur %3.2lf %Sbps\l",
             )
             f = open(imgfile, mode="rb")
             data = f.read()
