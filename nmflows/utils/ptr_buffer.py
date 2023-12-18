@@ -46,7 +46,7 @@ class PtrBuffer:
     def read_uint(self) -> int:
         if self.available_data() >= UNSIGNED_INT_SIZE:
             ptr = self._ptr
-            value = int.from_bytes(self._data[ptr:ptr+UNSIGNED_INT_SIZE], 'big')
+            value = int.from_bytes(self._data[ptr:ptr+UNSIGNED_INT_SIZE], 'big') & 0xffffffff
             self._ptr += UNSIGNED_INT_SIZE
             return value
         else:
