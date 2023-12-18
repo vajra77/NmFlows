@@ -36,7 +36,7 @@ class IPv4PacketHeader:
         proto = int.from_bytes(data[9:10], 'big') & 0xffff
         src_addr = socket.inet_ntop(socket.AF_INET, data[12:16])
         dst_addr = socket.inet_ntop(socket.AF_INET, data[16:20])
-        t_length = int.from_bytes(data[2:3], 'big') & 0xff
+        t_length = int.from_bytes(data[2:3], 'big') & 0xffff
         return cls(src_addr, dst_addr, proto, ihl, t_length - ihl)
 
     def __repr__(self):
