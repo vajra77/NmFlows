@@ -129,4 +129,4 @@ class StorableFlow:
         return (f"FLOW [{self.timestamp}] | proto: {_ip(self.proto)} | "
                 f"from {self.src_addr}:{_pp(self.src_port)} via [{self.src_mac}] | "
                 f"to {self.dst_addr}:{_pp(self.dst_port)} via [{self.dst_mac}] | "
-                f"size: {self.size} | rate: {self.sampling_rate}")
+                f"size: {self.size} | rate: {self.sampling_rate} | computed: {self.computed_size}")
