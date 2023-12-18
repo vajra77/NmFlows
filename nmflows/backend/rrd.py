@@ -56,34 +56,35 @@ class RRDBackend(Backend):
             )
         rrdtool.update(filename, "N:%s:%s:%s:%s" % (src.ipv4_in_bytes, src.ipv4_out_bytes, src.ipv6_in_bytes, src.ipv6_out_bytes))
 
-    def graph_flow(self, schedule, src, dst):
+    def graph_flow(self, schedule, src, dst, proto):
         """Create temporary PNG file of RRD flow data
         and returns as byte-stream"""
         src_asn = src.split('-')[0]
         path = self._base_path + f"/{src_asn}"
-        rrdfile = f"{path}/from__{src}__to__{dst}.rrd"
-        if os.path.isfile(rrdfile):
+        f_rrdfile = f"{path}/from__{src}__to__{dst}.rrd"
+        r_rrdfile = f"{path}/from__{dst}__to__{src}.rrd"
+        if os.path.isfile(f_rrdfile) and os.path.isfile(r_rrdfile):
             imgfile = f"/tmp/from__{src}__to__{dst}.png"
             rrdtool.graph(imgfile,
                           "--imgformat", "PNG",
                           "--width", "640",
                           "--height", "320",
                           "--start", f"-1{schedule}",
-                          "--title", f"Traffic flowing from {src} to {dst}",
+                          "--title", f"P2P Traffic {src}:{dst}\l",
                           "--vertical-label", "bits / seconds",
-                          f"DEF:flow4={rrdfile}:ipv4_bytes:AVERAGE",
-                          f"DEF:flow6={rrdfile}:ipv6_bytes:AVERAGE",
-                          "CDEF:bits4=flow4,8,*",
-                          "CDEF:bits6=flow6,8,*",
+                          f"DEF:f_flow{f_rrdfile}:{proto}_bytes:AVERAGE",
+                          f"DEF:r_flow={r_rrdfile}:{proto}_bytes:AVERAGE",
+                          "CDEF:f_bits=f_flow,8,*",
+                          "CDEF:r_bits=r_flow,8,*",
                           "COMMENT:                 \l",
-                          "AREA:bits4#00FF00:IPv4",
-                          "GPRINT:bits4:MAX:Max %6.2lf %Sbps",
-                          "GPRINT:bits4:AVERAGE:Avg %6.2lf %Sbps",
-                          "GPRINT:bits4:LAST:Cur %6.2lf %Sbps\l",
-                          "LINE:bits6#FF0000:IPv6",
-                          "GPRINT:bits6:MAX:Max %6.2lf %Sbps",
-                          "GPRINT:bits6:AVERAGE:Avg %6.2lf %Sbps",
-                          "GPRINT:bits6:LAST:Cur %6.2lf %Sbps\l",
+                          "AREA:f_bits#00FF00:Forward",
+                          "GPRINT:f_bits:MAX:Max %6.2lf %Sbps",
+                          "GPRINT:f_bits:AVERAGE:Avg %6.2lf %Sbps",
+                          "GPRINT:f_bits:LAST:Cur %6.2lf %Sbps\l",
+                          "LINE:r_bits#FF0000:Reverse",
+                          "GPRINT:r_bits:MAX:Max %6.2lf %Sbps",
+                          "GPRINT:r_bits:AVERAGE:Avg %6.2lf %Sbps",
+                          "GPRINT:r_bits:LAST:Cur %6.2lf %Sbps\l",
             )
             f = open(imgfile, mode="rb")
             data = f.read()
@@ -91,7 +92,7 @@ class RRDBackend(Backend):
             os.unlink(imgfile)
             return data
         else:
-            raise FileNotFoundError(rrdfile)
+            raise FileNotFoundError([f_rrdfile, r_rrdfile])
 
     def __repr__(self):
         return "RRD"

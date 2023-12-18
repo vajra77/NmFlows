@@ -22,9 +22,14 @@ def get_flow():
     }
     src = request.args.get('src')
     dst = request.args.get('dst')
+    proto = request.args.get('proto')
+
+    if proto not in ['ipv4', 'ipv6']:
+        return make_response(render_template("error.html", error="unknown protocol"), 500)
+
     try:
         backend = RRDBackend(CONFIG['rrd_base_path'])
-        data = backend.graph_flow(schedule[period], src, dst)
+        data = backend.graph_flow(schedule[period], src, dst, proto)
         response = make_response(data, 200)
         response.headers.set('Content-Type', 'image/png')
         return response
