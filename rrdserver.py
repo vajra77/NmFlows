@@ -22,11 +22,9 @@ def get_flow():
     }
     src = request.args.get('src')
     dst = request.args.get('dst')
-    src_asn, src_mac = src.split('-')
-    dst_asn, dst_mac  = dst.split('-')
     try:
         backend = RRDBackend(CONFIG['rrd_base_path'])
-        data = backend.graph_flow(schedule[period], src_asn, src_mac, dst_asn, dst_mac)
+        data = backend.graph_flow(schedule[period], src, dst)
         response = make_response(data, 200)
         response.headers.set('Content-Type', 'image/png')
         return response, 200
