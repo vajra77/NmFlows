@@ -23,10 +23,9 @@ ALLOWED_ETHERTYPES = [ ETHERTYPE_ARP, ETHERTYPE_IPV4, ETHERTYPE_8021Q, ETHERTYPE
 
 class RawPacketHeader(FlowRecord):
 
-    def __init__(self, r_format, length, proto, payload_length, stripped, header_length, eth_hdr, ip_hdr, txp_hdr):
+    def __init__(self, r_format, length, proto, stripped, header_length, eth_hdr, ip_hdr, txp_hdr):
         super().__init__(r_format, length)
         self._proto = proto
-        self._payload_length = payload_length
         self._stripped = stripped
         self._header_length = header_length
         self._datalink_header = eth_hdr
@@ -39,7 +38,10 @@ class RawPacketHeader(FlowRecord):
 
     @property
     def payload_length(self):
-        return self._payload_length
+        result = self._datalink_header.length + \
+            self._network_header.length + \
+            self._network_header.payload_length
+        return result
 
     @property
     def stripped(self):
@@ -86,12 +88,12 @@ class RawPacketHeader(FlowRecord):
                 elif ip.proto == PROTO_UDP:
                     txp = UDPPacketHeader.unpack(header_data[txp_start:])
 
-                return cls(rformat, rlength, proto, length, stripped, header_length, ethernet, ip, txp)
+                return cls(rformat, rlength, proto, stripped, header_length, ethernet, ip, txp)
             except ParserException:
-                return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
+                return cls(rformat, rlength, proto, stripped, header_length, None, None, None)
         else:
             data.skip(header_length)
-            return cls(rformat, rlength, proto, length, stripped, header_length, None, None, None)
+            return cls(rformat, rlength, proto, stripped, header_length, None, None, None)
 
     def __repr__(self):
         return f"""

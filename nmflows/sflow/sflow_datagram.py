@@ -49,7 +49,7 @@ class SFlowDatagram:
         return self._sequence_number
 
     @property
-    def switch_uptim(self):
+    def switch_uptime(self):
         return self._switch_uptime
 
     @property

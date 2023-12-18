@@ -3,11 +3,12 @@ import socket
 
 class IPv4PacketHeader:
 
-    def __init__(self, src_addr, dst_addr, proto, length):
+    def __init__(self, src_addr, dst_addr, proto, length, p_len):
         self._src_addr = src_addr
         self._dst_addr = dst_addr
         self._proto = proto
         self._length = length
+        self._payload_length = p_len
 
     @property
     def src_addr(self):
@@ -25,17 +26,23 @@ class IPv4PacketHeader:
     def length(self):
         return self._length
 
+    @property
+    def payload_length(self):
+        return self._payload_length
+
     @classmethod
     def unpack(cls, data: bytes):
-        ihl = int.from_bytes(data[0:1], 'big') & 0xf
+        ihl = 4 * (int.from_bytes(data[0:1], 'big') & 0xf)
         proto = int.from_bytes(data[9:10], 'big') & 0xffff
         src_addr = socket.inet_ntop(socket.AF_INET, data[12:16])
         dst_addr = socket.inet_ntop(socket.AF_INET, data[16:20])
-        return cls(src_addr, dst_addr, proto, 4 * ihl)
+        t_length = int.from_bytes(data[2:3], 'big') & 0xff
+        return cls(src_addr, dst_addr, proto, ihl, t_length - ihl)
 
     def __repr__(self):
         return f"""
                                     Src Addr: {self.src_addr}
                                     Dst Addr: {self.dst_addr}
+                                    Payload Len: {self.payload_length}
         """
 
