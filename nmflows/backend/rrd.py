@@ -72,7 +72,7 @@ class RRDBackend(Backend):
             rrdtool.graph(imgfile,
                           "--imgformat", "PNG",
                           "--width", "640",
-                          "--height", "320",
+                          "--height", "256",
                           "--start", f"-1{schedule}",
                           "--title", f"{proto.upper()} Traffic {src_asn}[:{src_mac[-2:]}] -> {dst_asn}[:{dst_mac[-2:]}]\r\r",
                           "--watermark", f"Generated: {date} / NmFlows by Namex IXP",
