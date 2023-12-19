@@ -54,7 +54,7 @@ def get_peer():
         return make_response(render_template("error.html", error="unknown protocol"), 500)
 
     try:
-        backend = RRDBackend(CONFIG['rrd_base_path'])
+        backend = RRDBackend(CONFIG['rrd_base_path'], CONFIG['rrd_graph_gamma'])
         data = backend.graph_peer(schedule[period], src, proto)
         response = make_response(data, 200)
         response.headers.set('Content-Type', 'image/png')
