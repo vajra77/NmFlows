@@ -1,9 +1,9 @@
 from nmflows.sflow.samples.flow_record import FlowRecord
-from .ethernet_frame_header import EthernetFrameHeader
-from .ipv4_packet_header import IPv4PacketHeader
-from .ipv6_packet_header import IPv6PacketHeader
-from .tcp_packet_header import TCPPacketHeader
-from .udp_packet_header import UDPPacketHeader
+from nmflows.sflow.headers.ethernet_frame_header import EthernetFrameHeader
+from nmflows.sflow.headers.ipv4_packet_header import IPv4PacketHeader
+from nmflows.sflow.headers.ipv6_packet_header import IPv6PacketHeader
+from nmflows.sflow.headers.tcp_packet_header import TCPPacketHeader
+from nmflows.sflow.headers.udp_packet_header import UDPPacketHeader
 from nmflows.sflow.exceptions import ParserException
 from nmflows.utils.ptr_buffer import PtrBuffer
 
