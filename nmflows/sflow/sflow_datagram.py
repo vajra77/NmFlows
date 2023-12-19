@@ -1,6 +1,6 @@
 from nmflows.utils.ptr_buffer import PtrBuffer
 from .exceptions import ParserException
-from .stats import SFlowStats
+from nmflows.utils.stats import SFlowStats
 from nmflows.sflow.samples.flow_sample import FlowSample
 from nmflows.sflow.samples.expanded_flow_sample import ExpandedFlowSample
 import socket
@@ -91,9 +91,10 @@ class SFlowDatagram:
                 continue
             except ParserException as e:
                 stats.parser_errors += 1
-                stats.log_info(e)
+                stats.log_debug(e)
                 break
         skipped = n_samples - len(samples)
+        stats.log_info(f"skipped {skipped} samples")
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, skipped)
 
     @staticmethod
