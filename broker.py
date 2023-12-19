@@ -52,7 +52,8 @@ if __name__ == "__main__":
     logger.addHandler(fh)
     keep_fds = [fh.stream.fileno()]
 
-    Matrix = PeeringMatrix(MACDirectory(CONFIG['ixf_url']), RRDBackend(CONFIG['rrd_base_path']))
+    Matrix = PeeringMatrix(MACDirectory(CONFIG['ixf_url']),
+                           RRDBackend(CONFIG['rrd_base_path'], CONFIG['rrd_graph_gamma']))
     Lock = threading.Lock()
     Queue = RecvQueue(CONFIG['rabbitmq_host'],
                       CONFIG['rabbitmq_port'],

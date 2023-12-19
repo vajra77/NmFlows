@@ -7,8 +7,17 @@ import os
 
 class RRDBackend(Backend):
 
-    def __init__(self, base_path):
+    def __init__(self, base_path, base_gamma):
         self._base_path = base_path
+        self._base_gamma = base_gamma
+
+    @property
+    def base_path(self):
+        return self._base_path
+
+    @property
+    def base_gamma(self):
+        return self._base_gamma
 
     def store_flows(self, src: PeeringFlow):
         path = self._base_path + f"/AS{src.asnum}"
@@ -29,8 +38,7 @@ class RRDBackend(Backend):
                                "RRA:MAX:0.5:1:600",
                                "RRA:MAX:0.5:6:700",
                                "RRA:MAX:0.5:24:775",
-                               "RRA:MAX:0.5:444:797"
-                )
+                               "RRA:MAX:0.5:444:797")
             rrdtool.update(filename, "N:%s:%s" % (dst.ipv4_out_bytes, dst.ipv6_out_bytes))
 
     def store_peer(self, src: PeeringFlow):
@@ -53,9 +61,9 @@ class RRDBackend(Backend):
                            "RRA:MAX:0.5:1:600",
                            "RRA:MAX:0.5:6:700",
                            "RRA:MAX:0.5:24:775",
-                           "RRA:MAX:0.5:444:797"
-            )
-        rrdtool.update(filename, "N:%s:%s:%s:%s" % (src.ipv4_in_bytes, src.ipv4_out_bytes, src.ipv6_in_bytes, src.ipv6_out_bytes))
+                           "RRA:MAX:0.5:444:797")
+        rrdtool.update(filename, "N:%s:%s:%s:%s" % (src.ipv4_in_bytes, src.ipv4_out_bytes,
+                                                    src.ipv6_in_bytes, src.ipv6_out_bytes))
 
     def graph_flow(self, schedule, src, dst, proto):
         """Create temporary PNG file of RRD flow data
@@ -67,6 +75,7 @@ class RRDBackend(Backend):
         f_rrdfile = f"{f_path}/from__{src}__to__{dst}.rrd"
         r_rrdfile = f"{r_path}/from__{dst}__to__{src}.rrd"
         if os.path.isfile(f_rrdfile) and os.path.isfile(r_rrdfile):
+            gamma = 8 * self._base_gamma
             imgfile = f"/tmp/from__{src}__to__{dst}.png"
             date = datetime.today()
             rrdtool.graph(imgfile,
@@ -79,8 +88,8 @@ class RRDBackend(Backend):
                           "--vertical-label", "bits / seconds",
                           f"DEF:f_flow={f_rrdfile}:{proto}_bytes:AVERAGE",
                           f"DEF:r_flow={r_rrdfile}:{proto}_bytes:AVERAGE",
-                          "CDEF:f_bits=f_flow,8,*",
-                          "CDEF:r_bits=r_flow,8,*",
+                          f"CDEF:f_bits=f_flow,{gamma},*",
+                          f"CDEF:r_bits=r_flow,{gamma},*",
                           "COMMENT:                 \l",
                           f"AREA:r_bits#00FF00:{src_asn} <- {dst_asn}\t",
                           "GPRINT:r_bits:MAX:Max %3.3lf%s\t",
@@ -105,6 +114,7 @@ class RRDBackend(Backend):
         if_path = self._base_path + f"/{src_asn}"
         rrdfile = f"{if_path}/iface__{src}.rrd"
         if os.path.isfile(rrdfile):
+            gamma = 8 * self._base_gamma
             imgfile = f"/tmp/iface__{src}.png"
             date = datetime.today()
             rrdtool.graph(imgfile,
@@ -117,8 +127,8 @@ class RRDBackend(Backend):
                           "--vertical-label", "bits / seconds",
                           f"DEF:in_flow={rrdfile}:{proto}_in_bytes:AVERAGE",
                           f"DEF:out_flow={rrdfile}:{proto}_out_bytes:AVERAGE",
-                          "CDEF:in_bits=in_flow,32,*",
-                          "CDEF:out_bits=out_flow,32,*",
+                          f"CDEF:in_bits=in_flow,{gamma},*",
+                          f"CDEF:out_bits=out_flow,{gamma},*",
                           "COMMENT:                 \l",
                           f"AREA:out_bits#00FF00:Outbound \t",
                           "GPRINT:out_bits:MAX:Max %3.3lf%s\t",
