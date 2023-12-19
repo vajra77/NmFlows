@@ -1,4 +1,4 @@
-from nmflows.peermatrix import PeeringMatrix
+from nmflows.peermatrix import PeeringMatrix, PeeringMatrixException
 from nmflows.utils import MACDirectory
 from nmflows.mq import RecvQueue
 from nmflows.backend import RRDBackend
@@ -16,8 +16,11 @@ def handle_msg(ch, method, properties, body):
         with Lock:
             flow = jsonpickle.decode((json.loads(body)))
             Matrix.add_flow(flow)
+    except PeeringMatrixException as e:
+        if CONFIG['debug']:
+            logger.debug(f"[ERROR]: {e}")
     except Exception as e:
-        logger.error(f"Error while adding flow: {flow}")
+        logger.error(f"Unknown error while adding flow: {e}")
 
 
 def consume_task():

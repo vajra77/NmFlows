@@ -2,6 +2,7 @@ from nmflows.storage import StorableFlow
 from nmflows.utils import MACDirectory
 from nmflows.peermatrix.peering_flow import PeeringFlow
 from nmflows.backend.backend import Backend
+from .exceptions import PeeringMatrixException
 
 
 class PeeringMatrix:
@@ -65,7 +66,7 @@ class PeeringMatrix:
         source = self._get_flow_source(flow)
         dest = self._get_flow_destination(flow)
         if source.is_unknown() or dest.is_unknown():
-            raise Exception(f"unknown source/destination")
+            raise PeeringMatrixException(f"unknown source/destination")
         else:
             source.account_in_bytes(flow.computed_size, flow.proto)
             dest.account_out_bytes(flow.computed_size, flow.proto)
