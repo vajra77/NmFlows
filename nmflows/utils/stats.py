@@ -42,9 +42,9 @@ class StatLogger:
 
     def increment_counter(self, key):
         if key in self._counters.keys():
-            self._counters[key] = 1
-        else:
             self._counters[key] += 1
+        else:
+            self._counters[key] = 1
 
     def log_counters(self):
         self._logger.info(self)
@@ -57,4 +57,4 @@ class StatLogger:
         res = "COUNTERS: "
         for c, value in self._counters.items():
             res += f"{c}: {value}, "
-        return res
+        return _tstamp(res)
