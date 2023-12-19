@@ -37,6 +37,6 @@ class SFlowStats:
         self._eof_errors += 1
 
     def __repr__(self):
-        msg = f"STATS: N/Impl {self.not_implemented} | Pars/err {self.parser_errors} " \
+        msg = f"N/Impl {self.not_implemented} | Pars/err {self.parser_errors} " \
               f"| Uns/ver: {self.unsupported_version} | EOF {self.eof_errors} "
         return msg

@@ -8,9 +8,14 @@ import logging
 import socketserver
 import json
 import jsonpickle
+import signal
 
 
 DEFAULT_BUFFER_SIZE = 8192  # 8k
+
+
+def do_stats():
+    logger.info(f"STATS: {stats}")
 
 
 def create_sflow_datagram(data: PtrBuffer):
@@ -63,7 +68,6 @@ def do_main():
     except (KeyboardInterrupt, SystemExit):
         server.shutdown()
         server.server_close()
-        logger.info(f"STATS: {stats}")
         return
 
 
@@ -83,6 +87,8 @@ if __name__ == "__main__":
     keep_fds = [fh.stream.fileno()]
 
     stats = SFlowStats()
+
+    signal.signal(signal.SIGUSR1, do_stats)
 
     daemon = Daemonize(app="nmflows-collector", pid=CONFIG['collector_pid'], action=do_main, keep_fds=keep_fds)
     daemon.start()
