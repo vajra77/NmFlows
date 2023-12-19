@@ -1,5 +1,6 @@
 from nmflows.utils.ptr_buffer import PtrBuffer
 from .exceptions import ParserException
+from .stats import SFlowStats
 from nmflows.sflow.samples.flow_sample import FlowSample
 from nmflows.sflow.samples.expanded_flow_sample import ExpandedFlowSample
 import socket
@@ -15,7 +16,8 @@ IP_VERSION_6 = 2
 
 class SFlowDatagram:
 
-    def __init__(self, version, ip_version, agent_address, agent_id, sequence_number, switch_uptime, samples, skipped):
+    def __init__(self, version, ip_version, agent_address, agent_id,
+                 sequence_number, switch_uptime, samples, skipped):
         self._version = version
         self._ip_version = ip_version
         self._agent_address = agent_address
@@ -65,7 +67,7 @@ class SFlowDatagram:
         return self._samples
 
     @classmethod
-    def unpack(cls, version, data: PtrBuffer):
+    def unpack(cls, version, data: PtrBuffer, stats: SFlowStats):
         ip_version = data.read_uint()
         if ip_version == IP_VERSION_4:
             agent_address = socket.inet_ntop(socket.AF_INET, data.read_bytes(4))
@@ -81,8 +83,10 @@ class SFlowDatagram:
                 sample = cls.create_sflow_sample(data)
                 samples.append(sample)
             except NotImplementedError:
+                stats.inc_not_implemented()
                 continue
             except ParserException:
+                stats.inc_parser_errors()
                 break
         skipped = n_samples - len(samples)
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, skipped)
