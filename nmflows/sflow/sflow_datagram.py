@@ -1,6 +1,5 @@
-from nmflows.utils.ptr_buffer import PtrBuffer
+from nmflows.utils import PtrBuffer, StatLogger
 from .exceptions import ParserException
-from nmflows.utils.stats import SFlowStats
 from nmflows.sflow.samples.flow_sample import FlowSample
 from nmflows.sflow.samples.expanded_flow_sample import ExpandedFlowSample
 import socket
@@ -70,7 +69,7 @@ class SFlowDatagram:
         return self._samples
 
     @classmethod
-    def unpack(cls, version, data: PtrBuffer, stats: SFlowStats):
+    def unpack(cls, version, data: PtrBuffer, stats: StatLogger):
         ip_version = data.read_uint()
         if ip_version == IP_VERSION_4:
             agent_address = socket.inet_ntop(socket.AF_INET, data.read_bytes(4))
@@ -85,16 +84,16 @@ class SFlowDatagram:
             try:
                 sample = cls.create_sflow_sample(data)
                 samples.append(sample)
-                stats.processed_samples += 1
+                stats.increment_counter('processed_samples')
             except NotImplementedError:
-                stats.not_implemented += 1
+                stats.increment_counter('not_implemented_samples')
                 continue
             except ParserException as e:
-                stats.parser_errors += 1
-                stats.log_debug(e)
+                stats.increment_counter('parser_errors')
+                stats.debug(e)
                 break
         skipped = n_samples - len(samples)
-        stats.log_info(f"skipped {skipped} samples")
+        stats.info(f"skipped {skipped} samples")
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, skipped)
 
     @staticmethod
