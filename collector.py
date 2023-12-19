@@ -66,7 +66,7 @@ def do_main():
     try:
         signal.signal(signal.SIGUSR1, do_stats)
         server.serve_forever()
-    except SystemExit:
+    except Exception:
         server.shutdown()
         server.server_close()
         return
