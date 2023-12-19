@@ -1,4 +1,4 @@
-from nmflows.sflow.raw_packet_header import RawPacketHeader
+from nmflows.sflow.headers.raw_packet_header import RawPacketHeader
 
 KNOWN_IP_PROTO = {
     2048: 'ipv4',

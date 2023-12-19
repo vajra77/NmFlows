@@ -1,4 +1,4 @@
-from .sflow_sample import SFlowSample
+from nmflows.sflow.samples.sflow_sample import SFlowSample
 from nmflows.utils.ptr_buffer import PtrBuffer
 
 

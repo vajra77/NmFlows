@@ -1,4 +1,4 @@
-from .exceptions import EthParserException
+from nmflows.sflow.exceptions import EthParserException
 
 
 ETHERTYPE_IPV4 = 0x0800

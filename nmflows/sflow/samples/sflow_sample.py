@@ -1,5 +1,5 @@
-from .raw_packet_header import RawPacketHeader
-from .exceptions import ParserException
+from nmflows.sflow.headers.raw_packet_header import RawPacketHeader
+from nmflows.sflow.exceptions import ParserException
 from nmflows.utils.ptr_buffer import PtrBuffer
 from datetime import datetime
 

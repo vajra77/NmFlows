@@ -1,7 +1,7 @@
 from nmflows.utils.ptr_buffer import PtrBuffer
 from .exceptions import ParserException
-from .flow_sample import FlowSample
-from .expanded_flow_sample import ExpandedFlowSample
+from nmflows.sflow.samples.flow_sample import FlowSample
+from nmflows.sflow.samples.expanded_flow_sample import ExpandedFlowSample
 import socket
 
 

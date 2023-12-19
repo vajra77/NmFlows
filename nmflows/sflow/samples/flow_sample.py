@@ -1,11 +1,13 @@
-from .sflow_sample import SFlowSample
-from .exceptions import ParserException
+from nmflows.sflow.samples.sflow_sample import SFlowSample
+from nmflows.sflow.exceptions import ParserException
 from nmflows.utils.ptr_buffer import PtrBuffer
 
 
 class FlowSample(SFlowSample):
 
-    def __init__(self, sformat, length, sequence_number, source, sampling_rate, sample_pool, drops, input_if, output_if, records):
+    def __init__(self, sformat, length, sequence_number,
+                 source, sampling_rate, sample_pool, drops,
+                 input_if, output_if, records):
         super().__init__(sformat, length)
         self._sequence_number = sequence_number
         self._source = source
