@@ -8,14 +8,18 @@ import logging
 import socketserver
 import json
 import jsonpickle
-import signal
-
+import threading
+from time import sleep
+from datetime import datetime
 
 DEFAULT_BUFFER_SIZE = 8192  # 8k
 
 
-def do_stats(sig_value, _):
-    logger.info(f"STATS: {stats}")
+def do_stats():
+    while True:
+        sleep(300)
+        now = datetime.now()
+        logger.info(f"STATS[{now}]: {stats}")
 
 
 def create_sflow_datagram(data: PtrBuffer):
@@ -62,8 +66,10 @@ def do_main():
                                               CONFIG['sflow_listener_port']),
                                              ThisUDPRequestHandler)
     try:
-        signal.signal(signal.SIGUSR1, do_stats)
+        st = threading.Thread(target=do_stats)
+        st.start()
         server.serve_forever()
+        st.join()
     except Exception as e:
         logger.error(f"Received exception: {e}")
         server.shutdown()
