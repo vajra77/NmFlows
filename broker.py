@@ -11,11 +11,11 @@ import threading
 import time
 
 
+
 def handle_msg(ch, method, properties, body):
     try:
         with Lock:
             Matrix.add_flow(jsonpickle.decode(json.loads(body)))
-            NSamples += 1
     except Exception as e:
         logger.error(f"Error while adding flow: {e}")
 
@@ -31,7 +31,6 @@ def flush_task():
             with Lock:
                 Matrix.dump(CONFIG['bgp_matrix_dump'])
                 Matrix.flush()
-                logger.info(f"Flushed after {NSamples} samples")
         except Exception as e:
             logger.error(f"Error while flushing matrix: {e}")
             continue
@@ -67,7 +66,6 @@ if __name__ == "__main__":
                       CONFIG['rabbitmq_user'],
                       CONFIG['rabbitmq_pass'],
                       handle_msg)
-    NSamples = 0
 
     daemon = Daemonize(app="nmflows-broker", pid=CONFIG['broker_pid'], action=do_main, keep_fds=keep_fds)
     daemon.start()
