@@ -66,7 +66,8 @@ def do_main():
     try:
         signal.signal(signal.SIGUSR1, do_stats)
         server.serve_forever()
-    except Exception:
+    except Exception as e:
+        logger.error(f"Received exception: {e}")
         server.shutdown()
         server.server_close()
         return
@@ -74,20 +75,25 @@ def do_main():
 
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
+
     if CONFIG['debug']:
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
+
     logger.propagate = False
     fh = logging.FileHandler(CONFIG['collector_log'], "w")
+
     if CONFIG['debug']:
         fh.setLevel(logging.DEBUG)
     else:
         fh.setLevel(logging.INFO)
+
     logger.addHandler(fh)
     keep_fds = [fh.stream.fileno()]
 
     stats = SFlowStats()
 
+    logger.info("starting collector")
     daemon = Daemonize(app="nmflows-collector", pid=CONFIG['collector_pid'], action=do_main, keep_fds=keep_fds)
     daemon.start()
