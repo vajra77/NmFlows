@@ -14,7 +14,7 @@ import signal
 DEFAULT_BUFFER_SIZE = 8192  # 8k
 
 
-def do_stats():
+def do_stats(sig_value, _):
     logger.info(f"STATS: {stats}")
 
 
