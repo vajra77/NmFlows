@@ -37,6 +37,7 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                           CONFIG['rabbitmq_pass'])
         try:
             datagram = create_sflow_datagram(PtrBuffer(data, DEFAULT_BUFFER_SIZE))
+            stats.inc_processed_datagrams()
             for sample in datagram.samples:
                 rate = sample.sampling_rate
                 timestamp = sample.timestamp
