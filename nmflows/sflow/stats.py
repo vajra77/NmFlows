@@ -61,8 +61,8 @@ class SFlowStats:
     def __repr__(self):
         msg = f"DGRAMs: {self.processed_datagrams} | " \
               f"SAMPLEs: {self.processed_samples},  " \
-              f"n/impl {self.not_implemented} | " \
+              f"n/impl {self.not_implemented}, " \
               f"pars/err {self.parser_errors}, " \
-              f"uns/ver: {self.unsupported_version}," \
+              f"uns/ver: {self.unsupported_version}, " \
               f"eof: {self.eof_errors} "
         return msg
