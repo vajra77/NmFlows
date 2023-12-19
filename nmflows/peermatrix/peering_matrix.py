@@ -65,7 +65,7 @@ class PeeringMatrix:
         source = self._get_flow_source(flow)
         dest = self._get_flow_destination(flow)
         if source.is_unknown() or dest.is_unknown():
-            return
+            raise Exception(f"unknown source/destination")
         else:
             source.account_in_bytes(flow.computed_size, flow.proto)
             dest.account_out_bytes(flow.computed_size, flow.proto)

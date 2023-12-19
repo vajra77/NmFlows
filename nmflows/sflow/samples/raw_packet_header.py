@@ -19,11 +19,14 @@ ETHERTYPE_ARP = 0x0806
 ETHERTYPE_8021Q = 0x8100
 ETHERTYPE_IPV6 = 0x86dd
 
-ALLOWED_ETHERTYPES = [ ETHERTYPE_ARP, ETHERTYPE_IPV4, ETHERTYPE_8021Q, ETHERTYPE_IPV6]
+ALLOWED_ETHERTYPES = [ETHERTYPE_ARP, ETHERTYPE_IPV4, ETHERTYPE_8021Q, ETHERTYPE_IPV6]
+
 
 class RawPacketHeader(FlowRecord):
 
-    def __init__(self, r_format, length, proto, original_length, stripped, header_length, eth_hdr, ip_hdr, txp_hdr):
+    def __init__(self, r_format, length, proto,
+                 original_length, stripped, header_length,
+                 eth_hdr, ip_hdr, txp_hdr):
         super().__init__(r_format, length)
         self._proto = proto
         self._original_length = original_length
