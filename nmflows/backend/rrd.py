@@ -7,7 +7,7 @@ import os
 
 class RRDBackend(Backend):
 
-    def __init__(self, base_path, base_gamma):
+    def __init__(self, base_path, base_gamma=1):
         self._base_path = base_path
         self._base_gamma = base_gamma
 
