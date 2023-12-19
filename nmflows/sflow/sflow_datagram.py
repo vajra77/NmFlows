@@ -91,7 +91,7 @@ class SFlowDatagram:
                 continue
             except ParserException:
                 stats.parser_errors += 1
-                continue
+                break
         skipped = n_samples - len(samples)
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, skipped)
 
