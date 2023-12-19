@@ -44,19 +44,16 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                 try:
                     for record in sample.records:
                         flow = StorableFlow.from_record(timestamp, rate, record)
-                        if CONFIG['debug']:
-                            logger.debug(f"[RCVD]: {flow}")
+                        logger.debug(f"[RCVD]: {flow}")
                         queue.send(json.dumps(jsonpickle.encode(flow)))
                 except AttributeError:
                     continue
         except EOFError:
             stats.inc_eof_errors()
-            if CONFIG['debug']:
-                logger.error("[ERROR]: EOF while reading buffer")
+            logger.debug("[EXC] EOF while reading buffer")
             return
         except Exception as e:
-            if CONFIG['debug']:
-                logger.error(f"[ERROR]: {e}")
+            logger.debug(f"[EXC]: {e}")
             return
 
 
