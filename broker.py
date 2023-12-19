@@ -15,11 +15,14 @@ def handle_msg(ch, method, properties, body):
     try:
         with Lock:
             Matrix.add_flow(jsonpickle.decode(json.loads(body)))
+            NSamples += 1
     except Exception as e:
         logger.error(f"Error while adding flow: {e}")
 
+
 def consume_task():
     Queue.consume()
+
 
 def flush_task():
     while True:
@@ -28,9 +31,11 @@ def flush_task():
             with Lock:
                 Matrix.dump(CONFIG['bgp_matrix_dump'])
                 Matrix.flush()
+                logger.info(f"Flushed after {NSamples} samples")
         except Exception as e:
             logger.error(f"Error while flushing matrix: {e}")
             continue
+
 
 def do_main():
     t1 = threading.Thread(target=consume_task)
@@ -39,6 +44,7 @@ def do_main():
     t2.start()
     t1.join()
     t2.join()
+
 
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
@@ -61,6 +67,7 @@ if __name__ == "__main__":
                       CONFIG['rabbitmq_user'],
                       CONFIG['rabbitmq_pass'],
                       handle_msg)
+    NSamples = 0
 
     daemon = Daemonize(app="nmflows-broker", pid=CONFIG['broker_pid'], action=do_main, keep_fds=keep_fds)
     daemon.start()
