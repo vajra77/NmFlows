@@ -18,8 +18,7 @@ DEFAULT_BUFFER_SIZE = 8192  # 8k
 def do_stats():
     while True:
         sleep(300)
-        now = datetime.now()
-        logger.info(f"STATS[{now}]: {stats}")
+        stats.log()
 
 
 def create_sflow_datagram(data: PtrBuffer):
@@ -48,16 +47,16 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                 try:
                     for record in sample.records:
                         flow = StorableFlow.from_record(timestamp, rate, record)
-                        logger.debug(f"[RCVD]: {flow}")
+                        stats.log_debug(f"RCVD: {flow}")
                         queue.send(json.dumps(jsonpickle.encode(flow)))
                 except AttributeError:
                     continue
         except EOFError:
             stats.eof_errors += 1
-            logger.debug("[EXC] EOF while reading buffer")
+            stats.log_debug("EOF while reading buffer")
             return
         except Exception as e:
-            logger.debug(f"[EXC]: {e}")
+            stats.log_debug(e)
             return
 
 
@@ -96,8 +95,8 @@ if __name__ == "__main__":
     logger.addHandler(fh)
     keep_fds = [fh.stream.fileno()]
 
-    stats = SFlowStats()
+    stats = SFlowStats(logger)
 
-    logger.info("starting collector")
+    stats.log_info("starting collector")
     daemon = Daemonize(app="nmflows-collector", pid=CONFIG['collector_pid'], action=do_main, keep_fds=keep_fds)
     daemon.start()

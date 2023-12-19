@@ -89,8 +89,9 @@ class SFlowDatagram:
             except NotImplementedError:
                 stats.not_implemented += 1
                 continue
-            except ParserException:
+            except ParserException as e:
                 stats.parser_errors += 1
+                stats.log_info(e)
                 break
         skipped = n_samples - len(samples)
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, skipped)

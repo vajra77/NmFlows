@@ -1,14 +1,17 @@
 
 
+LOG_MAX = 32
+
 class SFlowStats:
 
-    def __init__(self):
+    def __init__(self, logger):
         self._processed_datagrams = 0
         self._processed_samples = 0
         self._not_implemented = 0
         self._parser_errors = 0
         self._unsupported_version = 0
         self._eof_errors = 0
+        self._logger = logger
 
     @property
     def processed_datagrams(self):
@@ -57,6 +60,25 @@ class SFlowStats:
     @eof_errors.setter
     def eof_errors(self, value):
         self._eof_errors = value
+
+    def log(self):
+        self._logger.info(f"[STATS]: {self}")
+    def log_info(self, msg):
+        self._logger.info(msg)
+
+    def log_debug(self, msg):
+        self._logger.debug(msg)
+
+    def log_error(self, msg):
+        self._logger.error(msg)
+
+    def cleanup(self):
+        self._processed_datagrams = 0
+        self._processed_samples = 0
+        self._not_implemented = 0
+        self._parser_errors = 0
+        self._unsupported_version = 0
+        self._eof_errors = 0
 
     def __repr__(self):
         msg = f"DGRAMs: {self.processed_datagrams} | " \
