@@ -9,6 +9,9 @@ import socket
 FORMAT_FLOW_SAMPLE = 1
 FORMAT_COUNTER_SAMPLE = 2
 FORMAT_EXPANDED_FLOW_SAMPLE = 3
+FORMAT_EXPANDED_COUNTER_SAMPLE = 4
+
+VALID_SAMPLE_FORMATS = [FORMAT_FLOW_SAMPLE, FORMAT_EXPANDED_FLOW_SAMPLE, FORMAT_COUNTER_SAMPLE, FORMAT_EXPANDED_COUNTER_SAMPLE]
 
 IP_VERSION_4 = 1
 IP_VERSION_6 = 2
@@ -95,19 +98,16 @@ class SFlowDatagram:
     @staticmethod
     def create_sflow_sample(data: PtrBuffer):
         sformat = data.read_uint() & 0x0fff
-        if sformat == FORMAT_FLOW_SAMPLE:
+        if sformat in VALID_SAMPLE_FORMATS:
             length = data.read_uint()
-            return FlowSample.unpack(sformat, length, data)
-        elif sformat == FORMAT_COUNTER_SAMPLE:
-            length = data.read_uint()
-            data.skip(length - 8)
-            raise NotImplementedError
-        elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
-            length = data.read_uint()
-            return ExpandedFlowSample.unpack(sformat, length, data)
+            if sformat == FORMAT_FLOW_SAMPLE:
+                return FlowSample.unpack(sformat, length, data)
+            elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
+                return ExpandedFlowSample.unpack(sformat, length, data)
+            elif sformat == FORMAT_COUNTER_SAMPLE or sformat == FORMAT_EXPANDED_COUNTER_SAMPLE:
+                data.skip(length - 8)
+                raise NotImplementedError
         else:
-            length = data.read_uint()
-            data.skip(length - 8)
             raise ParserException(f"unrecognized sample format: {sformat}")
 
     def __repr__(self):
