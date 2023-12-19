@@ -93,7 +93,7 @@ class SFlowDatagram:
                 stats.debug(e)
                 break
         skipped = n_samples - len(samples)
-        stats.info(f"skipped {skipped} samples")
+        stats.debug(f"skipped {skipped} samples")
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, skipped)
 
     @staticmethod
