@@ -64,8 +64,9 @@ def do_main():
                                               CONFIG['sflow_listener_port']),
                                              ThisUDPRequestHandler)
     try:
+        signal.signal(signal.SIGUSR1, do_stats)
         server.serve_forever()
-    except (KeyboardInterrupt, SystemExit):
+    except SystemExit:
         server.shutdown()
         server.server_close()
         return
@@ -87,8 +88,6 @@ if __name__ == "__main__":
     keep_fds = [fh.stream.fileno()]
 
     stats = SFlowStats()
-
-    signal.signal(signal.SIGUSR1, do_stats)
 
     daemon = Daemonize(app="nmflows-collector", pid=CONFIG['collector_pid'], action=do_main, keep_fds=keep_fds)
     daemon.start()
