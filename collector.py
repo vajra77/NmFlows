@@ -21,7 +21,7 @@ def do_stats(sig_value, _):
 def create_sflow_datagram(data: PtrBuffer):
     version = data.read_uint()
     if version != 5:
-        stats.inc_unsupported_version()
+        stats.unsupported_version += 1
         raise Exception(f"sFlow version not supported: v{version}")
     return SFlowDatagram.unpack(version, data, stats)
 
@@ -37,7 +37,7 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                           CONFIG['rabbitmq_pass'])
         try:
             datagram = create_sflow_datagram(PtrBuffer(data, DEFAULT_BUFFER_SIZE))
-            stats.inc_processed_datagrams()
+            stats.processed_datagrams += 1
             for sample in datagram.samples:
                 rate = sample.sampling_rate
                 timestamp = sample.timestamp
@@ -49,7 +49,7 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                 except AttributeError:
                     continue
         except EOFError:
-            stats.inc_eof_errors()
+            stats.eof_errors += 1
             logger.debug("[EXC] EOF while reading buffer")
             return
         except Exception as e:

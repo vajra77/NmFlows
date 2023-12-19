@@ -82,11 +82,12 @@ class SFlowDatagram:
             try:
                 sample = cls.create_sflow_sample(data)
                 samples.append(sample)
+                stats.processed_samples += 1
             except NotImplementedError:
-                stats.inc_not_implemented()
+                stats.not_implemented += 1
                 continue
             except ParserException:
-                stats.inc_parser_errors()
+                stats.parser_errors += 1
                 continue
         skipped = n_samples - len(samples)
         return cls(version, ip_version, agent_address, agent_id, seq_number, uptime, samples, skipped)
