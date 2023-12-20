@@ -11,7 +11,7 @@ FORMAT_COUNTER_SAMPLE = 2
 FORMAT_EXPANDED_FLOW_SAMPLE = 3
 FORMAT_EXPANDED_COUNTER_SAMPLE = 4
 
-VALID_SAMPLE_FORMATS = [FORMAT_UNKNOWN, FORMAT_FLOW_SAMPLE, FORMAT_EXPANDED_FLOW_SAMPLE,
+VALID_SAMPLE_FORMATS = [FORMAT_FLOW_SAMPLE, FORMAT_EXPANDED_FLOW_SAMPLE,
                         FORMAT_COUNTER_SAMPLE, FORMAT_EXPANDED_COUNTER_SAMPLE]
 
 IP_VERSION_4 = 1
@@ -103,7 +103,7 @@ class SFlowDatagram:
         sformat = data.read_uint() & 0x0fff
         if sformat in VALID_SAMPLE_FORMATS:
             length = data.read_uint()
-            if sformat == FORMAT_FLOW_SAMPLE or sformat == FORMAT_UNKNOWN:
+            if sformat == FORMAT_FLOW_SAMPLE:
                 return FlowSample.unpack(sformat, length, data)
             elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
                 return ExpandedFlowSample.unpack(sformat, length, data)
