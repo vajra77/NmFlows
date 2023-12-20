@@ -158,7 +158,7 @@ class RRDBackend(Backend):
             os.unlink(imgfile)
             return data
         else:
-            f = open('static/404.jpg')
+            f = open('/srv/NmFlows/static/404.jpg')
             data = f.read()
             f.close()
             return data
