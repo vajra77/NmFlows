@@ -107,7 +107,7 @@ class StorableFlow:
             record.network_header.dst_addr,
             record.transport_header.src_port,
             record.transport_header.dst_port,
-            record.original_length
+            record.payload_length
         )
 
     def to_json(self):
