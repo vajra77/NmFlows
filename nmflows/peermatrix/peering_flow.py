@@ -1,6 +1,9 @@
 from nmflows.utils import MACEntry
 
 
+OVERFLOW = 0xffffffffffffffff
+
+
 class PeeringFlow:
 
     def __init__(self, asnum, name, mac):
@@ -68,14 +71,22 @@ class PeeringFlow:
     def account_in_bytes(self, size, proto):
         if int(proto) == 2048:
             self._ipv4_in_bytes += size
+            if self._ipv4_in_bytes >= OVERFLOW:
+                self._ipv4_in_bytes -= OVERFLOW
         else:
             self._ipv6_in_bytes += size
+            if self._ipv6_in_bytes >= OVERFLOW:
+                self._ipv6_in_bytes -= OVERFLOW
 
     def account_out_bytes(self, size, proto):
         if int(proto) == 2048:
             self._ipv4_out_bytes += size
+            if self._ipv4_out_bytes >= OVERFLOW:
+                self._ipv4_out_bytes -= OVERFLOW
         else:
             self._ipv6_out_bytes += size
+            if self._ipv6_out_bytes >= OVERFLOW:
+                self._ipv6_out_bytes -= OVERFLOW
 
     def is_unknown(self) -> bool:
         return self._asnum is None and self._name is None
