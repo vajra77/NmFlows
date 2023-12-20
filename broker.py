@@ -7,8 +7,9 @@ from daemonize import Daemonize
 import json
 import jsonpickle
 import threading
-import datetime
+from datetime import datetime, timedelta
 import time
+import math
 
 
 def handle_msg(ch, method, properties, body):
@@ -40,8 +41,11 @@ def flush_task():
 
 def do_main():
     Stats.info("syncing to 5 minutes interval")
-    sleeptime = 300 - datetime.datetime.utcnow().second
-    time.sleep(sleeptime)
+    delta = timedelta(minutes=5)
+    now = datetime.now()
+    next_date = datetime.min + math.ceil((now - datetime.min) / delta) * delta
+    timesleep = (next_date.minute - now.minute - 1) * 60 + (60 - now.second)
+    time.sleep(timesleep)
 
     Stats.info("starting collector thread")
     t1 = threading.Thread(target=consume_task)

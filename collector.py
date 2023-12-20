@@ -61,10 +61,6 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
 
 def do_main():
 
-    Stats.info("syncing to 5 minutes interval")
-    sleeptime = 300 - datetime.datetime.utcnow().second
-    time.sleep(sleeptime)
-
     server = socketserver.ThreadingUDPServer((CONFIG['sflow_listener_address'],
                                               CONFIG['sflow_listener_port']),
                                              ThisUDPRequestHandler)
