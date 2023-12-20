@@ -3,7 +3,14 @@ from .backend import Backend
 from datetime import datetime
 import rrdtool
 import os
+import pwd
+import grp
 
+
+def _chown(filename):
+    uid = pwd.getpwnam("root").pw_uid
+    gid = grp.getgrnam("www-data").gr_gid
+    os.chown(filename, uid, gid)
 
 class RRDBackend(Backend):
 
@@ -39,6 +46,7 @@ class RRDBackend(Backend):
                                "RRA:MAX:0.5:6:700",
                                "RRA:MAX:0.5:24:775",
                                "RRA:MAX:0.5:444:797")
+                _chown(filename)
             rrdtool.update(filename, "N:%s:%s" % (dst.ipv4_out_bytes, dst.ipv6_out_bytes))
 
     def store_peer(self, src: PeeringFlow):
@@ -62,6 +70,7 @@ class RRDBackend(Backend):
                            "RRA:MAX:0.5:6:700",
                            "RRA:MAX:0.5:24:775",
                            "RRA:MAX:0.5:444:797")
+            _chown(filename)
         rrdtool.update(filename, "N:%s:%s:%s:%s" % (src.ipv4_in_bytes, src.ipv4_out_bytes,
                                                     src.ipv6_in_bytes, src.ipv6_out_bytes))
 
@@ -101,6 +110,7 @@ class RRDBackend(Backend):
                           "GPRINT:f_bits:LAST:Cur %3.2lf%s\l",
                           "COMMENT:                 \l",
             )
+            _chown(imgfile)
             f = open(imgfile, mode="rb")
             data = f.read()
             f.close()
@@ -140,6 +150,7 @@ class RRDBackend(Backend):
                           "GPRINT:in_bits:LAST:Cur %3.2lf%s\l",
                           "COMMENT:                 \l",
             )
+            _chown(imgfile)
             f = open(imgfile, mode="rb")
             data = f.read()
             f.close()
