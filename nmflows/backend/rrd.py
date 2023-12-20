@@ -30,6 +30,7 @@ class RRDBackend(Backend):
         path = self._base_path + f"/AS{src.asnum}"
         if not os.path.exists(path):
             os.makedirs(path)
+            _chown(path)
         for dst in src.destinations:
             filename = f"{path}/from__AS{src.asnum}-{src.mac}__to__AS{dst.asnum}-{dst.mac}.rrd"
             if not os.path.isfile(filename):
@@ -53,6 +54,7 @@ class RRDBackend(Backend):
         path = self._base_path + f"/AS{src.asnum}"
         if not os.path.exists(path):
             os.makedirs(path)
+            _chown(path)
         filename = f"{path}/iface__AS{src.asnum}-{src.mac}.rrd"
         if not os.path.isfile(filename):
             rrdtool.create(filename,
