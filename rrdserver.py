@@ -16,7 +16,8 @@ def index():
 def asn_summary(asnum):
     period = request.args.get('period')
     proto = request.args.get('proto')
-    images = []
+    flows = []
+    ifaces = []
     path = CONFIG['rrd_base_path'] + f"/AS{asnum}"
     for fn in os.listdir(path):
         if os.path.isfile(path + '/' + fn):
@@ -24,7 +25,7 @@ def asn_summary(asnum):
                 tokens = fn.split('__')
                 src = tokens[1]
                 dst = tokens[3].strip('.rrd')
-                images.append({
+                flows.append({
                     'filename': fn,
                     'src': src,
                     'dst': dst,
@@ -34,7 +35,7 @@ def asn_summary(asnum):
             elif 'iface' in fn:
                 tokens = fn.split('__')
                 src = tokens[1].strip('.rrd')
-                images.append({
+                ifaces.append({
                     'filename': fn,
                     'src': src,
                     'url': f"/peer?src={src}&period={period}&proto={proto}",
@@ -42,7 +43,7 @@ def asn_summary(asnum):
                 })
             else:
                 pass
-    response = make_response(render_template('as.html', asn=asnum, images=images), 200)
+    response = make_response(render_template('as.html', asn=asnum, flows=flows, ifaces=ifaces), 200)
     return response
 
 
