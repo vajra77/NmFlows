@@ -116,7 +116,7 @@ class RRDBackend(Backend):
             os.unlink(imgfile)
             return data
         else:
-            f = open('/srv/NmFlows/static/404.png')
+            f = open('static/404.png', mode='rb')
             data = f.read()
             f.close()
             return data
@@ -158,7 +158,7 @@ class RRDBackend(Backend):
             os.unlink(imgfile)
             return data
         else:
-            f = open('/srv/NmFlows/static/404.png')
+            f = open('static/404.png', mode='rb')
             data = f.read()
             f.close()
             return data
