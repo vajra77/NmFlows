@@ -8,7 +8,8 @@ import socketserver
 import json
 import jsonpickle
 import threading
-from time import sleep
+import datetime
+import time
 
 
 DEFAULT_BUFFER_SIZE = 8192  # 8k
@@ -16,9 +17,14 @@ DEFAULT_BUFFER_SIZE = 8192  # 8k
 
 def do_stats():
     while True:
-        sleep(300)
+        time.sleep(300)
         Stats.log_counters()
         Stats.reset_counters()
+
+def do_sync():
+    Stats.info("syncing to 5 minutes interval")
+    sleeptime = 300 - datetime.datetime.utcnow().second
+    time.sleep(sleeptime)
 
 def create_sflow_datagram(data: PtrBuffer):
     version = data.read_uint()
@@ -78,7 +84,7 @@ def do_main():
 
 if __name__ == "__main__":
 
-
     Stats = StatLogger(CONFIG['collector_log'], CONFIG['debug'])
+    do_sync()
     daemon = Daemonize(app="nmflows-collector", pid=CONFIG['collector_pid'], action=do_main, keep_fds=Stats.keep_fds)
     daemon.start()
