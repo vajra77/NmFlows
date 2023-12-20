@@ -79,6 +79,7 @@ class PeeringMatrix:
             for src in self._sources.values():
                 self._backend.store_peer(src)
                 self._backend.store_flows(src)
+                src.cleanup()
             self._is_dirty = False
 
     def dump(self, filename):
