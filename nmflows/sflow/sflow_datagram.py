@@ -5,12 +5,14 @@ from nmflows.sflow.samples.expanded_flow_sample import ExpandedFlowSample
 import socket
 
 
+FORMAT_UNKNOWN = 0
 FORMAT_FLOW_SAMPLE = 1
 FORMAT_COUNTER_SAMPLE = 2
 FORMAT_EXPANDED_FLOW_SAMPLE = 3
 FORMAT_EXPANDED_COUNTER_SAMPLE = 4
 
-VALID_SAMPLE_FORMATS = [FORMAT_FLOW_SAMPLE, FORMAT_EXPANDED_FLOW_SAMPLE, FORMAT_COUNTER_SAMPLE, FORMAT_EXPANDED_COUNTER_SAMPLE]
+VALID_SAMPLE_FORMATS = [FORMAT_UNKNOWN, FORMAT_FLOW_SAMPLE, FORMAT_EXPANDED_FLOW_SAMPLE,
+                        FORMAT_COUNTER_SAMPLE, FORMAT_EXPANDED_COUNTER_SAMPLE]
 
 IP_VERSION_4 = 1
 IP_VERSION_6 = 2
@@ -101,7 +103,7 @@ class SFlowDatagram:
         sformat = data.read_uint() & 0x0fff
         if sformat in VALID_SAMPLE_FORMATS:
             length = data.read_uint()
-            if sformat == FORMAT_FLOW_SAMPLE:
+            if sformat == FORMAT_FLOW_SAMPLE or sformat == FORMAT_UNKNOWN:
                 return FlowSample.unpack(sformat, length, data)
             elif sformat == FORMAT_EXPANDED_FLOW_SAMPLE:
                 return ExpandedFlowSample.unpack(sformat, length, data)
