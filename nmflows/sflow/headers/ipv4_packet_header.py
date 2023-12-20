@@ -1,4 +1,5 @@
 import socket
+import sys
 
 
 class IPv4PacketHeader:
@@ -32,11 +33,11 @@ class IPv4PacketHeader:
 
     @classmethod
     def unpack(cls, data: bytes):
-        ihl = 4 * (int.from_bytes(data[0:1], 'big') & 0xf)
-        proto = int.from_bytes(data[9:10], 'big') & 0xff
+        ihl = 4 * (int.from_bytes(data[0:1], byteorder=sys.byteorder, signed=False) & 0xf)
+        proto = int.from_bytes(data[9:10], sys.byteorder, signed=False) & 0xff
         src_addr = socket.inet_ntop(socket.AF_INET, data[12:16])
         dst_addr = socket.inet_ntop(socket.AF_INET, data[16:20])
-        t_length = int.from_bytes(data[2:4], 'big') & 0xffff
+        t_length = int.from_bytes(data[2:4], byteorder=sys.byteorder, signed=False) & 0xffff
         return cls(src_addr, dst_addr, proto, ihl, t_length - ihl)
 
     def __repr__(self):

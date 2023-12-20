@@ -1,4 +1,5 @@
 import socket
+import sys
 
 
 class IPv6PacketHeader:
@@ -32,8 +33,8 @@ class IPv6PacketHeader:
 
     @classmethod
     def unpack(cls, data: bytes):
-        p_len = int.from_bytes(data[4:6], 'big') & 0xffff
-        proto = int.from_bytes(data[6:7], 'big') & 0xff
+        p_len = int.from_bytes(data[4:6], byteorder=sys.byteorder, signed=False) & 0xffff
+        proto = int.from_bytes(data[6:7], byteorder=sys.byteorder, signed=False) & 0xff
         src_addr = socket.inet_ntop(socket.AF_INET6, data[8:24])
         dst_addr = socket.inet_ntop(socket.AF_INET6, data[24:40])
         return cls(src_addr, dst_addr, proto, 40, p_len)

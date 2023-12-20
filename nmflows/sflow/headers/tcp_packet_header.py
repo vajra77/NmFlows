@@ -1,3 +1,4 @@
+import sys
 
 
 class TCPPacketHeader:
@@ -16,8 +17,8 @@ class TCPPacketHeader:
 
     @classmethod
     def unpack(cls, data: bytes):
-        src_port = int.from_bytes(data[0:2], 'big') & 0xffff
-        dst_port = int.from_bytes(data[2:4], 'big') & 0xffff
+        src_port = int.from_bytes(data[0:2], byteorder=sys.byteorder, signed=False) & 0xffff
+        dst_port = int.from_bytes(data[2:4], byteorder=sys.byteorder, signed=False) & 0xffff
         return cls(src_port, dst_port)
 
     def __repr__(self):
