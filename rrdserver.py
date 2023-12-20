@@ -31,6 +31,15 @@ def asn_summary(asnum):
                     'url': f"/flow?src={src}&dst={dst}&period={period}&proto={proto}",
                     'title': f"From {src} to {dst}",
                 })
+            elif 'iface' in fn:
+                tokens = fn.split('__')
+                src = tokens[1].strip('.rrd')
+                images.append({
+                    'filename': fn,
+                    'src': src,
+                    'url': f"/peer?src={src}&period={period}&proto={proto}",
+                    'title': f"Total traffic for {src} interface",
+                })
             else:
                 pass
     response = make_response(render_template('as.html', asn=asnum, images=images), 200)
