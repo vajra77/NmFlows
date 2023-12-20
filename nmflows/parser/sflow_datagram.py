@@ -5,14 +5,13 @@ from .flow_sample import FlowSample
 
 class SFlowDatagram:
 
-    def __init__(self, version, ip_version, ag_address, ag_id, seq_no, uptime, n_samples, samples):
+    def __init__(self, version, ip_version, ag_address, ag_id, seq_no, uptime, samples):
         self._version = version
         self._ip_version = ip_version
         self._agent_address = ag_address
         self._agent_id = ag_id
         self._sequence_number = seq_no
         self._switch_uptime = uptime
-        self._number_of_samples = n_samples
         self._samples = samples
 
     @property
@@ -40,8 +39,8 @@ class SFlowDatagram:
         return self._switch_uptime
 
     @property
-    def number_of_samples(self):
-        return self._number_of_samples
+    def processed_samples(self):
+        return len(self._samples)
 
     @classmethod
     def from_bytes(cls, data, stats: StatLogger):
@@ -66,7 +65,7 @@ class SFlowDatagram:
 
         samples = []
 
-        for s in range(n_samples):
+        for _ in range(n_samples):
             sample_format = buffer.read_uint(start_of_sample) & 0xfff                          # rightmost 12 bits
             sample_length = buffer.read_uint(start_of_sample + 4)
             if sample_format == Sample.FORMAT_FLOW_SAMPLE:
@@ -86,4 +85,4 @@ class SFlowDatagram:
             start_of_sample += 8 + sample_length                        # we assume we can always trust the length field
 
         return cls(version, ip_version, agent_address, agent_id,
-                   sequence_number, switch_uptime, n_samples, samples)
+                   sequence_number, switch_uptime, samples)
