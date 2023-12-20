@@ -1,6 +1,7 @@
 from nmflows.backend import RRDBackend
 from flask import Flask, request, make_response, render_template
 from config import CONFIG
+import os
 
 
 app = Flask(__name__, template_folder='static')
@@ -10,6 +11,31 @@ app = Flask(__name__, template_folder='static')
 def index():
     response = make_response(render_template('index.html'), 200)
     return response
+
+@app.route('/as/<asnum>', methods=['GET'])
+def asn_summary(asnum):
+    period = request.args.get('period')
+    proto = request.args.get('proto')
+    images = []
+    path = CONFIG['rrd_base_path'] + f"/AS{asnum}"
+    for fn in os.listdir(path):
+        if os.path.isfile(fn):
+            if 'from' in fn:
+                tokens = fn.split('__')
+                src = tokens[1]
+                dst = tokens[3]
+                images.append({
+                    'filename': fn,
+                    'src': src,
+                    'dst': dst,
+                    'url': f"/flow?src={src}&dst={dst}&period={period}&proto={proto}",
+                    'title': f"From {src} to {dst}",
+                })
+            else:
+                pass
+    response = make_response(render_template('as.html', asn=asnum, images=images), 200)
+    return response
+
 
 @app.route('/flow', methods=['GET'])
 def get_flow():
@@ -63,3 +89,4 @@ def get_peer():
         return make_response(render_template("404.html", error=e), 404)
     except Exception as e:
         return make_response(render_template("error.html", error=e), 500)
+
