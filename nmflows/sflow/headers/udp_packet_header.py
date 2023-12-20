@@ -22,9 +22,9 @@ class UDPPacketHeader:
 
     @classmethod
     def unpack(cls, data: bytes):
-        src_port = int.from_bytes(data[0:2], byteorder=sys.byteorder, signed=False) & 0xffff
-        dst_port = int.from_bytes(data[2:4], byteorder=sys.byteorder, signed=False) & 0xffff
-        payload_length = int.from_bytes(data[4:6], byteorder=sys.byteorder, signed=False) & 0xffff
+        src_port = int.from_bytes(data[0:2], byteorder='big', signed=False) & 0xffff
+        dst_port = int.from_bytes(data[2:4], byteorder='big', signed=False) & 0xffff
+        payload_length = int.from_bytes(data[4:6], byteorder='big', signed=False) & 0xffff
         return cls(src_port, dst_port, payload_length)
 
     def __repr__(self):

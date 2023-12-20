@@ -45,11 +45,11 @@ class EthernetFrameHeader:
     def unpack(cls, data: bytes):
         dst_mac = ''.join('%02x' % b for b in data[0:6])
         src_mac = ''.join('%02x' % b for b in data[6:12])
-        type_len = int.from_bytes(data[12:14], byteorder=sys.byteorder, signed=False)
+        type_len = int.from_bytes(data[12:14], byteorder='big', signed=False)
         if type_len in ALLOWED_ETHERTYPES:
             if type_len == ETHERTYPE_8021Q:
-                vlan = int.from_bytes(data[14:16], byteorder=sys.byteorder, signed=False) & 0x0fff
-                type_len = int.from_bytes(data[16:18], byteorder=sys.byteorder, signed=False)
+                vlan = int.from_bytes(data[14:16], byteorder='big', signed=False) & 0x0fff
+                type_len = int.from_bytes(data[16:18], byteorder='big', signed=False)
                 return cls(dst_mac, src_mac, vlan, type_len, 18)
             else:
                 return cls(dst_mac, src_mac, 0, type_len, 14)
