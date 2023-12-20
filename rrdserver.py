@@ -19,11 +19,11 @@ def asn_summary(asnum):
     images = []
     path = CONFIG['rrd_base_path'] + f"/AS{asnum}"
     for fn in os.listdir(path):
-        if os.path.isfile(fn):
+        if os.path.isfile(path + '/' + fn):
             if 'from' in fn:
                 tokens = fn.split('__')
                 src = tokens[1]
-                dst = tokens[3]
+                dst = tokens[3].strip('.rrd')
                 images.append({
                     'filename': fn,
                     'src': src,
