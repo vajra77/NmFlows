@@ -1,13 +1,13 @@
 from nmflows.peermatrix import PeeringMatrix, PeeringMatrixException
-from nmflows.utils import MACDirectory
+from nmflows.utils import MACDirectory, StatLogger
 from nmflows.mq import RecvQueue
 from nmflows.backend import RRDBackend
 from config import CONFIG
 from daemonize import Daemonize
-import logging
 import json
 import jsonpickle
 import threading
+import datetime
 import time
 
 
@@ -17,10 +17,9 @@ def handle_msg(ch, method, properties, body):
             flow = jsonpickle.decode((json.loads(body)))
             Matrix.add_flow(flow)
     except PeeringMatrixException as e:
-        if CONFIG['debug']:
-            logger.debug(f"[ERROR]: {e}")
+        Stats.debug(f"[ERROR]: {e}")
     except Exception as e:
-        logger.error(f"Unknown error while adding flow: {e}")
+        Stats.error(f"Unknown error while adding flow: {e}")
 
 
 def consume_task():
@@ -35,11 +34,14 @@ def flush_task():
                 Matrix.dump(CONFIG['bgp_matrix_dump'])
                 Matrix.flush()
         except Exception as e:
-            logger.error(f"Error while flushing matrix: {e}")
+            Stats.error(f"Error while flushing matrix: {e}")
             continue
 
 
 def do_main():
+    sleeptime = 300 - datetime.datetime.utcnow().second
+    time.sleep(sleeptime)
+
     t1 = threading.Thread(target=consume_task)
     t2 = threading.Thread(target=flush_task)
     t1.start()
@@ -49,16 +51,8 @@ def do_main():
 
 
 if __name__ == "__main__":
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    logger.propagate = False
-    fh = logging.FileHandler(CONFIG['broker_log'], "w")
-    if CONFIG['debug']:
-        fh.setLevel(logging.DEBUG)
-    else:
-        fh.setLevel(logging.INFO)
-    logger.addHandler(fh)
-    keep_fds = [fh.stream.fileno()]
+
+    Stats = StatLogger(CONFIG['broker_log'], CONFIG['debug'])
 
     Matrix = PeeringMatrix(MACDirectory(CONFIG['ixf_url']),
                            RRDBackend(CONFIG['rrd_base_path'], CONFIG['rrd_graph_gamma']))
@@ -70,5 +64,5 @@ if __name__ == "__main__":
                       CONFIG['rabbitmq_pass'],
                       handle_msg)
 
-    daemon = Daemonize(app="nmflows-broker", pid=CONFIG['broker_pid'], action=do_main, keep_fds=keep_fds)
+    daemon = Daemonize(app="nmflows-broker", pid=CONFIG['broker_pid'], action=do_main, keep_fds=Stats.keep_fds)
     daemon.start()
