@@ -39,13 +39,18 @@ def flush_task():
 
 
 def do_main():
+    Stats.info("syncing to 5 minutes interval")
     sleeptime = 300 - datetime.datetime.utcnow().second
     time.sleep(sleeptime)
 
+    Stats.info("starting collector thread")
     t1 = threading.Thread(target=consume_task)
-    t2 = threading.Thread(target=flush_task)
     t1.start()
+
+    Stats.info("starting flushing thread")
+    t2 = threading.Thread(target=flush_task)
     t2.start()
+
     t1.join()
     t2.join()
 
