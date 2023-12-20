@@ -110,7 +110,6 @@ class RRDBackend(Backend):
                           "GPRINT:f_bits:LAST:Cur %3.2lf%s\l",
                           "COMMENT:                 \l",
             )
-            _chown(imgfile)
             f = open(imgfile, mode="rb")
             data = f.read()
             f.close()
@@ -150,7 +149,6 @@ class RRDBackend(Backend):
                           "GPRINT:in_bits:LAST:Cur %3.2lf%s\l",
                           "COMMENT:                 \l",
             )
-            _chown(imgfile)
             f = open(imgfile, mode="rb")
             data = f.read()
             f.close()
