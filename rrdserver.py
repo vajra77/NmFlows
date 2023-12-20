@@ -1,5 +1,6 @@
 from nmflows.backend import RRDBackend
-from flask import Flask, request, make_response, render_template
+from nmflows.utils.mac_directory import MACDirectory
+from flask import Flask, request, make_response, render_template, jsonify
 from config import CONFIG
 import os
 
@@ -10,6 +11,22 @@ app = Flask(__name__, template_folder='static')
 @app.route('/', methods=['GET'])
 def index():
     response = make_response(render_template('index.html'), 200)
+    return response
+
+
+@app.route('/directory', methods=['GET'])
+def get_directory():
+    directory = MACDirectory(CONFIG['ixf_url'])
+    entries = []
+    for entry in directory:
+        entries.append({
+            'name': entry.name,
+            'asnum': entry.asnum,
+            'mac': entry.mac,
+            'ipv4_addr': entry.ipv4,
+            'ipv6_addr': entry.ipv6
+        })
+    response = make_response(jsonify(entries), 200)
     return response
 
 @app.route('/as/<asnum>', methods=['GET'])
