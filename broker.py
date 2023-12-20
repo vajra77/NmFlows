@@ -28,18 +28,7 @@ def consume_task():
 
 
 def flush_task():
-    while True:
-        time.sleep(300)
-        try:
-            with Lock:
-                Matrix.dump(CONFIG['bgp_matrix_dump'])
-                Matrix.flush()
-        except Exception as e:
-            Stats.error(f"Error while flushing matrix: {e}")
-            continue
 
-
-def do_main():
     Stats.info("syncing to 5 minutes interval")
     delta = timedelta(minutes=5)
     now = datetime.now()
@@ -47,7 +36,21 @@ def do_main():
     timesleep = (next_date.minute - now.minute - 1) * 60 + (60 - now.second)
     time.sleep(timesleep)
 
-    Stats.info("starting collector thread")
+    while True:
+        try:
+            with Lock:
+                Matrix.dump(CONFIG['bgp_matrix_dump'])
+                Matrix.flush()
+        except Exception as e:
+            Stats.error(f"Error while flushing matrix: {e}")
+            continue
+        finally:
+            time.sleep(300)
+
+
+def do_main():
+
+    Stats.info("starting broker thread")
     t1 = threading.Thread(target=consume_task)
     t1.start()
 
