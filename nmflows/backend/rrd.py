@@ -126,8 +126,7 @@ class RRDBackend(Backend):
         if_path = self._base_path + f"/{src_asn}"
         rrdfile = f"{if_path}/iface__{src}.rrd"
         if os.path.isfile(rrdfile):
-            gamma_in = 8 * self._base_gamma
-            gamma_out = gamma_in / 2
+            gamma = 8 * self._base_gamma
             imgfile = f"/tmp/iface__{src}.png"
             date = datetime.today()
             rrdtool.graph(imgfile,
@@ -140,8 +139,8 @@ class RRDBackend(Backend):
                           "--vertical-label", "bits / seconds",
                           f"DEF:in_flow={rrdfile}:{proto}_in_bytes:AVERAGE",
                           f"DEF:out_flow={rrdfile}:{proto}_out_bytes:AVERAGE",
-                          f"CDEF:in_bits=in_flow,{gamma_in},*",
-                          f"CDEF:out_bits=out_flow,{gamma_out},*",
+                          f"CDEF:in_bits=in_flow,{gamma},*",
+                          f"CDEF:out_bits=out_flow,{gamma},*",
                           "COMMENT:                 \l",
                           f"AREA:out_bits#00FF00:Outbound \t",
                           "GPRINT:out_bits:MAX:Max %3.2lf%s\t",
