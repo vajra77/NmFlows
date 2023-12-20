@@ -116,7 +116,10 @@ class RRDBackend(Backend):
             os.unlink(imgfile)
             return data
         else:
-            raise FileNotFoundError([f_rrdfile, r_rrdfile])
+            f = open('static/404.jpg')
+            data = f.read()
+            f.close()
+            return data
 
     def graph_peer(self, schedule, src, proto):
         src_asn, src_mac = src.split('-')
@@ -155,7 +158,10 @@ class RRDBackend(Backend):
             os.unlink(imgfile)
             return data
         else:
-            raise FileNotFoundError(rrdfile)
+            f = open('static/404.jpg')
+            data = f.read()
+            f.close()
+            return data
 
     def __repr__(self):
         return "RRD"
