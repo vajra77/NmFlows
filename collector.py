@@ -15,7 +15,7 @@ DEFAULT_BUFFER_SIZE = 8192  # 8k
 
 def do_stats():
     while True:
-        time.sleep(300)
+        time.sleep(10)          # CHANGEME
         Stats.log_counters()
         Stats.reset_counters()
 
