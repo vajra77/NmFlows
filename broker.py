@@ -20,7 +20,7 @@ def handle_msg(ch, method, properties, body):
     except PeeringMatrixException as e:
         Stats.increment_counter(e)
     except Exception as e:
-        Stats.error(f"Unknown error while adding flow: {e}")
+        Stats.error(f"Unknown error while registering flow: {e}")
 
 
 def consume_task():

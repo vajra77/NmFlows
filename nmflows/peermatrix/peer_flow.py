@@ -80,12 +80,6 @@ class PeerFlow:
     def is_unknown(self) -> bool:
         return self._asnum is None and self._name is None
 
-    def is_source(self) -> bool:
-        return len(self._flows) > 0
-
-    def is_flow(self) -> bool:
-        return len(self._flows) == 0
-
     def cleanup(self):
         self._ipv6_in_bytes = 0
         self._ipv4_in_bytes = 0
