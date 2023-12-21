@@ -1,6 +1,6 @@
 from .record import Record
 from nmflows.utils.buffer import Buffer
-from nmflows.parser.headers import EthernetHeader, NetworkHeader, TransportHeader
+from nmflows.parser.headers import DatalinkHeader, NetworkHeader, TransportHeader
 
 
 class PktHeaderRecord(Record):
@@ -20,9 +20,15 @@ class PktHeaderRecord(Record):
     @property
     def original_length(self):
         return self._original_length
+    
+    @property
+    def payload_length(self):
+        return (self._datalink.length
+                 + self._network.header_length
+                 + self._network.payload_length)
 
     @property
-    def datalink(self) -> EthernetHeader:
+    def datalink(self) -> DatalinkHeader:
         return self._datalink
 
     @property
@@ -43,7 +49,7 @@ class PktHeaderRecord(Record):
         if hdr_proto == 1:                      # header is Ethernet
             start_of_header = 16
             datalink_data = buffer.read_bytes(start_of_header, header_length)
-            datalink = EthernetHeader.from_bytes(datalink_data)
+            datalink = DatalinkHeader.from_bytes(datalink_data)
 
             start_of_header += datalink.length
             network_data = buffer.read_bytes(start_of_header, header_length - datalink.length)

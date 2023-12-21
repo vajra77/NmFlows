@@ -1,5 +1,5 @@
 from nmflows.utils.buffer import Buffer
-from .ethernet_header import EthernetHeader
+from .datalink_header import DatalinkHeader
 
 
 class NetworkHeader:
@@ -42,7 +42,7 @@ class NetworkHeader:
     @classmethod
     def from_bytes(cls, data, ether_type):
         buffer = Buffer.from_bytes(data)
-        if ether_type == EthernetHeader.ETHERTYPE_IPV4:
+        if ether_type == DatalinkHeader.ETHERTYPE_IPV4:
             # ---- IPv4 Packet Header
             hdr_len = 4 * (buffer.read_byte(0) & 0xf)  # IHL field
             assert hdr_len == 20, "non_default_ipv4_header"
@@ -52,7 +52,7 @@ class NetworkHeader:
             dst_addr = buffer.read_ipv4_address(16)
             return cls(4, hdr_len, tot_len, up_proto,
                        src_addr, dst_addr)
-        elif ether_type == EthernetHeader.ETHERTYPE_IPV6:
+        elif ether_type == DatalinkHeader.ETHERTYPE_IPV6:
             # ---- IPv6 Packet Header
             payload_len = buffer.read_short(4)
             up_proto = buffer.read_byte(6)

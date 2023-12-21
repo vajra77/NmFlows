@@ -1,7 +1,7 @@
 from nmflows.utils.buffer import Buffer
 
 
-class EthernetHeader:
+class DatalinkHeader:
 
     ETHERTYPE_IPV4 = 0x0800
     ETHERTYPE_ARP = 0x0806

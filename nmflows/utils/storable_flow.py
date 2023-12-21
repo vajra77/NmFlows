@@ -118,7 +118,7 @@ class StorableFlow:
             record.transport.source_port,
             record.transport.destination_port,
             record.original_length,
-            record.network.payload_length
+            record.payload_length
         )
 
     def __repr__(self):
