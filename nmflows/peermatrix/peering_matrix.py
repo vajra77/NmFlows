@@ -28,36 +28,35 @@ class PeeringMatrix:
         self._peers[peer.mac] = peer.mac
 
     def checkin_peer(self, mac) -> PeerFlow:
-        if mac in self._peers.keys():
-            return self._peers.get(mac)
+        peer = self._peers.get(mac)
+        if peer is not None:
+            return peer
         else:
             if self._directory.has(mac):
                 mac_entry = self._directory.get(mac)
-                peer = PeerFlow.from_mac_entry(mac_entry)
-                self.add_peer(peer)
-                return peer
-            else:
-                return PeerFlow.make_unknown(mac)
+                if mac_entry is not None:
+                    peer = PeerFlow.from_mac_entry(mac_entry)
+                    self.add_peer(peer)
+                    return peer
+            return PeerFlow.make_unknown(mac)
 
     def checkin_flow(self, peer: PeerFlow, mac: str) -> PeerFlow:
-        if peer.has_flow(mac):
-            return peer.get_flow(mac)
+        flow_dst = peer.get_flow(mac)
+        if flow_dst is not None:
+            return flow_dst
         else:
             if self._directory.has(mac):
                 mac_entry = self._directory.get(mac)
-                flow_dst = PeerFlow.from_mac_entry(mac_entry)
-                peer.add_flow(flow_dst)
-                return flow_dst
-            else:
-                return PeerFlow.make_unknown(mac)
+                if mac_entry is not None:
+                    flow_dst = PeerFlow.from_mac_entry(mac_entry)
+                    peer.add_flow(flow_dst)
+                    return flow_dst
+            return PeerFlow.make_unknown(mac)
 
     def register_flow(self, flow: StorableFlow):
 
         src = self.checkin_peer(flow.src_mac)
         dst = self.checkin_peer(flow.dst_mac)
-
-        print(type(src))
-        print(type(dst))
 
         if not src.is_unknown():
             src.account_in_bytes(flow.estimated_size, flow.proto)

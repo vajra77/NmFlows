@@ -57,10 +57,7 @@ class PeerFlow:
         return mac in self._flows.keys()
 
     def get_flow(self, mac: str):
-        if mac in self._flows.keys():
-            return self._flows.get(mac)
-        else:
-            return PeerFlow.make_unknown(mac)
+        return self._flows.get(mac)
 
     def add_flow(self, peer):
         self._flows[peer.mac] = peer
