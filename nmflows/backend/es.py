@@ -12,7 +12,7 @@ class ESBackend(Backend):
         self._es = Elasticsearch(es_url)
 
     def store_flows(self, src: PeerFlow):
-        for dst in src.destinations:
+        for dst in src.flows:
             flow = {
                 'timestamp': datetime.now(),
                 'type': 'flow',

@@ -1,7 +1,6 @@
 from nmflows.utils import MACDirectory, StorableFlow
 from nmflows.peermatrix.peer_flow import PeerFlow
 from nmflows.backend.backend import Backend
-from pprint import pprint
 
 
 class PeeringMatrix:
@@ -85,7 +84,7 @@ class PeeringMatrix:
             msg += f"FROM: {src.name}[:{src.mac[-2:]}] TO: "
             tot4 = 0
             tot6 = 0
-            for dst in src.destinations:
+            for dst in src.flows:
                 # msg += f"{dst.name}[{dst.mac}]=({dst.ipv4_in_bytes}/{dst.ipv6_in_bytes}) "
                 msg += f"{dst.name}[:{dst.mac[-2:]}] | "
                 tot4 += dst.ipv4_in_bytes
