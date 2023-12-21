@@ -1,7 +1,7 @@
 from nmflows.utils import Buffer, StatLogger
 from .sample import Sample
 from .record import Record
-from .raw_packet_header import RawPacketHeader
+from .pkt_header_record import PktHeaderRecord
 
 
 class FlowSample(Sample):
@@ -72,14 +72,19 @@ class FlowSample(Sample):
         for _ in range(number_of_records):
             record_format = buffer.read_uint(start_of_record)
             record_length = buffer.read_uint(start_of_record + 4)
-            if record_format == Record.FORMAT_RAW_PACKET:
-                record = RawPacketHeader.from_bytes(record_format, record_length,
-                                                    buffer.read_bytes(start_of_record + 8, record_length))
-                records.append(record)
-                stats.increment_counter('raw_packet_headers_records')
-            else:
-                stats.increment_counter('unknown_records')
-            start_of_record += 8 + record_length
+            try:
+                if record_format == Record.FORMAT_RAW_PACKET:
+                    record = PktHeaderRecord.from_bytes(record_format, record_length,
+                                                        buffer.read_bytes(start_of_record + 8, record_length))
+                    records.append(record)
+                    stats.increment_counter('raw_packet_header_record')
+                else:
+                    stats.increment_counter('non_packeet_header_record')
+            except NotImplementedError as e:
+                stats.increment_counter(e)
+                stats.increment_counter('unrecognized_data_in_record')
+            finally:
+                start_of_record += 8 + record_length                                   # we always trust the length data
 
         return cls(sformat, length, seq_no, src_id, sampling_rate,
                    sample_pool, drops, input_iface, output_iface, records)

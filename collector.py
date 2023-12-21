@@ -1,6 +1,5 @@
-from nmflows.sflow import SFlowDatagram
-from nmflows.utils import PtrBuffer, StatLogger
-from nmflows.storage import StorableFlow
+from nmflows.parser import SFlowDatagram
+from nmflows.utils import StatLogger, StorableFlow
 from nmflows.mq import SendQueue
 from config import CONFIG
 from daemonize import Daemonize
@@ -8,7 +7,6 @@ import socketserver
 import json
 import jsonpickle
 import threading
-import datetime
 import time
 
 
@@ -21,13 +19,6 @@ def do_stats():
         Stats.log_counters()
         Stats.reset_counters()
 
-def create_sflow_datagram(data: PtrBuffer):
-    version = data.read_uint()
-    if version != 5:
-        raise Exception(f"sFlow version not supported: v{version}")
-    return SFlowDatagram.unpack(version, data, Stats)
-
-
 class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
@@ -38,20 +29,19 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                           CONFIG['rabbitmq_user'],
                           CONFIG['rabbitmq_pass'])
         try:
-            datagram = create_sflow_datagram(PtrBuffer(data, DEFAULT_BUFFER_SIZE))
-            Stats.increment_counter('processed_datagrams')
+            datagram = SFlowDatagram.from_bytes(data, Stats)
+            Stats.increment_counter('processed_datagram')
             for sample in datagram.samples:
                 rate = sample.sampling_rate
-                timestamp = sample.timestamp
                 try:
                     for record in sample.records:
-                        flow = StorableFlow.from_record(timestamp, rate, record)
-                        Stats.debug(f"received: {flow}")
+                        flow = StorableFlow.from_record(rate, record)
+                        Stats.increment_counter('processed_record')
                         queue.send(json.dumps(jsonpickle.encode(flow)))
                 except AttributeError:
                     continue
         except EOFError:
-            Stats.increment_counter('eof_errors')
+            Stats.increment_counter('eof_error')
             Stats.debug("EOF while reading buffer")
             return
         except Exception as e:

@@ -1,4 +1,6 @@
-from nmflows.sflow.samples.raw_packet_header import RawPacketHeader
+from nmflows.parser.samples import PktHeaderRecord
+from datetime import datetime
+
 
 KNOWN_IP_PROTO = {
     2048: 'ipv4',
@@ -33,7 +35,7 @@ def _pp(n: int):
 
 class StorableFlow:
 
-    def __init__(self, ts, rate, vlan, proto, src_mac, dst_mac, src_ip, dst_ip, src_port, dst_port, size):
+    def __init__(self, ts, rate, vlan, proto, src_mac, dst_mac, src_ip, dst_ip, src_port, dst_port, orig_len, pay_len):
         self._timestamp = ts
         self._sampling_rate = rate
         self._vlan = vlan
@@ -44,7 +46,8 @@ class StorableFlow:
         self._dst_addr = dst_ip
         self._src_port = src_port
         self._dst_port = dst_port
-        self._size = size
+        self._original_length = orig_len
+        self._payload_length = pay_len
 
     @property
     def timestamp(self):
@@ -83,50 +86,44 @@ class StorableFlow:
         return self._dst_port
 
     @property
-    def size(self):
-        return self._size
-
+    def original_length(self):
+        return self._original_length
+    
+    @property
+    def payload_length(self):
+        return self._payload_length
+    
     @property
     def sampling_rate(self):
         return self._sampling_rate
 
     @property
-    def computed_size(self):
-        return self._size * self._sampling_rate
+    def estimated_size(self):
+        if self._original_length < self._payload_length:
+            return self._payload_length * self._sampling_rate
+        else:
+            return self._original_length * self._sampling_rate
 
     @classmethod
-    def from_record(cls, timestamp, rate, record: RawPacketHeader):
+    def from_record(cls, rate, record: PktHeaderRecord):
         return cls(
-            timestamp,
+            datetime.now(),
             rate,
-            record.datalink_header.vlan,
-            record.datalink_header.type,
-            record.datalink_header.src_mac,
-            record.datalink_header.dst_mac,
-            record.network_header.src_addr,
-            record.network_header.dst_addr,
-            record.transport_header.src_port,
-            record.transport_header.dst_port,
-            record.payload_length
+            record.datalink.vlan,
+            record.datalink.ether_type,
+            record.datalink.source_mac,
+            record.datalink.destination_mac,
+            record.network.source_address,
+            record.network.destination_address,
+            record.transport.source_port,
+            record.transport.destination_port,
+            record.original_length,
+            record.network.payload_length
         )
-
-    def to_json(self):
-        return {
-            'timestamp': self._timestamp,
-            'sampling_rate': self._sampling_rate,
-            'vlan': self._vlan,
-            'proto': self._proto,
-            'src_mac': self._src_mac,
-            'dst_mac': self._dst_mac,
-            'src_addr': self._src_addr,
-            'dst_addr': self._dst_addr,
-            'src_port': self._src_port,
-            'dst_port': self._dst_port,
-            'size': self._size
-        }
 
     def __repr__(self):
         return (f"FLOW [{self.timestamp}] | proto: {_ip(self.proto)} | "
                 f"from {self.src_addr}:{_pp(self.src_port)} via [{self.src_mac}] | "
                 f"to {self.dst_addr}:{_pp(self.dst_port)} via [{self.dst_mac}] | "
-                f"size: {self.size} | rate: {self.sampling_rate} | computed: {self.computed_size}")
+                f"original_len: {self.original_length} | payload_len: {self.payload_length} | "
+                f"rate: {self.sampling_rate} | computed: {self.estimated_size}")

@@ -1,6 +1,6 @@
 from nmflows.utils import Buffer, StatLogger
-from .sample import Sample
-from .flow_sample import FlowSample
+from nmflows.parser.samples.sample import Sample
+from nmflows.parser.samples.flow_sample import FlowSample
 
 
 class SFlowDatagram:

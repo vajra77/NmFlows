@@ -3,16 +3,13 @@ import sys
 from nmflows.sflow.exceptions import EthParserException
 
 
-ETHERTYPE_IPV4 = 0x0800
-ETHERTYPE_ARP = 0x0806
-ETHERTYPE_8021Q = 0x8100
-ETHERTYPE_IPV6 = 0x86dd
-
-TAGGING_ETHERTYPES = [0x8100, 0x88A8, 0x9100, 0x9200, 0x9300]
-ALLOWED_ETHERTYPES = [ETHERTYPE_ARP, ETHERTYPE_8021Q, ETHERTYPE_IPV4, ETHERTYPE_IPV6]
-
-
 class EthernetFrameHeader:
+
+    ETHERTYPE_IPV4 = 0x0800
+    ETHERTYPE_ARP = 0x0806
+    ETHERTYPE_8021Q = 0x8100
+    ETHERTYPE_IPV6 = 0x86dd
+    ALLOWED_ETHERTYPES = [ETHERTYPE_ARP, ETHERTYPE_8021Q, ETHERTYPE_IPV4, ETHERTYPE_IPV6]
 
     def __init__(self, dst_mac, src_mac, vlan, e_type, length):
         self._dst_mac = dst_mac
@@ -46,8 +43,8 @@ class EthernetFrameHeader:
         dst_mac = ''.join('%02x' % b for b in data[0:6])
         src_mac = ''.join('%02x' % b for b in data[6:12])
         type_len = int.from_bytes(data[12:14], byteorder='big', signed=False)
-        if type_len in ALLOWED_ETHERTYPES:
-            if type_len == ETHERTYPE_8021Q:
+        if type_len in cls.ALLOWED_ETHERTYPES:
+            if type_len == cls.ETHERTYPE_8021Q:
                 vlan = int.from_bytes(data[14:16], byteorder='big', signed=False) & 0x0fff
                 type_len = int.from_bytes(data[16:18], byteorder='big', signed=False)
                 return cls(dst_mac, src_mac, vlan, type_len, 18)
