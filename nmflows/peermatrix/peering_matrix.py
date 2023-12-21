@@ -24,22 +24,22 @@ class PeeringMatrix:
         else:
             return PeerFlow.make_unknown(mac)
 
-    def _add_peer(self, peer: PeerFlow):
+    def add_peer(self, peer: PeerFlow):
         self._peers[peer.mac] = peer.mac
 
-    def _checkin_peer(self, mac) -> PeerFlow:
+    def checkin_peer(self, mac) -> PeerFlow:
         if mac in self._peers.keys():
             return self._peers.get(mac)
         else:
             if self._directory.has(mac):
                 mac_entry = self._directory.get(mac)
                 peer = PeerFlow.from_mac_entry(mac_entry)
-                self._add_peer(peer)
+                self.add_peer(peer)
                 return peer
             else:
                 return PeerFlow.make_unknown(mac)
 
-    def _checkin_flow(self, peer: PeerFlow, mac: str) -> PeerFlow:
+    def checkin_flow(self, peer: PeerFlow, mac: str) -> PeerFlow:
         if peer.has_flow(mac):
             return peer.get_flow(mac)
         else:
@@ -53,19 +53,22 @@ class PeeringMatrix:
 
     def register_flow(self, flow: StorableFlow):
 
-        src = self._checkin_peer(flow.src_mac)
-        dst = self._checkin_peer(flow.dst_mac)
+        src = self.checkin_peer(flow.src_mac)
+        dst = self.checkin_peer(flow.dst_mac)
+
+        print(type(src))
+        print(type(dst))
 
         if not src.is_unknown():
-            self._is_dirty = True
             src.account_in_bytes(flow.estimated_size, flow.proto)
-            fdest = self._checkin_flow(src, flow.dst_mac)
+            self._is_dirty = True
+            fdest = self.checkin_flow(src, flow.dst_mac)
             if not fdest.is_unknown():
                 fdest.account_out_bytes(flow.estimated_size, flow.proto)
 
         if not dst.is_unknown():
+            dst.account_out_bytes(flow.estimated_size, flow.proto)
             self._is_dirty = True
-            src.account_out_bytes(flow.estimated_size, flow.proto)
 
     def flush(self):
         if self.is_dirty:

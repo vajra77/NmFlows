@@ -53,10 +53,10 @@ class PeerFlow:
     def out_bytes(self):
         return self._ipv4_out_bytes + self._ipv6_out_bytes
 
-    def has_flow(self, mac):
+    def has_flow(self, mac: str):
         return mac in self._flows.keys()
 
-    def get_flow(self, mac):
+    def get_flow(self, mac: str):
         if mac in self._flows.keys():
             return self._flows.get(mac)
         else:

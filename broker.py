@@ -1,4 +1,4 @@
-from nmflows.peermatrix import PeeringMatrix, PeeringMatrixException
+from nmflows.peermatrix import PeeringMatrix
 from nmflows.utils import MACDirectory, StatLogger
 from nmflows.mq import RecvQueue
 from nmflows.backend import RRDBackend
@@ -17,8 +17,6 @@ def handle_msg(ch, method, properties, body):
         with Lock:
             flow = jsonpickle.decode((json.loads(body)))
             Matrix.register_flow(flow)
-    except PeeringMatrixException as e:
-        Stats.increment_counter(e)
     except Exception as e:
         Stats.error(f"Unknown error while registering flow: {e}")
 
@@ -78,5 +76,6 @@ if __name__ == "__main__":
                       CONFIG['rabbitmq_pass'],
                       handle_msg)
 
-    daemon = Daemonize(app="nmflows-broker", pid=CONFIG['broker_pid'], action=do_main, keep_fds=Stats.keep_fds)
-    daemon.start()
+    do_main()
+    #daemon = Daemonize(app="nmflows-broker", pid=CONFIG['broker_pid'], action=do_main, keep_fds=Stats.keep_fds)
+    #daemon.start()
