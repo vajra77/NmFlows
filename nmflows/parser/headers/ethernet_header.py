@@ -41,7 +41,7 @@ class EthernetHeader:
     def from_bytes(cls, data):
         buffer = Buffer.from_bytes(data)
         dst_mac = ''.join('%02x' % b for b in buffer.read_bytes(0,6))
-        src_mac = ''.join('%02x' % b for b in buffer.read_bytes(6,12))
+        src_mac = ''.join('%02x' % b for b in buffer.read_bytes(6,6))
         type_len = buffer.read_short(12) #int.from_bytes(data[12:14], byteorder='big', signed=False)
         if type_len in cls.ALLOWED_ETHERTYPES:
             if type_len == cls.ETHERTYPE_8021Q:
