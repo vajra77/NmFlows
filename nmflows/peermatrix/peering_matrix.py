@@ -57,6 +57,9 @@ class PeeringMatrix:
         src = self.checkin_peer(flow.src_mac)
         dst = self.checkin_peer(flow.dst_mac)
 
+        print(type(src))
+        print(type(dst))
+
         if not src.is_unknown():
             src.account_in_bytes(flow.estimated_size, flow.proto)
             self._is_dirty = True
