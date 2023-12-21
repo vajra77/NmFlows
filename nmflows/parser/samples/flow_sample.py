@@ -80,7 +80,7 @@ class FlowSample(Sample):
                     records.append(record)
                     stats.increment_counter('raw_packet_header_record')
                 else:
-                    stats.increment_counter('non_packeet_header_record')
+                    stats.increment_counter('non_packet_header_record')
             except NotImplementedError as e:
                 stats.increment_counter(e)
                 stats.increment_counter('unrecognized_data_in_record')

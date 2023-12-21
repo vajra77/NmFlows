@@ -40,12 +40,8 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                         queue.send(json.dumps(jsonpickle.encode(flow)))
                 except AttributeError:
                     continue
-        except EOFError:
-            Stats.increment_counter('eof_error')
-            Stats.debug("EOF while reading buffer")
-            return
         except Exception as e:
-            Stats.debug(e)
+            Stats.increment_counter(e)
             return
 
 
