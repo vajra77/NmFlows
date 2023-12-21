@@ -18,7 +18,7 @@ def handle_msg(ch, method, properties, body):
             flow = jsonpickle.decode((json.loads(body)))
             Matrix.add_flow(flow)
     except PeeringMatrixException as e:
-        Stats.debug(f"[ERROR]: {e}")
+        Stats.increment_counter(e)
     except Exception as e:
         Stats.error(f"Unknown error while adding flow: {e}")
 
@@ -41,6 +41,8 @@ def flush_task():
             with Lock:
                 Matrix.dump(CONFIG['bgp_matrix_dump'])
                 Matrix.flush()
+                Stats.log_counters()
+                Stats.reset_counters()
         except Exception as e:
             Stats.error(f"Error while flushing matrix: {e}")
             continue

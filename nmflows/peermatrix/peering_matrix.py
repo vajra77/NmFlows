@@ -59,13 +59,14 @@ class PeeringMatrix:
             if entry is not None:
                 das = PeeringFlow.from_mac_entry(entry)
                 self._add_source(das)
+                # we assume das is never None
         return das
 
     def add_flow(self, flow: StorableFlow):
         source = self._get_flow_source(flow)
         dest = self._get_flow_destination(flow)
         if source.is_unknown() or dest.is_unknown():
-            raise PeeringMatrixException(f"unknown source/destination")
+            raise PeeringMatrixException("unknown_source_destination_mac")
         else:
             source.account_in_bytes(flow.estimated_size, flow.proto)
             dest.account_out_bytes(flow.estimated_size, flow.proto)
