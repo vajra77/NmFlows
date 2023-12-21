@@ -78,11 +78,10 @@ class FlowSample(Sample):
                     record = PktHeaderRecord.from_bytes(record_format, record_length,
                                                         buffer.read_bytes(start_of_record + 8, record_length))
                     records.append(record)
-                    stats.increment_counter('raw_packet_header_record')
                 else:
                     stats.increment_counter('non_packet_header_record')
             except NotImplementedError as e:
-                stats.increment_counter(e)
+                stats.debug(e)
                 stats.increment_counter('unrecognized_data_in_record')
             finally:
                 start_of_record += 8 + record_length                                   # we always trust the length data
