@@ -38,7 +38,7 @@ def asn_summary(asnum):
     path = CONFIG['rrd_base_path'] + f"/AS{asnum}"
     for fn in os.listdir(path):
         if os.path.isfile(path + '/' + fn):
-            if 'from' in fn:
+            if 'flow' in fn:
                 tokens = fn.split('__')
                 src = tokens[1]
                 dst = tokens[3].strip('.rrd')
@@ -49,7 +49,7 @@ def asn_summary(asnum):
                     'url': f"/flow?src={src}&dst={dst}&period={period}&proto={proto}",
                     'title': f"From {src} to {dst}",
                 })
-            elif 'iface' in fn:
+            elif 'peer' in fn:
                 tokens = fn.split('__')
                 src = tokens[1].strip('.rrd')
                 ifaces.append({
@@ -116,4 +116,3 @@ def get_peer():
         return make_response(render_template("404.html", error=e), 404)
     except Exception as e:
         return make_response(render_template("error.html", error=e), 500)
-
