@@ -40,8 +40,8 @@ class SFlowDatagram:
         return self._switch_uptime
 
     @property
-    def processed_samples(self):
-        return len(self._samples)
+    def samples(self):
+        return self._samples
 
     @classmethod
     def from_bytes(cls, data, stats: StatLogger):
