@@ -30,14 +30,14 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                           CONFIG['rabbitmq_pass'])
         try:
             datagram = SFlowDatagram.from_bytes(data, Stats)
-            Stats.increment_counter('processed_datagram')
+            Stats.increment_counter('processed_datagrams')
             for sample in datagram.samples:
                 rate = sample.sampling_rate
                 try:
                     for record in sample.records:
                         flow = StorableFlow.from_record(rate, record)
                         Stats.debug(flow)
-                        Stats.increment_counter('processed_record')
+                        Stats.increment_counter('processed_records')
                         queue.send(json.dumps(jsonpickle.encode(flow)))
                 except AttributeError:
                     continue

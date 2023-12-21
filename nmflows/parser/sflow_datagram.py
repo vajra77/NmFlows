@@ -2,6 +2,7 @@ from nmflows.utils.buffer import Buffer
 from nmflows.utils.stats import StatLogger
 from nmflows.parser.samples.sample import Sample
 from nmflows.parser.samples.flow_sample import FlowSample
+from nmflows.parser.samples.ext_flow_sample import ExtFlowSample
 
 
 class SFlowDatagram:
@@ -74,15 +75,19 @@ class SFlowDatagram:
                                                sample_length,
                                                buffer.read_bytes(start_of_sample + 8, sample_length), stats)
                 samples.append(sample)
-                stats.increment_counter('flow_sample')
-            elif sample_format == Sample.FORMAT_COUNTER_SAMPLE:
-                stats.increment_counter('counter_sample')
+                stats.increment_counter('flow_samples')
             elif sample_format == Sample.FORMAT_EXT_FLOW_SAMPLE:
-                stats.increment_counter('extended_flow_sample')
+                sample = ExtFlowSample.from_bytes(sample_format,
+                                                  sample_length,
+                                                  buffer.read_bytes(start_of_sample + 8, sample_length), stats)
+                samples.append(sample)
+                stats.increment_counter('extended_flow_samples')
+            elif sample_format == Sample.FORMAT_COUNTER_SAMPLE:
+                stats.increment_counter('counter_samples')
             elif sample_format == Sample.FORMAT_EXT_COUNTER_SAMPLE:
-                stats.increment_counter('extended_counter_sample')
+                stats.increment_counter('extended_counter_samples')
             else:
-                stats.increment_counter('unknown_sample')
+                stats.increment_counter('unknown_samples')
             start_of_sample += 8 + sample_length                        # we assume we can always trust the length field
 
         return cls(version, ip_version, agent_address, agent_id,
