@@ -22,8 +22,8 @@ class Buffer:
         value = int.from_bytes(self._data[start:start+1], byteorder='big', signed=False)
         return value & 0xff
 
-    def read_bytes(self, start, len):
-        return self._data[start:start+len]
+    def read_bytes(self, start, blen):
+        return self._data[start:start+blen]
 
     def read_ipv4_address(self, start):
         return socket.inet_ntop(socket.AF_INET, self._data[start:start+4])

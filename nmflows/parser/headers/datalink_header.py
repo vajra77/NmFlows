@@ -42,11 +42,11 @@ class DatalinkHeader:
         buffer = Buffer.from_bytes(data)
         dst_mac = ''.join('%02x' % b for b in buffer.read_bytes(0,6))
         src_mac = ''.join('%02x' % b for b in buffer.read_bytes(6,6))
-        type_len = buffer.read_short(12) #int.from_bytes(data[12:14], byteorder='big', signed=False)
+        type_len = buffer.read_short(12)
         if type_len in cls.ALLOWED_ETHERTYPES:
             if type_len == cls.ETHERTYPE_8021Q:
-                vlan = buffer.read_short(14) & 0x0fff #int.from_bytes(data[14:16], byteorder='big', signed=False) & 0x0fff
-                type_len = buffer.read_short(16) # from_bytes(data[16:18], byteorder='big', signed=False)
+                vlan = buffer.read_short(14) & 0x0fff
+                type_len = buffer.read_short(16)
                 return cls(dst_mac, src_mac, vlan, type_len, 18)
             else:
                 return cls(dst_mac, src_mac, 0, type_len, 14)

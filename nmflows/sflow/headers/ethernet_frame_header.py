@@ -1,5 +1,3 @@
-import sys
-
 from nmflows.sflow.exceptions import EthParserException
 
 
