@@ -32,12 +32,11 @@ class PeeringMatrix:
         if peer is not None:
             return peer
         else:
-            if self._directory.has(mac):
-                mac_entry = self._directory.get(mac)
-                if mac_entry is not None:
-                    peer = PeerFlow.from_mac_entry(mac_entry)
-                    self.add_peer(peer)
-                    return peer
+            mac_entry = self._directory.get(mac)
+            if mac_entry is not None:
+                peer = PeerFlow.from_mac_entry(mac_entry)
+                self.add_peer(peer)
+                return peer
             return PeerFlow.make_unknown(mac)
 
     def checkin_flow(self, peer: PeerFlow, mac: str) -> PeerFlow:

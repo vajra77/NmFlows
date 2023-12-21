@@ -75,6 +75,6 @@ if __name__ == "__main__":
                       CONFIG['rabbitmq_user'],
                       CONFIG['rabbitmq_pass'],
                       handle_msg)
-
-    daemon = Daemonize(app="nmflows-broker", pid=CONFIG['broker_pid'], action=do_main, keep_fds=Stats.keep_fds)
-    daemon.start()
+    do_main()
+    # daemon = Daemonize(app="nmflows-broker", pid=CONFIG['broker_pid'], action=do_main, keep_fds=Stats.keep_fds)
+    # daemon.start()

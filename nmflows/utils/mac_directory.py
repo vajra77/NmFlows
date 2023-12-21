@@ -23,10 +23,7 @@ class MACDirectory:
         self._entries[entry.mac] = entry
 
     def get(self, mac):
-        if mac in self._entries.keys():
-            return self._entries[mac]
-        else:
-            return None
+        return self._entries.get(mac)
 
     def has(self, mac):
         return mac in self._entries.keys()
