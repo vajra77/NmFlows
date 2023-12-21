@@ -6,7 +6,7 @@ from nmflows.parser.headers import DatalinkHeader, NetworkHeader, TransportHeade
 class PktHeaderRecord(Record):
 
     def __init__(self, rformat, length, hdr_proto, orig_len, stripped, hdr_length,
-                 datalink=None, network=None, transport=None):
+                 datalink: DatalinkHeader, network: NetworkHeader, transport: TransportHeader):
         assert rformat == Record.FORMAT_RAW_PACKET
         super().__init__(rformat, length)
         self._header_proto = hdr_proto          # protocol type of header that follows
@@ -24,7 +24,7 @@ class PktHeaderRecord(Record):
     @property
     def payload_length(self):
         return (self._datalink.length
-                 + self._network.header_length
+                 + self._network.length
                  + self._network.payload_length)
 
     @property
