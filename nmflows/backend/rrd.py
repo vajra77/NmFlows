@@ -1,4 +1,4 @@
-from nmflows.peermatrix.peering_flow import PeeringFlow
+from nmflows.peermatrix.peer_flow import PeerFlow
 from .backend import Backend
 from datetime import datetime
 import rrdtool
@@ -26,12 +26,12 @@ class RRDBackend(Backend):
     def base_gamma(self):
         return self._base_gamma
 
-    def store_flows(self, src: PeeringFlow):
+    def store_flows(self, src: PeerFlow):
         path = self._base_path + f"/AS{src.asnum}"
         if not os.path.exists(path):
             os.makedirs(path)
             _chown(path)
-        for dst in src.destinations:
+        for dst in src.flows:
             filename = f"{path}/from__AS{src.asnum}-{src.mac}__to__AS{dst.asnum}-{dst.mac}.rrd"
             if not os.path.isfile(filename):
                 rrdtool.create(filename,
@@ -50,7 +50,7 @@ class RRDBackend(Backend):
                 _chown(filename)
             rrdtool.update(filename, "N:%s:%s" % (dst.ipv4_out_bytes, dst.ipv6_out_bytes))
 
-    def store_peer(self, src: PeeringFlow):
+    def store_peer(self, src: PeerFlow):
         path = self._base_path + f"/AS{src.asnum}"
         if not os.path.exists(path):
             os.makedirs(path)

@@ -1,4 +1,4 @@
-from nmflows.peermatrix.peering_flow import PeeringFlow
+from nmflows.peermatrix.peer_flow import PeerFlow
 from .backend import Backend
 from elasticsearch import Elasticsearch
 from datetime import datetime
@@ -11,7 +11,7 @@ class ESBackend(Backend):
         self._index = index
         self._es = Elasticsearch(es_url)
 
-    def store_flows(self, src: PeeringFlow):
+    def store_flows(self, src: PeerFlow):
         for dst in src.destinations:
             flow = {
                 'timestamp': datetime.now(),
@@ -27,7 +27,7 @@ class ESBackend(Backend):
             }
             self._es.index(index=self._index, id=uuid4().hex, document=flow)
 
-    def store_peer(self, src: PeeringFlow):
+    def store_peer(self, src: PeerFlow):
         peer = {
             'timestamp': datetime.now(),
             'type': 'peer',

@@ -1,7 +1,7 @@
 from nmflows.utils import MACEntry
 
 
-class PeeringFlow:
+class PeerFlow:
 
     def __init__(self, asnum, name, mac):
         self._asnum = asnum
@@ -11,7 +11,7 @@ class PeeringFlow:
         self._ipv6_in_bytes = 0
         self._ipv4_out_bytes = 0
         self._ipv6_out_bytes = 0
-        self._destinations = {}
+        self._flows = {}
 
     @property
     def asnum(self):
@@ -26,8 +26,8 @@ class PeeringFlow:
         return self._mac
 
     @property
-    def destinations(self):
-        return self._destinations.values()
+    def flows(self):
+        return self._flows.values()
 
     @property
     def ipv4_in_bytes(self):
@@ -53,17 +53,17 @@ class PeeringFlow:
     def out_bytes(self):
         return self._ipv4_out_bytes + self._ipv6_out_bytes
 
-    def has_destination(self, mac):
-        return mac in self._destinations.keys()
+    def has_flow(self, mac):
+        return mac in self._flows.keys()
 
-    def get_destination(self, mac):
-        if mac in self._destinations.keys():
-            return self._destinations.get(mac)
+    def get_flow(self, mac):
+        if mac in self._flows.keys():
+            return self._flows.get(mac)
         else:
-            return PeeringFlow.make_unknown(mac)
+            return PeerFlow.make_unknown(mac)
 
-    def add_destination(self, peer):
-        self._destinations[peer.mac] = peer
+    def add_flow(self, peer):
+        self._flows[peer.mac] = peer
 
     def account_in_bytes(self, size, proto):
         if int(proto) == 2048:
@@ -81,17 +81,17 @@ class PeeringFlow:
         return self._asnum is None and self._name is None
 
     def is_source(self) -> bool:
-        return len(self._destinations) > 0
+        return len(self._flows) > 0
 
-    def is_destination(self) -> bool:
-        return len(self._destinations) == 0
+    def is_flow(self) -> bool:
+        return len(self._flows) == 0
 
     def cleanup(self):
         self._ipv6_in_bytes = 0
         self._ipv4_in_bytes = 0
         self._ipv6_out_bytes = 0
         self._ipv4_out_bytes = 0
-        for p in self._destinations.values():
+        for p in self._flows.values():
             p.cleanup()
 
     @classmethod

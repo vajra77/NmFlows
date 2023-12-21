@@ -16,7 +16,7 @@ def handle_msg(ch, method, properties, body):
     try:
         with Lock:
             flow = jsonpickle.decode((json.loads(body)))
-            Matrix.add_flow(flow)
+            Matrix.register_flow(flow)
     except PeeringMatrixException as e:
         Stats.increment_counter(e)
     except Exception as e:
