@@ -32,7 +32,7 @@ class RRDBackend(Backend):
             os.makedirs(path)
             _chown(path)
         for dst in src.flows:
-            filename = f"{path}/from__AS{src.asnum}-{src.mac}__to__AS{dst.asnum}-{dst.mac}.rrd"
+            filename = f"{path}/flow__AS{src.asnum}-{src.mac}__to__AS{dst.asnum}-{dst.mac}.rrd"
             if not os.path.isfile(filename):
                 rrdtool.create(filename,
                                "--step", "300",
@@ -55,7 +55,7 @@ class RRDBackend(Backend):
         if not os.path.exists(path):
             os.makedirs(path)
             _chown(path)
-        filename = f"{path}/iface__AS{src.asnum}-{src.mac}.rrd"
+        filename = f"{path}/peer__AS{src.asnum}-{src.mac}.rrd"
         if not os.path.isfile(filename):
             rrdtool.create(filename,
                            "--step", "300",
@@ -83,11 +83,11 @@ class RRDBackend(Backend):
         dst_asn, dst_mac = dst.split('-')
         f_path = self._base_path + f"/{src_asn}"
         r_path = self._base_path + f"/{dst_asn}"
-        f_rrdfile = f"{f_path}/from__{src}__to__{dst}.rrd"
-        r_rrdfile = f"{r_path}/from__{dst}__to__{src}.rrd"
+        f_rrdfile = f"{f_path}/flow__{src}__to__{dst}.rrd"
+        r_rrdfile = f"{r_path}/flow__{dst}__to__{src}.rrd"
         if os.path.isfile(f_rrdfile) and os.path.isfile(r_rrdfile):
             gamma = 8 * self._base_gamma
-            imgfile = f"/tmp/from__{src}__to__{dst}.png"
+            imgfile = f"/tmp/flow__{src}__to__{dst}.png"
             date = datetime.today()
             rrdtool.graph(imgfile,
                           "--imgformat", "PNG",
@@ -126,10 +126,10 @@ class RRDBackend(Backend):
     def graph_peer(self, schedule, src, proto):
         src_asn, src_mac = src.split('-')
         if_path = self._base_path + f"/{src_asn}"
-        rrdfile = f"{if_path}/iface__{src}.rrd"
+        rrdfile = f"{if_path}/peer__{src}.rrd"
         if os.path.isfile(rrdfile):
             gamma = 8 * self._base_gamma
-            imgfile = f"/tmp/iface__{src}.png"
+            imgfile = f"/tmp/peer__{src}.png"
             date = datetime.today()
             rrdtool.graph(imgfile,
                           "--imgformat", "PNG",
