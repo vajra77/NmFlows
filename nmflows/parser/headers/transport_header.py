@@ -34,6 +34,13 @@ class TransportHeader:
     def destination_port(self):
         return self._destination_port
 
+    @property
+    def is_unknown(self):
+        return (self._length == 0
+                and self._payload_length == 0
+                and self._source_port == 0
+                and self._destination_port == 0)
+
     @classmethod
     def from_bytes(cls, data, proto):
         buffer = Buffer.from_bytes(data)
@@ -41,14 +48,16 @@ class TransportHeader:
             # TCP Packet Header
             src_port = buffer.read_short(0)
             dst_port = buffer.read_short(2)
-            return cls(NetworkHeader.UPPER_PROTO_TCP,
-                       20, 0, src_port, dst_port)
+            return cls(proto, 20, 0, src_port, dst_port)
         elif proto == NetworkHeader.UPPER_PROTO_UDP:
             # UDP Packet Header
             src_port = buffer.read_short(0)
             dst_port = buffer.read_short(2)
             tot_len = buffer.read_short(4)
-            return cls(NetworkHeader.UPPER_PROTO_UDP,
-                       8, tot_len, src_port, dst_port)
+            return cls(proto, 8, tot_len, src_port, dst_port)
         else:
-            raise NotImplementedError('unrecognized_transport_header')
+            return cls.unknown(proto)
+
+    @classmethod
+    def unknown(cls, proto):
+        return cls(proto, 0, 0, 0, 0)

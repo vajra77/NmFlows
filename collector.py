@@ -41,7 +41,7 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                 except AttributeError:
                     continue
         except Exception as e:
-            Stats.increment_counter(e)
+            Stats.debug(e)
             return
 
 
