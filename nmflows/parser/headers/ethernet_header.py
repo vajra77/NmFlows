@@ -1,6 +1,4 @@
-from nmflows.utils import Buffer
-
-
+from nmflows.utils.buffer import Buffer
 
 
 class EthernetHeader:

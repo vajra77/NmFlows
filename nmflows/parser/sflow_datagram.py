@@ -1,4 +1,5 @@
-from nmflows.utils import Buffer, StatLogger
+from nmflows.utils.buffer import Buffer
+from nmflows.utils.stats import StatLogger
 from nmflows.parser.samples.sample import Sample
 from nmflows.parser.samples.flow_sample import FlowSample
 

@@ -1,4 +1,5 @@
-from nmflows.utils import Buffer, StatLogger
+from nmflows.utils.buffer import Buffer
+from nmflows.utils.stats import StatLogger
 from .sample import Sample
 from .record import Record
 from .pkt_header_record import PktHeaderRecord

@@ -1,5 +1,5 @@
+from nmflows.utils.buffer import Buffer
 from .ethernet_header import EthernetHeader
-from nmflows.utils import Buffer
 
 
 class NetworkHeader:

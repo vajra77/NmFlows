@@ -1,4 +1,4 @@
-from nmflows.utils import Buffer
+from nmflows.utils.buffer import Buffer
 from .network_header import NetworkHeader
 
 

@@ -1,5 +1,5 @@
 from .record import Record
-from nmflows.utils import Buffer
+from nmflows.utils.buffer import Buffer
 from nmflows.parser.headers import EthernetHeader, NetworkHeader, TransportHeader
 
 
