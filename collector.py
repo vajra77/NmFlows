@@ -38,7 +38,7 @@ class ThisUDPRequestHandler(socketserver.DatagramRequestHandler):
                         flow = StorableFlow.from_record(rate, record)
                         Stats.debug(flow)
                         Stats.increment_counter('processed_record')
-                        #queue.send(json.dumps(jsonpickle.encode(flow)))
+                        queue.send(json.dumps(jsonpickle.encode(flow)))
                 except AttributeError:
                     continue
         except Exception as e:
