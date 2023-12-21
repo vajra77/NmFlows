@@ -1,6 +1,7 @@
 from nmflows.utils import MACDirectory, StorableFlow
 from nmflows.peermatrix.peer_flow import PeerFlow
 from nmflows.backend.backend import Backend
+from pprint import pprint
 
 
 class PeeringMatrix:
@@ -24,9 +25,6 @@ class PeeringMatrix:
         else:
             return PeerFlow.make_unknown(mac)
 
-    def add_peer(self, peer: PeerFlow):
-        self._peers[peer.mac] = peer.mac
-
     def checkin_peer(self, mac) -> PeerFlow:
         peer = self._peers.get(mac)
         if peer is not None:
@@ -35,30 +33,30 @@ class PeeringMatrix:
             mac_entry = self._directory.get(mac)
             if mac_entry is not None:
                 peer = PeerFlow.from_mac_entry(mac_entry)
-                self.add_peer(peer)
+                self._peers[mac] = peer
                 return peer
-            return PeerFlow.make_unknown(mac)
+            else:
+                return PeerFlow.make_unknown(mac)
 
     def checkin_flow(self, peer: PeerFlow, mac: str) -> PeerFlow:
         flow_dst = peer.get_flow(mac)
         if flow_dst is not None:
             return flow_dst
         else:
-            if self._directory.has(mac):
-                mac_entry = self._directory.get(mac)
-                if mac_entry is not None:
-                    flow_dst = PeerFlow.from_mac_entry(mac_entry)
-                    peer.add_flow(flow_dst)
-                    return flow_dst
-            return PeerFlow.make_unknown(mac)
+            mac_entry = self._directory.get(mac)
+            if mac_entry is not None:
+                flow_dst = PeerFlow.from_mac_entry(mac_entry)
+                peer.add_flow(flow_dst)
+                return flow_dst
+            else:
+                return PeerFlow.make_unknown(mac)
 
     def register_flow(self, flow: StorableFlow):
 
         src = self.checkin_peer(flow.src_mac)
         dst = self.checkin_peer(flow.dst_mac)
 
-        print(type(src))
-        print(type(dst))
+        pprint(src)
 
         if not src.is_unknown():
             src.account_in_bytes(flow.estimated_size, flow.proto)
